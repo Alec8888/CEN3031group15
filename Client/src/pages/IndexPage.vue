@@ -3,7 +3,7 @@
     <img
       alt="PantryPal logo"
       src="~assets/PantryPal-Logo.png"
-      style="width: 300px; height: 300px"
+      style="width: 700px; height: 700px"
     >
 
     <div class="q-pa-md qgutter-sm">
