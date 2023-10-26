@@ -3,9 +3,9 @@
     <q-header elevated>
       <q-toolbar>
         <q-btn
-          flat
+          
           dense
-          round
+          
           icon="menu"
           aria-label="Menu"
           @click="toggleLeftDrawer"
@@ -15,7 +15,11 @@
           Pantry Pal
         </q-toolbar-title>
 
-        <q-btn color="primary" icon="account_circle" >
+        <q-btn 
+          color="primary"
+          icon="account_circle"
+          
+           >
         <q-menu
           transition-show="flip-right"
           transition-hide="flip-left"
