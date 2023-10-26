@@ -15,29 +15,25 @@
           Pantry Pal
         </q-toolbar-title>
 
-        <div>Fall 2023 - CEN2031 - Group 15</div>
+        <q-btn color="primary" icon="account_circle" >
+        <q-menu
+          transition-show="flip-right"
+          transition-hide="flip-left"
+        >
+          <q-list style="min-width: 100px">
+            <q-item clickable>
+              <q-item-section>{{ userName }}</q-item-section>
+            </q-item>
+            <q-separator />
+            <q-item clickable>
+              <q-item-section>Log Out</q-item-section>
+            </q-item>
+          </q-list>
+        </q-menu>
+      </q-btn>
+
       </q-toolbar>
     </q-header>
-
-    <!-- <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
-      <q-list>
-        <q-item-label
-          header
-        >
-          Site Navigation
-        </q-item-label>
-
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
-      </q-list>
-    </q-drawer> -->
 
     <q-drawer
         v-model="leftDrawerOpen"
@@ -47,11 +43,6 @@
       >
         <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd">
           <q-list padding>
-            <!-- <q-item-label
-              header
-            >
-              Site Navigation
-            </q-item-label> -->
 
             <EssentialLink
               v-for="link in essentialLinks"
@@ -130,6 +121,12 @@ export default defineComponent({
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value
       }
+    }
+  },
+  data () {
+    return {
+      userName: 'John Doe'
+
     }
   }
 })

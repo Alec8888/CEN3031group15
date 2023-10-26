@@ -1,6 +1,9 @@
 <template>
   <q-page padding>
-    <h1>Sign up page</h1>
+    
+    <div class="text-h5 text-primary">
+      Sign up page
+    </div>
 
     <div class="q-pa-md">
       <div class="q-gutter-y-md column" style="max-width: 300px">
