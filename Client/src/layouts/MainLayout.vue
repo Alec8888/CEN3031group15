@@ -19,7 +19,7 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer
+    <!-- <q-drawer
       v-model="leftDrawerOpen"
       show-if-above
       bordered
@@ -28,7 +28,7 @@
         <q-item-label
           header
         >
-          Essential Links
+          Site Navigation
         </q-item-label>
 
         <EssentialLink
@@ -37,7 +37,33 @@
           v-bind="link"
         />
       </q-list>
-    </q-drawer>
+    </q-drawer> -->
+
+    <q-drawer
+        v-model="leftDrawerOpen"
+        show-if-above
+        bordered
+
+      >
+        <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd">
+          <q-list padding>
+            <!-- <q-item-label
+              header
+            >
+              Site Navigation
+            </q-item-label> -->
+
+            <EssentialLink
+              v-for="link in essentialLinks"
+              :key="link.title"
+              v-bind="link"
+            />
+          </q-list>
+        </q-scroll-area>
+
+        <q-img class="absolute-top" src="~/assets/PantryPal-Logo.png" style="height: 200px">
+        </q-img>
+      </q-drawer>
 
     <q-page-container>
       <router-view />
@@ -53,13 +79,13 @@ const linksList = [
   {
     title: 'Home',
     caption: 'Start here if you are new.',
-    icon: 'school',
+    icon: 'help',
     link: '#/'
   },
   {
     title: 'Profile',
     caption: 'Your profile.',
-    icon: 'public',
+    icon: 'settings',
     link: '#/profile'
   },
   {
@@ -71,19 +97,19 @@ const linksList = [
   {
     title: 'Sign Up',
     caption: 'New user registration.',
-    icon: 'chat',
+    icon: 'send',
     link: '#/signUp'
   },
   {
     title: 'Pantry',
     caption: 'Find food here.',
-    icon: 'record_voice_over',
+    icon: 'inbox',
     link: '#/pantry'
   },
   {
     title: 'Fill Pantry',
     caption: 'Post your food as in the pantry.',
-    icon: 'rss_feed',
+    icon: 'star',
     link: '#/fillPantry'
   }
 ]
