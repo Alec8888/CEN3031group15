@@ -5,7 +5,7 @@
     </div>
 
     <div class = "q-pa-md text-body1" >
-      A food pantry management system.
+      A food donation platform.
     </div>
 
     <div class="q-pa-md qgutter-sm">
@@ -15,7 +15,7 @@
     <div class="q-pa-md qgutter-sm">
       <q-btn color="secondary" glossy label="Sign up" to="signUp" />
     </div>
-    
+
     <img
       alt="PantryPal logo"
       src="~assets/PantryPal-Logo.png"
