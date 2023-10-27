@@ -1,11 +1,11 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
-      <q-toolbar>
+      <q-toolbar class="text-accent">
         <q-btn
           
           dense
-          
+          color="secondary"
           icon="menu"
           aria-label="Menu"
           @click="toggleLeftDrawer"
@@ -16,7 +16,7 @@
         </q-toolbar-title>
 
         <q-btn 
-          color="primary"
+          color="secondary"
           icon="account_circle"
           
            >
