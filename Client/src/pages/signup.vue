@@ -29,6 +29,7 @@
     <div class="q-pa-md qgutter-sm">
       <q-btn color="secondary" glossy label="Sumbmit" @click="createAccount" />
     </div>
+
     
 
   </q-page>
@@ -36,12 +37,28 @@
 </template>
 
 <script>
+export default {
+  name: 'signUp',
+  data() {
+    return {
+      foodDonation: false
+    }
+  },
+  methods: {
+    async createAccount () {
+      console.log('Sign up button clicked.');
+    }
+  }
+}
+</script>
+
+<!-- <script>
 import { defineComponent, ref } from 'vue'
 export default defineComponent({
    name: 'signUp',
    setup () {
       return {
-        foodDonation: ref('')
+        foodDonation: ref(false)
       }
    },
    methods: {
@@ -49,5 +66,8 @@ export default defineComponent({
          console.log('Sign up button clicked.');
       }
    }
+},
+{
+  name: 'anotherComponent'
 })
-</script>
+</script> -->
