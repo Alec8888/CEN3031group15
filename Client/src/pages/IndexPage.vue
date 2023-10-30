@@ -9,11 +9,11 @@
     </div>
 
     <div class="q-pa-md qgutter-sm">
-      <q-btn color="primary" glossy label="Sign In" to="signUp" />
+      <q-btn color="primary" glossy label="Sign In" />
     </div>
 
     <div class="q-pa-md qgutter-sm">
-      <q-btn color="secondary" glossy label="Sign up" to="signUp" />
+      <q-btn color="secondary" glossy label="Sign up" to="register" />
     </div>
 
     <img

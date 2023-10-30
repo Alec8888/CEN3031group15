@@ -12,21 +12,83 @@
         filled
         v-model="name"
         label="Your name *"
-        hint="Name and surname"
+        hint="First and last name"
+        color="secondary"
         lazy-rules
         :rules="[ val => val && val.length > 0 || 'Please type something']"
       />
 
       <q-input
         filled
-        type="number"
-        v-model="age"
-        label="Your age *"
+        type="email"
+        v-model="email"
+        label="Email address*"
+        hint="This will be your username"
         lazy-rules
+        color="secondary"
         :rules="[
-          val => val !== null && val !== '' || 'Please type your age',
-          val => val > 0 && val < 100 || 'Please type a real age'
+          val => val && val.length > 0 || 'Please type something',
+          val => /^.+@.+\..+$/.test(val) || 'Please type a valid email'
         ]"
+      />
+      
+      <q-input
+      filled
+        v-model="organization"
+        label="Organization or company name*"
+        hint="Name of entity donating or receiving food"
+        lazy-rules
+        color="secondary"
+        :rules="[ val => val && val.length > 0 || 'Please type something']"
+      />
+      <q-input
+        filled
+        v-model="street"
+        label="Street address*"
+        hint="Street address of organization or company"
+        lazy-rules
+        color="secondary"
+        :rules="[ val => val && val.length > 0 || 'Please type something']"
+      /> 
+
+      <q-input
+        filled
+        v-model="city"
+        label="City*"
+        hint="City in which organization or company is located"
+        lazy-rules
+        color="secondary"
+        :rules="[ val => val && val.length > 0 || 'Please type something']"
+      />
+
+      <q-input
+        filled
+        v-model="state"
+        label="State*"
+        hint="State in which organization or company is located"
+        lazy-rules
+        color="secondary"
+        :rules="[ val => val && val.length > 0 || 'Please type something']"
+      />
+
+      <q-input
+        filled
+        v-model="zip"
+        label="Zip code*"
+        hint="Zip code of organization or company"
+        lazy-rules
+        color="secondary"
+        :rules="[ val => val && val.length > 0 || 'Please type something']"
+      />
+
+      <q-input
+        filled
+        v-model="phone"
+        label="Phone number*"
+        hint="Phone number of organization or company"
+        lazy-rules
+        color="secondary"
+        :rules="[ val => val && val.length > 0 || 'Please type something']"
       />
 
       <q-toggle v-model="accept" label="I accept the license and terms" />
@@ -37,13 +99,6 @@
       </div>
     </q-form>
 
-    <div class="text-body1 q-pa-md">
-      Input binding example: {{ inputBindingExample }}
-      <q-input
-        v-model="inputBindingExample"
-        placeholder="Edit me..."
-      />
-    </div>
 
   </div>
 </template>
@@ -60,6 +115,8 @@ export default {
     const name = ref(null)
     const age = ref(null)
     const accept = ref(false)
+    const showDialog = ref(false)
+    const organization = ref(null)
 
     const inputBindingExample = ref('')
 
@@ -67,6 +124,7 @@ export default {
       name,
       age,
       accept,
+      organization,
       inputBindingExample,
 
       async onSubmit () {
@@ -91,7 +149,7 @@ export default {
           let formResponse = await response.json()
 
           if (formResponse.isSuccess) {
-            // route to next page or whatever
+            // server returns a success message or boolean
           }
 
           $q.notify({

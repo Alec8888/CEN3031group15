@@ -58,6 +58,7 @@
 
         <q-img class="absolute-top" src="~/assets/PantryPal-Logo.png" style="height: 200px">
         </q-img>
+        
       </q-drawer>
 
     <q-page-container>
@@ -90,10 +91,10 @@ const linksList = [
     link: '#/signIn'
   },
   {
-    title: 'Sign Up',
+    title: 'Register',
     caption: 'New user registration.',
     icon: 'send',
-    link: '#/signUp'
+    link: '#/register'
   },
   {
     title: 'Pantry',
