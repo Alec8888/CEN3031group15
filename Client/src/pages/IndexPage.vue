@@ -1,8 +1,5 @@
 <template>
   <q-page padding>
-    <div class="q-gutter-lg">
-      <q-btn push color="primary" label="Sign In" text-color="accent" to="signin"/>      
-    </div>
 
     <div class = "text-body1 q-mt-md" >
       A food donation platform.
@@ -13,7 +10,6 @@
       src="~assets/PantryPal-Logo.png"
       style="width: 700px; height: 700px"
     >
-
     
   </q-page>
 </template>

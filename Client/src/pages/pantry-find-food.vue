@@ -1,8 +1,5 @@
 <template>
   <q-page padding>
-    <div class="text-h1 text-primary">
-      Pantry
-    </div>
 
     <div class="q-pa-md row items-start q-gutter-md">
       <q-card class="my-card bg-secondary text-white">

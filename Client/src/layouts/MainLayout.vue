@@ -12,29 +12,48 @@
         />
 
         <q-toolbar-title>
-          Pantry Pal
+          {{ $route.meta.title }}
         </q-toolbar-title>
 
-        <q-btn 
-          color="secondary"
-          icon="account_circle"
-          
-           >
-        <q-menu
-          transition-show="flip-right"
-          transition-hide="flip-left"
-        >
-          <q-list style="min-width: 100px">
-            <q-item clickable>
-              <q-item-section>{{ userName }}</q-item-section>
-            </q-item>
-            <q-separator />
-            <q-item clickable>
-              <q-item-section>Log Out</q-item-section>
-            </q-item>
-          </q-list>
-        </q-menu>
-      </q-btn>
+        <div class="q-gutter-sm">
+          <q-btn
+            v-if="!isLoggedIn"
+            color="secondary"
+            label="Sign In"
+            to="signin"
+             >
+          </q-btn>
+          <q-btn
+            v-if="!isLoggedIn"
+            color="secondary"
+            label="Register"
+            to="register"
+             >
+          </q-btn>
+        </div>
+
+        <div>
+          <q-btn
+          v-if="isLoggedIn"
+            color="secondary"
+            icon="account_circle"
+             >
+          <q-menu
+            transition-show="flip-right"
+            transition-hide="flip-left"
+          >
+            <q-list style="min-width: 100px">
+              <q-item clickable>
+                <q-item-section>{{ userName }}</q-item-section>
+              </q-item>
+              <q-separator />
+              <q-item clickable>
+                <q-item-section>Log Out</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
+        </div>
 
       </q-toolbar>
     </q-header>
@@ -119,10 +138,12 @@ export default defineComponent({
 
   setup () {
     const leftDrawerOpen = ref(false)
+    const isLoggedIn = ref(false)
 
     return {
       essentialLinks: linksList,
       leftDrawerOpen,
+      isLoggedIn,
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value
       }
@@ -132,6 +153,7 @@ export default defineComponent({
   data () {
     return {
       userName: 'John Doe'
+
 
     }
   }
