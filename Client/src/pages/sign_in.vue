@@ -2,45 +2,48 @@
   <!-- <div class="q-pa-md" style="max-width: 800px"> -->
   <div class="column items-center">
 
+    
     <img
       alt="PantryPal logo"
       src="~assets/PantryPal-Logo.png"
       style="width: 400px; height:400px"
     >
 
-    <q-form
-      action="http://localhost:8000/#/api"
-      method="post"
-      @submit="onSubmit"
-      @reset="onReset"
-      class="q-gutter-sm"
-    >
-
-      <q-input
-        filled
-        type="email"
-        v-model="email"
-        label="Email address*"
-        lazy-rules
-        color="secondary"
-        :rules="[
-          val => val && val.length > 0 || 'Please type something',
-          val => /^.+@.+\..+$/.test(val) || 'Please type a valid email'
-        ]"
-      />
-
-      <q-input
+    <div style="width: 350px">
+    
+      <q-form
+        action="http://localhost:8000/#/api"
+        method="post"
+        @submit="onSubmit"
+        @reset="onReset"
+        class="q-gutter-sm"
+      >
+        <q-input
           filled
-          v-model="password"
-          label="Password*"
+          type="email"
+          v-model="email"
+          label="Email address*"
           lazy-rules
           color="secondary"
-          :rules="[ val => val && val.length > 0 || 'Please type something',
-                    val => val && val.length > 7 || 'Password must be at least 8 characters long']"
+          :rules="[
+            val => val && val.length > 0 || 'Please type something',
+            val => /^.+@.+\..+$/.test(val) || 'Please type a valid email'
+          ]"
         />
-
-        <q-btn label="Submit" type="submit" color="primary"/>
-    </q-form>
+  
+        <q-input
+            filled
+            v-model="password"
+            label="Password*"
+            lazy-rules
+            color="secondary"
+            :rules="[ val => val && val.length > 0 || 'Please type something',
+                      val => val && val.length > 7 || 'Password must be at least 8 characters long']"
+          />
+  
+          <q-btn label="Submit" type="submit" color="primary"/>
+      </q-form>
+    </div>
 
   </div>
 

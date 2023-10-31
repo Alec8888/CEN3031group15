@@ -79,6 +79,18 @@ const linksList = [
     link: '#/'
   },
   {
+    title: 'Pantry',
+    caption: 'Find food here.',
+    icon: 'inbox',
+    link: '#/pantry'
+  },
+  {
+    title: 'Fill Pantry',
+    caption: 'Post your food as in the pantry.',
+    icon: 'star',
+    link: '#/fillPantry'
+  },
+  {
     title: 'Profile',
     caption: 'Your profile.',
     icon: 'settings',
@@ -96,18 +108,6 @@ const linksList = [
     icon: 'send',
     link: '#/register'
   },
-  {
-    title: 'Pantry',
-    caption: 'Find food here.',
-    icon: 'inbox',
-    link: '#/pantry'
-  },
-  {
-    title: 'Fill Pantry',
-    caption: 'Post your food as in the pantry.',
-    icon: 'star',
-    link: '#/fillPantry'
-  }
 ]
 
 export default defineComponent({

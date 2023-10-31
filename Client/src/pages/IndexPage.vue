@@ -1,10 +1,10 @@
 <template>
-  <q-page>
-    <div class = "q-pa-md text-h3 text-primary" >
-      PantryPal
+  <q-page padding>
+    <div class="q-gutter-lg">
+      <q-btn push color="primary" label="Sign In" text-color="accent" to="signin"/>      
     </div>
 
-    <div class = "q-pa-md text-body1" >
+    <div class = "text-body1 q-mt-md" >
       A food donation platform.
     </div>
 
