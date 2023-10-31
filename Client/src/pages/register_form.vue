@@ -136,118 +136,106 @@
 
   </div>
 
+  <eula />
+
   <q-dialog v-model="read_eula">
-      <q-card>
-        <q-card-section>
-          <div class="text-h6">License and terms</div>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum repellendus sit voluptate voluptas eveniet porro. Rerum blanditiis perferendis totam, ea at omnis vel numquam exercitationem aut, natus minima, porro labore.
-        </q-card-section>
-
-        <q-card-actions align="right">
-          <q-btn flat label="OK" color="primary" v-close-popup />
-        </q-card-actions>
-      </q-card>
+      <eula_popup />
   </q-dialog>
 </template>
 
 <script>
 import { useQuasar } from 'quasar'
 import { ref } from 'vue'
+import eula_popup from 'components/eula_popup.vue'
 
 export default {
+    components: { 
+      eula_popup,
+     },
+    setup() {
+        const $q = useQuasar();
+        const name = ref(null);
+        const email = ref(null);
+        const donate = ref(null);
+        const organization = ref(null);
+        const streetAddress = ref(null);
+        const city = ref(null);
+        const state = ref(null);
+        const zip = ref(null);
+        const phone = ref(null);
+        const password = ref(null);
+        const confirm_password = ref(null);
+        const read_eula = ref(false);
+        const accept = ref(false);
 
-  setup () {
-    const $q = useQuasar()
+        // define methods here, if any
 
-    const name = ref(null)
-    const email = ref(null)
-    const donate = ref(null)
-    const organization = ref(null)
-    const streetAddress = ref(null)
-    const city = ref(null)
-    const state = ref(null)
-    const zip = ref(null)
-    const phone = ref(null)
-    const password = ref(null)
-    const confirm_password = ref(null)
-    const read_eula = ref(false)
-    const accept = ref(false)
+        return {
 
-    return {
-      name,
-      email,
-      organization,
-      donate,
-      streetAddress,
-      city,
-      state,
-      zip,
-      phone,
-      password,
-      confirm_password,
-      read_eula,
-      accept,
+            name,
+            email,
+            organization,
+            donate,
+            streetAddress,
+            city,
+            state,
+            zip,
+            phone,
+            password,
+            confirm_password,
+            read_eula,
+            accept,
 
-      async onSubmit () {
-        if (accept.value !== true) {
-          $q.notify({
-            color: 'red-5',
-            textColor: 'white',
-            icon: 'warning',
-            message: 'You need to accept the license and terms first'
-          })
-        }
-        else {
-          console.log(name.value)
-          console.log(email.value)
-          console.log(organization.value)
-          console.log(donate.value)
-          console.log(streetAddress.value)
-          console.log(city.value)
-          console.log(state.value)
-          console.log(zip.value)
-          
-          let response = await fetch('http://localhost:8000/#/api', {
-            method: 'POST',
-            body: JSON.stringify({
-              name: name.value,
-              email: email.value,
-              donate: donate.value,
-              organization: organization.value,
-              streetAddress: streetAddress.value,
-              city: city.value,
-              state: state.value,
-              zip: zip.value,
-              phone: phone.value,
-              password: password.value,
-
-            })
-          })
-
-          let formResponse = await response.json()
-
-          if (formResponse.isSuccess) {
-            // Go to the post food page
-          }
-        
-
-          $q.notify({
-            color: 'green-4',
-            textColor: 'white',
-            icon: 'cloud_done',
-            message: 'Submitted ' +  "name: " + name.value + ", age: " + age.value
-          })
-        }
-      },
-
-      onReset () {
-        name.value = null
-        accept.value = false
-      }
+            async onSubmit() {
+                if (accept.value !== true) {
+                    $q.notify({
+                        color: 'red-5',
+                        textColor: 'white',
+                        icon: 'warning',
+                        message: 'You need to accept the license and terms first'
+                    });
+                }
+                else {
+                    console.log(name.value);
+                    console.log(email.value);
+                    console.log(organization.value);
+                    console.log(donate.value);
+                    console.log(streetAddress.value);
+                    console.log(city.value);
+                    console.log(state.value);
+                    console.log(zip.value);
+                    let response = await fetch('http://localhost:8000/#/api', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            name: name.value,
+                            email: email.value,
+                            donate: donate.value,
+                            organization: organization.value,
+                            streetAddress: streetAddress.value,
+                            city: city.value,
+                            state: state.value,
+                            zip: zip.value,
+                            phone: phone.value,
+                            password: password.value,
+                        })
+                    });
+                    let formResponse = await response.json();
+                    if (formResponse.isSuccess) {
+                        // Go to the post food page
+                        $q.notify({
+                            color: 'green-4',
+                            textColor: 'white',
+                            icon: 'cloud_done',
+                            message: 'Form submitted successfully'
+                        });
+                    }
+                }
+            },
+            onReset() {
+                name.value = null;
+                accept.value = false;
+            }
+        };
     }
-  }
 }
 </script>
