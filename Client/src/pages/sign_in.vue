@@ -1,52 +1,62 @@
 <template>
-  <!-- <div class="q-pa-md" style="max-width: 800px"> -->
-  <div class="column items-center">
+  <q-page class="column items-center">
+  <!-- <div class="column items-center"> -->
 
-    
-    <img
-      alt="PantryPal logo"
-      src="~assets/PantryPal-Logo.png"
-      style="width: 400px; height:400px"
-    >
+    <q-card>
+      <!-- <q-card-section>
+        <img
+          alt="PantryPal logo"
+          src="~assets/PantryPal-Logo.png"
+          style="width: 300px; height:300px"
+        >
+      </q-card-section> -->
+      <q-card-section>
+        <div class="text-subtitle2">Sign in to PantryPal</div>
+      </q-card-section>
 
-    <div style="width: 350px">
-    
-      <q-form
-        action="http://localhost:8000/#/api"
-        method="post"
-        @submit="onSubmit"
-        @reset="onReset"
-        class="q-gutter-sm"
-      >
-        <q-input
-          filled
-          type="email"
-          v-model="email"
-          label="Email address*"
-          lazy-rules
-          color="secondary"
-          :rules="[
-            val => val && val.length > 0 || 'Please type something',
-            val => /^.+@.+\..+$/.test(val) || 'Please type a valid email'
-          ]"
-        />
-  
-        <q-input
+      <q-card-section>
+        <q-form
+          action="http://localhost:8000/#/api"
+          method="post"
+          @submit="onSubmit"
+          @reset="onReset"
+          class="q-gutter-sm"
+        >
+          <q-input
             filled
-            v-model="password"
-            label="Password*"
+            type="email"
+            v-model="email"
+            label="Email address*"
             lazy-rules
             color="secondary"
-            :rules="[ val => val && val.length > 0 || 'Please type something',
-                      val => val && val.length > 7 || 'Password must be at least 8 characters long']"
+            :rules="[
+              val => val && val.length > 0 || 'Please type something',
+              val => /^.+@.+\..+$/.test(val) || 'Please type a valid email'
+            ]"
           />
-  
-          <q-btn label="Submit" type="submit" color="primary"/>
-      </q-form>
-    </div>
+    
+          <q-input
+              filled
+              v-model="password"
+              label="Password*"
+              lazy-rules
+              color="secondary"
+              :rules="[ val => val && val.length > 0 || 'Please type something',
+                        val => val && val.length > 7 || 'Password must be at least 8 characters long']"
+            />
+    
+            <q-btn label="Submit" type="submit" color="primary"/>
+        </q-form>
 
-  </div>
+      </q-card-section>
 
+    </q-card>
+    
+    
+
+
+  <!-- </div> -->
+  </q-page>
 </template>
 
 <script>
