@@ -8,14 +8,6 @@
       A food donation platform.
     </div>
 
-    <div class="q-pa-md qgutter-sm">
-      <q-btn color="primary" glossy label="Sign In" to="signin" />
-    </div>
-
-    <div class="q-pa-md qgutter-sm">
-      <q-btn color="secondary" glossy label="Sign up" to="register" />
-    </div>
-
     <img
       alt="PantryPal logo"
       src="~assets/PantryPal-Logo.png"
