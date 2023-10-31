@@ -31,6 +31,16 @@
           val => /^.+@.+\..+$/.test(val) || 'Please type a valid email'
         ]"
       />
+
+      <q-option-group
+        v-model="donate"
+        :options="[
+          { label: 'I want to donate food', value: true },
+          { label: 'I want to receive food', value: false }
+        ]"
+        color="primary"
+        inline
+      />
       
       <q-input
       filled
@@ -43,7 +53,7 @@
       />
       <q-input
         filled
-        v-model="street"
+        v-model="streetAddress"
         label="Street address*"
         hint="Street address of organization or company"
         lazy-rules
@@ -90,8 +100,32 @@
         color="secondary"
         :rules="[ val => val && val.length > 0 || 'Please type something']"
       />
+      <q-input
+          filled
+          v-model="password"
+          label="Password*"
+          hint="Password"
+          lazy-rules
+          color="secondary"
+          :rules="[ val => val && val.length > 0 || 'Please type something',
+                    val => val && val.length > 7 || 'Password must be at least 8 characters long']"
+        />
+  
+      <q-input
+          filled
+          v-model="confirm_password"
+          label="Confirm Password*"
+          hint="Confirm Password"
+          lazy-rules
+          color="secondary"
+          :rules="[ val => val && val.length > 0 || 'Please type something',
+                    val => val && val.length > 7 || 'Password must be at least 8 characters long',]"
+        />
+      <q-chip clickable @click="read_eula = true">Read license and terms</q-chip>
 
-      <q-toggle v-model="accept" label="I accept the license and terms" />
+      <div>
+        <q-toggle v-model="accept" label="I accept the license and terms" />
+      </div>
 
       <div>
         <q-btn label="Submit" type="submit" color="primary"/>
@@ -101,6 +135,22 @@
 
 
   </div>
+
+  <q-dialog v-model="read_eula">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">License and terms</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum repellendus sit voluptate voluptas eveniet porro. Rerum blanditiis perferendis totam, ea at omnis vel numquam exercitationem aut, natus minima, porro labore.
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="OK" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+  </q-dialog>
 </template>
 
 <script>
@@ -113,19 +163,33 @@ export default {
     const $q = useQuasar()
 
     const name = ref(null)
-    const age = ref(null)
-    const accept = ref(false)
-    const showDialog = ref(false)
+    const email = ref(null)
+    const donate = ref(null)
     const organization = ref(null)
-
-    const inputBindingExample = ref('')
+    const streetAddress = ref(null)
+    const city = ref(null)
+    const state = ref(null)
+    const zip = ref(null)
+    const phone = ref(null)
+    const password = ref(null)
+    const confirm_password = ref(null)
+    const read_eula = ref(false)
+    const accept = ref(false)
 
     return {
       name,
-      age,
-      accept,
+      email,
       organization,
-      inputBindingExample,
+      donate,
+      streetAddress,
+      city,
+      state,
+      zip,
+      phone,
+      password,
+      confirm_password,
+      read_eula,
+      accept,
 
       async onSubmit () {
         if (accept.value !== true) {
@@ -137,20 +201,38 @@ export default {
           })
         }
         else {
+          console.log(name.value)
+          console.log(email.value)
+          console.log(organization.value)
+          console.log(donate.value)
+          console.log(streetAddress.value)
+          console.log(city.value)
+          console.log(state.value)
+          console.log(zip.value)
           
           let response = await fetch('http://localhost:8000/#/api', {
             method: 'POST',
             body: JSON.stringify({
               name: name.value,
-              age: age.value
+              email: email.value,
+              donate: donate.value,
+              organization: organization.value,
+              streetAddress: streetAddress.value,
+              city: city.value,
+              state: state.value,
+              zip: zip.value,
+              phone: phone.value,
+              password: password.value,
+
             })
           })
 
           let formResponse = await response.json()
 
           if (formResponse.isSuccess) {
-            // server returns a success message or boolean
+            // Go to the post food page
           }
+        
 
           $q.notify({
             color: 'green-4',
@@ -163,7 +245,6 @@ export default {
 
       onReset () {
         name.value = null
-        age.value = null
         accept.value = false
       }
     }
