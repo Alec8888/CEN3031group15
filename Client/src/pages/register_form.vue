@@ -136,8 +136,6 @@
 
   </div>
 
-  <eula />
-
   <q-dialog v-model="read_eula">
       <eula_popup />
   </q-dialog>

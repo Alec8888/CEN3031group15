@@ -56,7 +56,7 @@
           </q-list>
         </q-scroll-area>
 
-        <q-img class="absolute-top" src="~/assets/PantryPal-Logo.png" style="height: 200px">
+        <q-img class="absolute-top" src="~/assets/PantryPal-Logo.png" style="height: 150px">
         </q-img>
         
       </q-drawer>

@@ -9,7 +9,7 @@
     </div>
 
     <div class="q-pa-md qgutter-sm">
-      <q-btn color="primary" glossy label="Sign In" />
+      <q-btn color="primary" glossy label="Sign In" to="signin" />
     </div>
 
     <div class="q-pa-md qgutter-sm">
