@@ -1,29 +1,50 @@
 <template>
   <q-page padding>
     <div class="row items-start q-gutter-sm">
-
+      
       <q-card class="my-card bg-secondary text-white" v-for="(organization, index) in organizations" :key="index">
         <q-card-section>
           <div class="text-h6">{{ organization.name }}</div>
           <div class="text-subtitle2">{{ organization.streetAddress }}</div>
           <div class="text-subtitle2">{{ organization.csz }}</div>
         </q-card-section>
-
+        
         <q-card-section>
           {{ organization.food }}
         </q-card-section>
-
+        
         <q-separator dark />
-
+        
         <q-card-actions>
           <q-btn flat @click="reserveFood">Reserve</q-btn>
           <q-btn flat @click="contact">Contact</q-btn>
         </q-card-actions>
       </q-card>
-
+      
     </div>
+    <q-dialog
+      v-model="clickedCall"
+    >
+      <q-card style="width: 300px">
+        <div class="q-pd-md">
+          <q-card-section>
+            Email: 
+          </q-card-section>
+  
+          <q-card-section>
+            Phone: 
+          </q-card-section>
 
+        </div>
+
+        <q-card-actions align="right" class="bg-white text-teal">
+          <q-btn flat label="OK" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
+    
+
 </template>
 
 <script>
@@ -52,15 +73,17 @@ export default defineComponent({
           csz: '33455 Tampa FL',
           food: 'Such and such food is available.'
         }
-      ]
+      ],
+      clickedCall: false
     }
   },
   methods: {
     async reserveFood () {
       console.log('Reserve food button clicked.');
     },
-    async contact () {
+    contact () {
       console.log('Contact button clicked.');
+      this.clickedCall = true;
     }
   }
 })
