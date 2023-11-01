@@ -1,19 +1,8 @@
 <template>
-  <q-page>
-    <div class = "q-pa-md text-h3 text-primary" >
-      PantryPal
-    </div>
+  <q-page padding>
 
-    <div class = "q-pa-md text-body1" >
+    <div class = "text-body1 q-mt-md" >
       A food donation platform.
-    </div>
-
-    <div class="q-pa-md qgutter-sm">
-      <q-btn color="primary" glossy label="Sign In" to="signUp" />
-    </div>
-
-    <div class="q-pa-md qgutter-sm">
-      <q-btn color="secondary" glossy label="Sign up" to="signUp" />
     </div>
 
     <img
@@ -21,7 +10,6 @@
       src="~assets/PantryPal-Logo.png"
       style="width: 700px; height: 700px"
     >
-
     
   </q-page>
 </template>

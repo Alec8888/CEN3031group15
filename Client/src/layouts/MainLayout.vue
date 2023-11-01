@@ -12,29 +12,48 @@
         />
 
         <q-toolbar-title>
-          Pantry Pal
+          {{ $route.meta.title }}
         </q-toolbar-title>
 
-        <q-btn 
-          color="secondary"
-          icon="account_circle"
-          
-           >
-        <q-menu
-          transition-show="flip-right"
-          transition-hide="flip-left"
-        >
-          <q-list style="min-width: 100px">
-            <q-item clickable>
-              <q-item-section>{{ userName }}</q-item-section>
-            </q-item>
-            <q-separator />
-            <q-item clickable>
-              <q-item-section>Log Out</q-item-section>
-            </q-item>
-          </q-list>
-        </q-menu>
-      </q-btn>
+        <div class="q-gutter-sm">
+          <q-btn
+            v-if="!isLoggedIn"
+            color="secondary"
+            label="Sign In"
+            to="signin"
+             >
+          </q-btn>
+          <q-btn
+            v-if="!isLoggedIn"
+            color="secondary"
+            label="Register"
+            to="register"
+             >
+          </q-btn>
+        </div>
+
+        <div>
+          <q-btn
+          v-if="isLoggedIn"
+            color="secondary"
+            icon="account_circle"
+             >
+          <q-menu
+            transition-show="flip-right"
+            transition-hide="flip-left"
+          >
+            <q-list style="min-width: 100px">
+              <q-item clickable>
+                <q-item-section>{{ userName }}</q-item-section>
+              </q-item>
+              <q-separator />
+              <q-item clickable>
+                <q-item-section>Log Out</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
+        </div>
 
       </q-toolbar>
     </q-header>
@@ -56,8 +75,9 @@
           </q-list>
         </q-scroll-area>
 
-        <q-img class="absolute-top" src="~/assets/PantryPal-Logo.png" style="height: 200px">
+        <q-img class="absolute-top" src="~/assets/PantryPal-Logo.png" style="height: 150px">
         </q-img>
+        
       </q-drawer>
 
     <q-page-container>
@@ -78,6 +98,18 @@ const linksList = [
     link: '#/'
   },
   {
+    title: 'Pantry',
+    caption: 'Find food here.',
+    icon: 'inbox',
+    link: '#/pantry'
+  },
+  {
+    title: 'Fill Pantry',
+    caption: 'Post your food as in the pantry.',
+    icon: 'star',
+    link: '#/fillPantry'
+  },
+  {
     title: 'Profile',
     caption: 'Your profile.',
     icon: 'settings',
@@ -90,23 +122,11 @@ const linksList = [
     link: '#/signIn'
   },
   {
-    title: 'Sign Up',
+    title: 'Register',
     caption: 'New user registration.',
     icon: 'send',
-    link: '#/signUp'
+    link: '#/register'
   },
-  {
-    title: 'Pantry',
-    caption: 'Find food here.',
-    icon: 'inbox',
-    link: '#/pantry'
-  },
-  {
-    title: 'Fill Pantry',
-    caption: 'Post your food as in the pantry.',
-    icon: 'star',
-    link: '#/fillPantry'
-  }
 ]
 
 export default defineComponent({
@@ -118,18 +138,22 @@ export default defineComponent({
 
   setup () {
     const leftDrawerOpen = ref(false)
+    const isLoggedIn = ref(false)
 
     return {
       essentialLinks: linksList,
       leftDrawerOpen,
+      isLoggedIn,
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value
       }
     }
   },
+  // this is blending in optoins api, need to fix
   data () {
     return {
       userName: 'John Doe'
+
 
     }
   }
