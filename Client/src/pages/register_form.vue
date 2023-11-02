@@ -7,6 +7,7 @@
       @submit="onSubmit"
       @reset="onReset"
       class="q-gutter-md"
+      autofocus
     >
       <q-input
         filled
@@ -40,6 +41,7 @@
         ]"
         color="primary"
         inline
+        :rules="[ val => val !== null || 'Please select an option']"
       />
       
       <q-input
@@ -119,7 +121,8 @@
           lazy-rules
           color="secondary"
           :rules="[ val => val && val.length > 0 || 'Please type something',
-                    val => val && val.length > 7 || 'Password must be at least 8 characters long',]"
+                    val => val && val.length > 7 || 'Password must be at least 8 characters long',
+                    val => val && val === password || 'Passwords must match']"
         />
       <q-chip clickable @click="read_eula = true">Read license and terms</q-chip>
 
@@ -129,10 +132,9 @@
 
       <div>
         <q-btn label="Submit" type="submit" color="primary"/>
-        <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
+        <q-btn label="Reset Form" type="reset" color="primary" flat/>
       </div>
     </q-form>
-
 
   </div>
 
@@ -166,10 +168,7 @@ export default {
         const read_eula = ref(false);
         const accept = ref(false);
 
-        // define methods here, if any
-
         return {
-
             name,
             email,
             organization,
@@ -234,6 +233,18 @@ export default {
             onReset() {
                 name.value = null;
                 accept.value = false;
+                //reset all form fields
+                email.value = null;
+                donate.value = null;
+                organization.value = null;
+                streetAddress.value = null;
+                city.value = null;
+                state.value = null;
+                zip.value = null;
+                phone.value = null;
+                password.value = null;
+                confirm_password.value = null;
+
             }
         };
     }

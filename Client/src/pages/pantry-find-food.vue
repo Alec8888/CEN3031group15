@@ -47,41 +47,49 @@
 </template>
 
 <script>
+import { ref } from 'vue';
+
 export default {
   name: 'pantry-find-food',
-  data () {
-    return {
-      organizations: [
-        {
-          name: 'Panera',
-          streetAddress: '1200 Some Street Dr.',
-          csz: '33453 Tampa FL',
-          food: 'Such and such food is available.'
-        },
-        {
-          name: "Chilie's",
-          streetAddress: '1234 Another Street Dr.',
-          csz: '33454 Tampa FL',
-          food: 'Such and such food is available.'
-        },
-        {
-          name: 'Chipotle',
-          streetAddress: '5678 Yet Another Street Dr.',
-          csz: '33455 Tampa FL',
-          food: 'Such and such food is available.'
-        }
-      ],
-      clickedCall: false
-    }
-  },
-  methods: {
-    async reserveFood () {
+  setup() {
+    const organizations = ref([
+      {
+        name: 'Panera',
+        streetAddress: '1200 Some Street Dr.',
+        csz: '33453 Tampa FL',
+        food: 'Such and such food is available.'
+      },
+      {
+        name: "Chilie's",
+        streetAddress: '1234 Another Street Dr.',
+        csz: '33454 Tampa FL',
+        food: 'Such and such food is available.'
+      },
+      {
+        name: 'Chipotle',
+        streetAddress: '5678 Yet Another Street Dr.',
+        csz: '33455 Tampa FL',
+        food: 'Such and such food is available.'
+      }
+    ]);
+
+    const clickedCall = ref(false);
+
+    const reserveFood = async () => {
       console.log('Reserve food button clicked.');
-    },
-    contact () {
+    };
+
+    const contact = () => {
       console.log('Contact button clicked.');
-      this.clickedCall = true;
-    }
+      clickedCall.value = true;
+    };
+
+    return {
+      organizations,
+      clickedCall,
+      reserveFood,
+      contact
+    };
   }
 }
 </script>

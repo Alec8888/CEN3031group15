@@ -1,19 +1,14 @@
 <template>
-  <q-page class="column items-center">
-  <!-- <div class="column items-center"> -->
+  <q-page class="bg-secondary column items-center">
 
-    <q-card>
-      <!-- <q-card-section>
-        <img
-          alt="PantryPal logo"
-          src="~assets/PantryPal-Logo.png"
-          style="width: 300px; height:300px"
-        >
-      </q-card-section> -->
-      <q-card-section>
-        <div class="text-subtitle2">Sign in to PantryPal</div>
+    <q-card style="width: 300px; margin-top: 35px;" >
+
+      <q-card-section> 
+        <div class="text-h6">
+          Sign in to PantryPal
+        </div>
       </q-card-section>
-
+      
       <q-card-section>
         <q-form
           action="http://localhost:8000/#/api"
@@ -41,21 +36,29 @@
               label="Password*"
               lazy-rules
               color="secondary"
+              :type="isPwd ? 'password' : 'text'"
               :rules="[ val => val && val.length > 0 || 'Please type something',
                         val => val && val.length > 7 || 'Password must be at least 8 characters long']"
-            />
+          >
+            <template v-slot:append>
+              <q-icon
+                :name="isPwd ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                @click="isPwd = !isPwd"
+              />
+            </template>
+          </q-input>
     
-            <q-btn label="Submit" type="submit" color="primary"/>
+          <q-btn label="Log In" type="submit" color="primary" style="width: 270px;"/>
+          <div class="text-caption">
+            Not registered? <router-link to="/register">Create an account</router-link>
+          </div>
         </q-form>
-
+        
       </q-card-section>
 
     </q-card>
-    
-    
 
-
-  <!-- </div> -->
   </q-page>
 </template>
 
@@ -64,49 +67,42 @@ import { useQuasar } from 'quasar'
 import { ref } from 'vue'
 
 export default {
-    components: { 
-
-     },
     setup() {
         const $q = useQuasar();
         const email = ref(null);
         const password = ref(null);
+        const isPwd = ref(true);
+        const onSubmit = async () => {
+          console.log(email.value);
+              console.log(password.value);
 
-        // define methods here, if any
+              let response = await fetch('http://localhost:8000/#/api', {
+                  method: 'POST',
+                  body: JSON.stringify({
+                      email: email.value,
+                      password: password.value,
+                  })
+              });
 
+              let formResponse = await response.json();
+
+              if (formResponse.isSuccess) {
+                  $q.notify({
+                      color: 'green-4',
+                      textColor: 'white',
+                      icon: 'cloud_done',
+                      message: 'Log in successfull'
+                  });
+                  // if successfull, route to posting page for donators else route to pantry
+                  // code here...
+              }
+        }
         return {
-
             email,
             password,
+            isPwd,
+            onSubmit
 
-            async onSubmit() {
-               
-                  console.log(email.value);
-                  console.log(password.value);
-
-                  let response = await fetch('http://localhost:8000/#/api', {
-                      method: 'POST',
-                      body: JSON.stringify({
-                          email: email.value,
-                          password: password.value,
-                      })
-                  });
-
-                  let formResponse = await response.json();
-
-                  if (formResponse.isSuccess) {
-                      // do something
-                      $q.notify({
-                          color: 'green-4',
-                          textColor: 'white',
-                          icon: 'cloud_done',
-                          message: 'Log in successfull'
-                      });
-                  }
-            },
-            onReset() {
-
-            }
         };
     }
 }

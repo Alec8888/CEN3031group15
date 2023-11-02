@@ -44,7 +44,7 @@
           >
             <q-list style="min-width: 100px">
               <q-item clickable>
-                <q-item-section>{{ userName }}</q-item-section>
+                <q-item-section>{{ currentUser }}</q-item-section>
               </q-item>
               <q-separator />
               <q-item clickable>
@@ -62,7 +62,6 @@
         v-model="leftDrawerOpen"
         show-if-above
         bordered
-
       >
         <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd">
           <q-list padding>
@@ -139,24 +138,19 @@ export default defineComponent({
 
   setup () {
     const leftDrawerOpen = ref(false)
-    const isLoggedIn = ref(false)
+    const isLoggedIn = ref(true)
+    const currentUser = ref('Current User')
 
     return {
       essentialLinks: linksList,
       leftDrawerOpen,
       isLoggedIn,
+      currentUser,
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value
       }
     }
-  },
-  // this is blending in optoins api, need to fix
-  data () {
-    return {
-      userName: 'John Doe'
-
-
-    }
   }
+
 })
 </script>
