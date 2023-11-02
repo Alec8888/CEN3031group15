@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <q-input rounded outlined v-model="text" label="Search..." />
+    <q-input rounded outlined v-model="searchText" label="Search..." />
     
 
     <div class="row items-start q-gutter-sm" style="margin-top: 5px;">
@@ -52,37 +52,13 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
+import { initialOrganizations } from '../demoData/initialOrganizations.js';
 
 export default {
   name: 'pantry-find-food',
   setup() {
-    const organizations = ref([
-      {
-        name: 'Panera',
-        streetAddress: '1200 Some Street Dr.',
-        csz: '33453 Tampa FL',
-        food: 'Such and such food is available.',
-        email: 'panera@email.com',
-        phone: '123-456-1111'
-      },
-      {
-        name: "Chilie's",
-        streetAddress: '1234 Another Street Dr.',
-        csz: '33454 Tampa FL',
-        food: 'Such and such food is available.',
-        email: 'chilies@email.com',
-        phone: '123-456-2222'
-      },
-      {
-        name: 'Chipotle',
-        streetAddress: '5678 Yet Another Street Dr.',
-        csz: '33455 Tampa FL',
-        food: 'Such and such food is available.',
-        email: 'chipotle@email.com',
-        phone: '123-456-3333'
-      }
-    ]);
+    const organizations = ref([...initialOrganizations]);
 
     const clickedCall = ref(false);
 
@@ -94,13 +70,27 @@ export default {
       console.log('Contact button clicked.');
       clickedCall.value = true;
     };
-    
 
+    const searchText = ref('');
+    watch(searchText, () => {
+      console.log('Search text changed.');
+      // update organizations [] where name includes searchText
+      organizations.value = organizations.value.filter((organization) => {
+        return organization.name.includes(searchText.value);
+      });
+      // if searchText is '' then reset organizations []
+      if (searchText.value === '') {
+        organizations.value = [...initialOrganizations];
+      }
+    });
+    
     return {
       organizations,
       clickedCall,
       reserveFood,
-      contact
+      contact,
+      searchText,
+      watch
     };
   }
 }
