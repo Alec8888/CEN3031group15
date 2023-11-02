@@ -5,7 +5,7 @@
 
     <div class="row items-start q-gutter-sm" style="margin-top: 5px;">
       
-      <q-card class="my-card bg-secondary text-white" v-for="(organization, index) in organizations" :key="index">
+      <q-card class="my-card bg-secondary text-white" v-for="(organization, index) in organizations" :key="index" style="width: 180px; height:fit-content;">
         <q-card-section>
           <div class="text-h6">{{ organization.name }}</div>
           <div class="text-subtitle2">{{ organization.streetAddress }}</div>
@@ -18,7 +18,7 @@
         
         <q-separator dark />
         
-        <q-card-actions align="center">
+        <q-card-actions class="justify-around">
           <q-btn flat @click="reserveDonation">Reserve</q-btn>
           <q-btn flat @click="() => contact(organization)">Contact</q-btn>
         </q-card-actions>
