@@ -19,33 +19,56 @@
         <q-separator dark />
         
         <q-card-actions align="center">
-          <q-btn flat @click="reserveFood">Reserve</q-btn>
-          <q-btn flat @click="contact">Contact</q-btn>
+          <q-btn flat @click="reserveDonation">Reserve</q-btn>
+          <q-btn flat @click="() => contact(organization)">Contact</q-btn>
         </q-card-actions>
         
-        <q-dialog
-          v-model="clickedCall"
-        >
-          <q-card style="width: 300px">
-            <div class="q-pd-md">
-              <q-card-section>
-                Email: {{ organization.email }}
-              </q-card-section>
-      
-              <q-card-section>
-                Phone: {{ organization.phone }}
-              </q-card-section>
-    
-            </div>
-    
-            <q-card-actions align="right" class="bg-white text-teal">
-              <q-btn flat label="OK" v-close-popup />
-            </q-card-actions>
-          </q-card>
-        </q-dialog>
       </q-card>
       
     </div>
+    <q-dialog
+      v-model="clickedCall"
+    >
+      <q-card style="width: 300px">
+        <div class="q-pd-md">
+          <q-card-section>
+            Email: {{ selectedOrganization.email }}
+          </q-card-section>
+  
+          <q-card-section>
+            Phone: {{ selectedOrganization.phone }}
+          </q-card-section>
+
+        </div>
+
+        <q-card-actions align="right" class="bg-white text-teal">
+          <q-btn flat label="OK" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog
+      v-model="clickedReserve"
+    >
+      <q-card style="width: 300px">
+        <div class="q-pd-md">
+          <q-card-section>
+            Are you sure you want to  reserve this food?
+          </q-card-section>
+          <q-card-section>
+            You will have 24 hours to pick up the food.
+          </q-card-section>
+  
+          <q-card-section>
+            After clicking OK, this food will be reserved for you and it will appear on your home page.
+          </q-card-section>
+           
+        </div>
+        <q-card-actions align="right" class="bg-white text-teal">
+          <q-btn flat label="OK" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
 
     
   </q-page>
@@ -59,15 +82,20 @@ export default {
   name: 'pantry-find-food',
   setup() {
     const organizations = ref([...initialOrganizations]);
+    const selectedOrganization = ref(null);
 
     const clickedCall = ref(false);
+    const clickedReserve = ref(false);
 
-    const reserveFood = async () => {
+    const reserveDonation = () => {
       console.log('Reserve food button clicked.');
+      clickedReserve.value = true;
     };
 
-    const contact = () => {
+    const contact = (organization) => {
       console.log('Contact button clicked.');
+      console.log(organization);
+      selectedOrganization.value = organization;
       clickedCall.value = true;
     };
 
@@ -78,7 +106,6 @@ export default {
       organizations.value = organizations.value.filter((organization) => {
         return organization.name.includes(searchText.value);
       });
-      // if searchText is '' then reset organizations []
       if (searchText.value === '') {
         organizations.value = [...initialOrganizations];
       }
@@ -86,9 +113,11 @@ export default {
     
     return {
       organizations,
+      selectedOrganization,
       clickedCall,
-      reserveFood,
       contact,
+      clickedReserve,
+      reserveDonation,
       searchText,
       watch
     };
