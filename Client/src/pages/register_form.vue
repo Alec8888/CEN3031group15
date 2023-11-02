@@ -8,7 +8,7 @@
       </q-card-section>
       <q-card-section>
 
-        <div>
+
           <!-- I don't think I'm using the action= part of this form, just using it for validation really. -->
           <q-form
             action="http://localhost:8000/#/api"  
@@ -18,11 +18,20 @@
             class="q-gutter-md"
             autofocus
           >
+            <q-option-group
+              v-model="donate"
+              :options="[
+                { label: 'I want to donate food', value: true },
+                { label: 'I want to receive food', value: false }
+              ]"
+              color="primary"
+              inline
+              :rules="[ val => val !== null || 'Please select an option']"
+            />
             <q-input
               filled
               v-model="name"
-              label="Your name *"
-              hint="First and last name"
+              label="First and last name*"
               color="secondary"
               lazy-rules
               :rules="[ val => val && val.length > 0 || 'Please type something']"
@@ -42,22 +51,11 @@
               ]"
             />
       
-            <q-option-group
-              v-model="donate"
-              :options="[
-                { label: 'I want to donate food', value: true },
-                { label: 'I want to receive food', value: false }
-              ]"
-              color="primary"
-              inline
-              :rules="[ val => val !== null || 'Please select an option']"
-            />
             
             <q-input
-            filled
+              filled
               v-model="organization"
               label="Organization or company name*"
-              hint="Name of entity donating or receiving food"
               lazy-rules
               color="secondary"
               :rules="[ val => val && val.length > 0 || 'Please type something']"
@@ -66,7 +64,6 @@
               filled
               v-model="streetAddress"
               label="Street address*"
-              hint="Street address of organization or company"
               lazy-rules
               color="secondary"
               :rules="[ val => val && val.length > 0 || 'Please type something']"
@@ -76,27 +73,23 @@
               filled
               v-model="city"
               label="City*"
-              hint="City in which organization or company is located"
               lazy-rules
               color="secondary"
               :rules="[ val => val && val.length > 0 || 'Please type something']"
             />
-      
-            <q-input
+
+            <q-select
               filled
-              v-model="state"
+              v-model="state" 
+              :options="states" 
               label="State*"
-              hint="State in which organization or company is located"
-              lazy-rules
-              color="secondary"
-              :rules="[ val => val && val.length > 0 || 'Please type something']"
+              :rules="[ val => val !== null || 'Please select an option']"
             />
       
             <q-input
               filled
               v-model="zip"
               label="Zip code*"
-              hint="Zip code of organization or company"
               lazy-rules
               color="secondary"
               mask="#####"
@@ -108,7 +101,6 @@
               filled
               v-model="phone"
               label="Phone number*"
-              hint="Phone number of organization or company"
               lazy-rules
               color="secondary"
               mask="(###) ### - ####"
@@ -118,24 +110,40 @@
                 filled
                 v-model="password"
                 label="Password*"
-                hint="Password"
                 lazy-rules
                 color="secondary"
+                :type="isPwd ? 'password' : 'text'"
                 :rules="[ val => val && val.length > 0 || 'Please type something',
                           val => val && val.length > 7 || 'Password must be at least 8 characters long']"
-              />
+            >
+              <template v-slot:append>
+                <q-icon
+                  :name="isPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="isPwd = !isPwd"
+                />
+              </template>
+            </q-input>
         
             <q-input
                 filled
                 v-model="confirm_password"
                 label="Confirm Password*"
-                hint="Confirm Password"
                 lazy-rules
                 color="secondary"
+                :type="isPwd ? 'password' : 'text'"
                 :rules="[ val => val && val.length > 0 || 'Please type something',
                           val => val && val.length > 7 || 'Password must be at least 8 characters long',
                           val => val && val === password || 'Passwords must match']"
-              />
+              >
+              <template v-slot:append>
+                <q-icon
+                  :name="isPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="isPwd = !isPwd"
+                />
+              </template>
+            </q-input>
             <q-chip clickable @click="read_eula = true">Read license and terms</q-chip>
       
             <div>
@@ -147,8 +155,6 @@
               <q-btn label="Reset Form" type="reset" color="primary" flat/>
             </div>
           </q-form>
-      
-        </div>
 
       </q-card-section>
 
@@ -171,20 +177,73 @@ export default {
       eula_popup,
      },
     setup() {
-        const $q = useQuasar();
-        const name = ref(null);
-        const email = ref(null);
-        const donate = ref(null);
-        const organization = ref(null);
-        const streetAddress = ref(null);
-        const city = ref(null);
-        const state = ref(null);
-        const zip = ref(null);
-        const phone = ref(null);
-        const password = ref(null);
-        const confirm_password = ref(null);
-        const read_eula = ref(false);
-        const accept = ref(false);
+        const $q = useQuasar()
+        const name = ref(null)
+        const email = ref(null)
+        const donate = ref(null)
+        const organization = ref(null)
+        const streetAddress = ref(null)
+        const city = ref(null)
+        const state = ref(null)
+        const zip = ref(null)
+        const phone = ref(null)
+        const password = ref(null)
+        const confirm_password = ref(null)
+        const read_eula = ref(false)
+        const accept = ref(false)
+        const isPwd = ref(true)
+        const states = ref([
+          { label: 'Alabama', value: 'AL' },
+          { label: 'Alaska', value: 'AK' },
+          { label: 'Arizona', value: 'AZ' },
+          { label: 'Arkansas', value: 'AR' },
+          { label: 'California', value: 'CA' },
+          { label: 'Colorado', value: 'CO' },
+          { label: 'Connecticut', value: 'CT' },
+          { label: 'Delaware', value: 'DE' },
+          { label: 'Florida', value: 'FL' },
+          { label: 'Georgia', value: 'GA' },
+          { label: 'Hawaii', value: 'HI' },
+          { label: 'Idaho', value: 'ID' },
+          { label: 'Illinois', value: 'IL' },
+          { label: 'Indiana', value: 'IN' },
+          { label: 'Iowa', value: 'IA' },
+          { label: 'Kansas', value: 'KS' },
+          { label: 'Kentucky', value: 'KY' },
+          { label: 'Louisiana', value: 'LA' },
+          { label: 'Maine', value: 'ME' },
+          { label: 'Maryland', value: 'MD' },
+          { label: 'Massachusetts', value: 'MA' },
+          { label: 'Michigan', value: 'MI' },
+          { label: 'Minnesota', value: 'MN' },
+          { label: 'Mississippi', value: 'MS' },
+          { label: 'Missouri', value: 'MO' },
+          { label: 'Montana', value: 'MT' },
+          { label: 'Nebraska', value: 'NE' },
+          { label: 'Nevada', value: 'NV' },
+          { label: 'New Hampshire', value: 'NH' },
+          { label: 'New Jersey', value: 'NJ' },
+          { label: 'New Mexico', value: 'NM' },
+          { label: 'New York', value: 'NY' },
+          { label: 'North Carolina', value: 'NC' },
+          { label: 'North Dakota', value: 'ND' },
+          { label: 'Ohio', value: 'OH' },
+          { label: 'Oklahoma', value: 'OK' },
+          { label: 'Oregon', value: 'OR' },
+          { label: 'Pennsylvania', value: 'PA' },
+          { label: 'Rhode Island', value: 'RI' },
+          { label: 'South Carolina', value: 'SC' },
+          { label: 'South Dakota', value: 'SD' },
+          { label: 'Tennessee', value: 'TN' },
+          { label: 'Texas', value: 'TX' },
+          { label: 'Utah', value: 'UT' },
+          { label: 'Vermont', value: 'VT' },
+          { label: 'Virginia', value: 'VA' },
+          { label: 'Washington', value: 'WA' },
+          { label: 'West Virginia', value: 'WV' },
+          { label: 'Wisconsin', value: 'WI' },
+          { label: 'Wyoming', value: 'WY' },
+        ])
 
         return {
             name,
@@ -200,6 +259,8 @@ export default {
             confirm_password,
             read_eula,
             accept,
+            isPwd,
+            states,
 
             async onSubmit() {
                 if (accept.value !== true) {

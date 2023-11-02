@@ -1,7 +1,7 @@
 <template>
   <q-page class="bg-secondary column items-center">
 
-    <q-card style="width: 300px; margin-top: 35px;" >
+    <q-card style="width: 300px; margin-top: 25px;" >
 
       <q-card-section> 
         <div class="text-h6">
