@@ -138,7 +138,7 @@ export default defineComponent({
 
   setup () {
     const leftDrawerOpen = ref(false)
-    const isLoggedIn = ref(true)
+    const isLoggedIn = ref(false)
     const currentUser = ref('Current User')
 
     return {
