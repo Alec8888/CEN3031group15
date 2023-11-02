@@ -202,6 +202,7 @@ export default {
                     console.log(city.value);
                     console.log(state.value);
                     console.log(zip.value);
+
                     let response = await fetch('http://localhost:8000/#/api', {
                         method: 'POST',
                         body: JSON.stringify({
@@ -220,6 +221,7 @@ export default {
                     let formResponse = await response.json();
                     if (formResponse.isSuccess) {
                         // Go to the post food page
+                      
                         $q.notify({
                             color: 'green-4',
                             textColor: 'white',

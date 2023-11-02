@@ -42,15 +42,12 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-  </q-page>
     
-
+  </q-page>
 </template>
 
 <script>
-import { defineComponent } from 'vue'
-
-export default defineComponent({
+export default {
   name: 'pantry-find-food',
   data () {
     return {
@@ -86,5 +83,5 @@ export default defineComponent({
       this.clickedCall = true;
     }
   }
-})
+}
 </script>
