@@ -1,146 +1,164 @@
 <template>
-  <div class="q-pa-md" style="max-width: 800px">
+  <q-page class="bg-secondary q-pa-md">
+    <q-card class="bg-white">
+      <q-card-section>
+        <div class="text-h6">
+          Complete the form below to register for PantryPal.
+        </div>
+      </q-card-section>
+      <q-card-section>
 
-    <q-form
-      action="http://localhost:8000/#/api"
-      method="post"
-      @submit="onSubmit"
-      @reset="onReset"
-      class="q-gutter-md"
-      autofocus
-    >
-      <q-input
-        filled
-        v-model="name"
-        label="Your name *"
-        hint="First and last name"
-        color="secondary"
-        lazy-rules
-        :rules="[ val => val && val.length > 0 || 'Please type something']"
-      />
-
-      <q-input
-        filled
-        type="email"
-        v-model="email"
-        label="Email address*"
-        hint="This will be your username"
-        lazy-rules
-        color="secondary"
-        :rules="[
-          val => val && val.length > 0 || 'Please type something',
-          val => /^.+@.+\..+$/.test(val) || 'Please type a valid email'
-        ]"
-      />
-
-      <q-option-group
-        v-model="donate"
-        :options="[
-          { label: 'I want to donate food', value: true },
-          { label: 'I want to receive food', value: false }
-        ]"
-        color="primary"
-        inline
-        :rules="[ val => val !== null || 'Please select an option']"
-      />
+        <div>
+          <!-- I don't think I'm using the action= part of this form, just using it for validation really. -->
+          <q-form
+            action="http://localhost:8000/#/api"  
+            method="post"
+            @submit="onSubmit"
+            @reset="onReset"
+            class="q-gutter-md"
+            autofocus
+          >
+            <q-input
+              filled
+              v-model="name"
+              label="Your name *"
+              hint="First and last name"
+              color="secondary"
+              lazy-rules
+              :rules="[ val => val && val.length > 0 || 'Please type something']"
+            />
       
-      <q-input
-      filled
-        v-model="organization"
-        label="Organization or company name*"
-        hint="Name of entity donating or receiving food"
-        lazy-rules
-        color="secondary"
-        :rules="[ val => val && val.length > 0 || 'Please type something']"
-      />
-      <q-input
-        filled
-        v-model="streetAddress"
-        label="Street address*"
-        hint="Street address of organization or company"
-        lazy-rules
-        color="secondary"
-        :rules="[ val => val && val.length > 0 || 'Please type something']"
-      /> 
+            <q-input
+              filled
+              type="email"
+              v-model="email"
+              label="Email address*"
+              hint="This will be your username"
+              lazy-rules
+              color="secondary"
+              :rules="[
+                val => val && val.length > 0 || 'Please type something',
+                val => /^.+@.+\..+$/.test(val) || 'Please type a valid email'
+              ]"
+            />
+      
+            <q-option-group
+              v-model="donate"
+              :options="[
+                { label: 'I want to donate food', value: true },
+                { label: 'I want to receive food', value: false }
+              ]"
+              color="primary"
+              inline
+              :rules="[ val => val !== null || 'Please select an option']"
+            />
+            
+            <q-input
+            filled
+              v-model="organization"
+              label="Organization or company name*"
+              hint="Name of entity donating or receiving food"
+              lazy-rules
+              color="secondary"
+              :rules="[ val => val && val.length > 0 || 'Please type something']"
+            />
+            <q-input
+              filled
+              v-model="streetAddress"
+              label="Street address*"
+              hint="Street address of organization or company"
+              lazy-rules
+              color="secondary"
+              :rules="[ val => val && val.length > 0 || 'Please type something']"
+            /> 
+      
+            <q-input
+              filled
+              v-model="city"
+              label="City*"
+              hint="City in which organization or company is located"
+              lazy-rules
+              color="secondary"
+              :rules="[ val => val && val.length > 0 || 'Please type something']"
+            />
+      
+            <q-input
+              filled
+              v-model="state"
+              label="State*"
+              hint="State in which organization or company is located"
+              lazy-rules
+              color="secondary"
+              :rules="[ val => val && val.length > 0 || 'Please type something']"
+            />
+      
+            <q-input
+              filled
+              v-model="zip"
+              label="Zip code*"
+              hint="Zip code of organization or company"
+              lazy-rules
+              color="secondary"
+              mask="#####"
+              :rules="[ val => val && val.length > 0 || 'Please type something']"
+            />
+      
+            <q-input
+              type="tel"
+              filled
+              v-model="phone"
+              label="Phone number*"
+              hint="Phone number of organization or company"
+              lazy-rules
+              color="secondary"
+              mask="(###) ### - ####"
+              :rules="[ val => val && val.length > 0 || 'Please type something']"
+            />
+            <q-input
+                filled
+                v-model="password"
+                label="Password*"
+                hint="Password"
+                lazy-rules
+                color="secondary"
+                :rules="[ val => val && val.length > 0 || 'Please type something',
+                          val => val && val.length > 7 || 'Password must be at least 8 characters long']"
+              />
+        
+            <q-input
+                filled
+                v-model="confirm_password"
+                label="Confirm Password*"
+                hint="Confirm Password"
+                lazy-rules
+                color="secondary"
+                :rules="[ val => val && val.length > 0 || 'Please type something',
+                          val => val && val.length > 7 || 'Password must be at least 8 characters long',
+                          val => val && val === password || 'Passwords must match']"
+              />
+            <q-chip clickable @click="read_eula = true">Read license and terms</q-chip>
+      
+            <div>
+              <q-toggle v-model="accept" label="I accept the license and terms" />
+            </div>
+      
+            <div>
+              <q-btn label="Submit" type="submit" color="primary"/>
+              <q-btn label="Reset Form" type="reset" color="primary" flat/>
+            </div>
+          </q-form>
+      
+        </div>
 
-      <q-input
-        filled
-        v-model="city"
-        label="City*"
-        hint="City in which organization or company is located"
-        lazy-rules
-        color="secondary"
-        :rules="[ val => val && val.length > 0 || 'Please type something']"
-      />
+      </q-card-section>
 
-      <q-input
-        filled
-        v-model="state"
-        label="State*"
-        hint="State in which organization or company is located"
-        lazy-rules
-        color="secondary"
-        :rules="[ val => val && val.length > 0 || 'Please type something']"
-      />
-
-      <q-input
-        filled
-        v-model="zip"
-        label="Zip code*"
-        hint="Zip code of organization or company"
-        lazy-rules
-        color="secondary"
-        :rules="[ val => val && val.length > 0 || 'Please type something']"
-      />
-
-      <q-input
-        filled
-        v-model="phone"
-        label="Phone number*"
-        hint="Phone number of organization or company"
-        lazy-rules
-        color="secondary"
-        :rules="[ val => val && val.length > 0 || 'Please type something']"
-      />
-      <q-input
-          filled
-          v-model="password"
-          label="Password*"
-          hint="Password"
-          lazy-rules
-          color="secondary"
-          :rules="[ val => val && val.length > 0 || 'Please type something',
-                    val => val && val.length > 7 || 'Password must be at least 8 characters long']"
-        />
+    </q-card>
   
-      <q-input
-          filled
-          v-model="confirm_password"
-          label="Confirm Password*"
-          hint="Confirm Password"
-          lazy-rules
-          color="secondary"
-          :rules="[ val => val && val.length > 0 || 'Please type something',
-                    val => val && val.length > 7 || 'Password must be at least 8 characters long',
-                    val => val && val === password || 'Passwords must match']"
-        />
-      <q-chip clickable @click="read_eula = true">Read license and terms</q-chip>
+    <q-dialog v-model="read_eula">
+        <eula_popup />
+    </q-dialog>
 
-      <div>
-        <q-toggle v-model="accept" label="I accept the license and terms" />
-      </div>
-
-      <div>
-        <q-btn label="Submit" type="submit" color="primary"/>
-        <q-btn label="Reset Form" type="reset" color="primary" flat/>
-      </div>
-    </q-form>
-
-  </div>
-
-  <q-dialog v-model="read_eula">
-      <eula_popup />
-  </q-dialog>
+  </q-page>
 </template>
 
 <script>

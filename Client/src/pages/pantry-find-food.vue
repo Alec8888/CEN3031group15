@@ -1,5 +1,8 @@
 <template>
   <q-page padding>
+    <q-input rounded outlined v-model="text" label="Rounded outlined" />
+    
+
     <div class="row items-start q-gutter-sm">
       
       <q-card class="my-card bg-secondary text-white" v-for="(organization, index) in organizations" :key="index">
