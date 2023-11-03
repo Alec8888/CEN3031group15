@@ -75,14 +75,29 @@
 </template>
 
 <script>
-import { ref, watch } from 'vue';
-import { initialOrganizations } from '../demoData/initialOrganizations.js';
+import { ref, watch, onMounted } from 'vue';
 
 export default {
   name: 'pantry-find-food',
   setup() {
-    const organizations = ref([...initialOrganizations]);
+    
     const selectedOrganization = ref(null);
+    const organizations = ref([]);
+
+    const fetchOrganization = async () => {
+      const response = await fetch('http://localhost:3000/organizations', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      const data = await response.json();
+      organizations.value = data;
+    };
+
+    onMounted(fetchOrganization);
+
 
     const clickedCall = ref(false);
     const clickedReserve = ref(false);
@@ -107,7 +122,7 @@ export default {
         return organization.name.includes(searchText.value);
       });
       if (searchText.value === '') {
-        organizations.value = [...initialOrganizations];
+        fetchOrganization();
       }
     });
     
