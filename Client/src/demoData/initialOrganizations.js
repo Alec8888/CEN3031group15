@@ -23,7 +23,6 @@ export const initialOrganizations = [
     email: 'chipotle@email.com',
     phone: '123-456-3333'
   },
-  // create 10 more different organizations, email and phone start with 1@email.com and 111-111-1111 and increment
   {
     name: 'Buffalo Wild Wings',
     streetAddress: '1234 Another Street Dr.',
