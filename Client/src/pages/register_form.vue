@@ -287,28 +287,18 @@ export default {
                           'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                        //     rep: name.value,
-                        //     email: email.value,
-                        //     donate: donate.value,
-                        //     name: organization.value,
-                        //     streetAddress: streetAddress.value,
-                        //     city: city.value,
-                        //     state: state.value,
-                        //     zip: zip.value,
-                        //     phone: phone.value,
-                        //     password: password.value,
-                        // }
-                          
-                          name: "Ricks on River",
-                          streetAddress: "234 RiverBend Lane",
-                          city: "Riverview",
-                          state: "FL",
-                          zip: "33456",
-                          food: "fish and chips",
-                          email: "rick@river.com",
-                          phone: "4447778888",
-                          donate: true
-                          }
+                            // rep: name.value,
+                            name: organization.value,
+                            streetAddress: streetAddress.value,
+                            city: city.value,
+                            state: state.value.value,
+                            zip: zip.value,
+                            email: email.value,
+                            phone: phone.value,
+                            donate: donate.value,
+                            // password: password.value,
+                        }
+
                         )
                     });
                     let formResponse = await response.json();
