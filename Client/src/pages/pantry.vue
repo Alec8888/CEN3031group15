@@ -8,14 +8,13 @@
       <q-card class="my-card bg-secondary text-white" v-for="(organization, index) in organizations" :key="index" style="width: 180px; height:fit-content;">
         <q-card-section>
           <div class="text-h6">{{ organization.name }}</div>
+          <q-separator dark />
+          <div class="text-subtitle2">{{ organization.food }}</div>
+          <q-separator dark />
           <div class="text-subtitle2">{{ organization.streetAddress }}</div>
-          <div class="text-subtitle2">{{ organization.csz }}</div>
+          <div class="text-subtitle2">{{ organization.city }} , {{ organization.state }} {{ organization.zip }}</div>
         </q-card-section>
-        
-        <q-card-section>
-          {{ organization.food }}
-        </q-card-section>
-        
+
         <q-separator dark />
         
         <q-card-actions class="justify-around">

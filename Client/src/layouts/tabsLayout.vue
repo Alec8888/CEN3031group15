@@ -73,7 +73,7 @@ export default {
   name: 'TabledLayout',
 
   setup () {
-    const isLoggedIn = ref(true)
+    const isLoggedIn = ref(false)
     const currentUser = ref('Current User')
 
     return {

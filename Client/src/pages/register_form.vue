@@ -281,20 +281,35 @@ export default {
                     console.log(state.value);
                     console.log(zip.value);
 
-                    let response = await fetch('http://localhost:8000/#/api', {
+                    let response = await fetch('http://localhost:3000/organizations', {
                         method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json'
+                        },
                         body: JSON.stringify({
-                            name: name.value,
-                            email: email.value,
-                            donate: donate.value,
-                            organization: organization.value,
-                            streetAddress: streetAddress.value,
-                            city: city.value,
-                            state: state.value,
-                            zip: zip.value,
-                            phone: phone.value,
-                            password: password.value,
-                        })
+                        //     rep: name.value,
+                        //     email: email.value,
+                        //     donate: donate.value,
+                        //     name: organization.value,
+                        //     streetAddress: streetAddress.value,
+                        //     city: city.value,
+                        //     state: state.value,
+                        //     zip: zip.value,
+                        //     phone: phone.value,
+                        //     password: password.value,
+                        // }
+                          
+                          name: "Ricks on River",
+                          streetAddress: "234 RiverBend Lane",
+                          city: "Riverview",
+                          state: "FL",
+                          zip: "33456",
+                          food: "fish and chips",
+                          email: "rick@river.com",
+                          phone: "4447778888",
+                          donate: true
+                          }
+                        )
                     });
                     let formResponse = await response.json();
                     if (formResponse.isSuccess) {
