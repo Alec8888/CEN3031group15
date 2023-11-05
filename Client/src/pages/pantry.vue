@@ -1,12 +1,6 @@
 <template>
   <q-page padding>
-    <!-- <q-card class="bg-info">
-      <q-card-section>
-      </q-card-section>
-      
-    </q-card> -->
-    
-    
+
     <q-input rounded outlined v-model="searchText" label="Search..." />
     
     <div class="row q-gutter-md" style="margin-top: 5px;">
@@ -90,7 +84,7 @@ export default {
     const organizations = ref([]);
 
     const fetchOrganization = async () => {
-      const response = await fetch('http://localhost:3000/organizations', {
+      const response = await fetch('http://localhost:3000/donations', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

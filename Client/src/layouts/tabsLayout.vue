@@ -53,8 +53,8 @@
       </q-toolbar>
 
       <q-tabs align="center">
-        <q-route-tab v-if="!isLoggedIn" to="/signin" label="Sign In" />
-        <q-route-tab v-if="!isLoggedIn" to="/register" label="Register" />
+        <q-route-tab v-if="true" to="/signin" label="Sign In" />
+        <q-route-tab v-if="true" to="/register" label="Register" />
         <q-route-tab v-if="isLoggedIn" to="/account" label="Home" />
         <q-route-tab v-if="isLoggedIn" to="/pantry" label="Pantry" />
         <q-route-tab v-if="isLoggedIn" to="/donate" label="Donate" />
