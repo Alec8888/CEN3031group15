@@ -53,13 +53,15 @@
       </q-toolbar>
 
       <q-tabs align="center">
-        <q-route-tab to="/account" label="Home" />
-        <q-route-tab to="/pantry" label="Pantry" />
-        <q-route-tab to="/donate" label="Donate" />
+        <q-route-tab v-if="!isLoggedIn" to="/signin" label="Sign In" />
+        <q-route-tab v-if="!isLoggedIn" to="/register" label="Register" />
+        <q-route-tab v-if="isLoggedIn" to="/account" label="Home" />
+        <q-route-tab v-if="isLoggedIn" to="/pantry" label="Pantry" />
+        <q-route-tab v-if="isLoggedIn" to="/donate" label="Donate" />
       </q-tabs>
     </q-header>
 
-    <q-page-container>
+    <q-page-container class="bg-image">
       <router-view />
     </q-page-container>
 
@@ -83,3 +85,11 @@ export default {
   }
 }
 </script>
+
+<style >
+  .bg-image {
+    background-image: url('C:/dev/PantryPal/CEN3031group15/Client/src/assets/bg2.png');
+    background-size: cover;
+  }
+
+</style>
