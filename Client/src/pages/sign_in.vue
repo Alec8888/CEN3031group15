@@ -49,13 +49,13 @@
               />
             </template>
           </q-input>
+
     
           <q-btn label="Log In" type="submit" color="primary" style="width: 270px;"/>
           <div class="text-caption">
             Not registered? <router-link to="/register">Create an account</router-link>
           </div>
         </q-form>
-        <q-btn label="Fake log in" @click="fakeLogin" style="width: 270px;" to="pantry"/>
         
       </q-card-section>
 
@@ -100,10 +100,9 @@ export default {
                   // code here...
               }
         };
-        // this doesn't work. I can fake it with JSON SERVER later
+        // this doesn't work. I can instead fake it with JSON SERVER later
         const fakeLogin = () => {
           console.log('Fake log in button clicked.');
-          // set isLoggedIn to true, it's in the tabsLayout.vue
           TabsLayout.isLoggedIn.value = true;
         }
 
