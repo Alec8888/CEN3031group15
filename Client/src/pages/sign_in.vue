@@ -9,13 +9,13 @@
         </div>
       </q-card-section>
       
-      <q-card-section>
+      <q-card-section class="q-gutter-sm">
         <q-form
           action="http://localhost:8000/#/api"
           method="post"
           @submit="onSubmit"
           @reset="onReset"
-          class="q-gutter-sm"
+          
         >
           <q-input
             autofocus
@@ -55,6 +55,7 @@
             Not registered? <router-link to="/register">Create an account</router-link>
           </div>
         </q-form>
+        <q-btn label="Fake log in" @click="fakeLogin" style="width: 270px;" to="pantry"/>
         
       </q-card-section>
 
@@ -65,6 +66,7 @@
 
 <script>
 import { useQuasar } from 'quasar'
+import TabsLayout from 'src/layouts/tabsLayout.vue';
 import { ref } from 'vue'
 
 export default {
@@ -97,12 +99,20 @@ export default {
                   // if successfull, route to posting page for donators else route to pantry
                   // code here...
               }
+        };
+        // this doesn't work. I can fake it with JSON SERVER later
+        const fakeLogin = () => {
+          console.log('Fake log in button clicked.');
+          // set isLoggedIn to true, it's in the tabsLayout.vue
+          TabsLayout.isLoggedIn.value = true;
         }
+
         return {
             email,
             password,
             isPwd,
-            onSubmit
+            onSubmit,
+            fakeLogin
 
         };
     }

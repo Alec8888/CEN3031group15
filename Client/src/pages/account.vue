@@ -1,15 +1,21 @@
 <template>
-  <q-page padding>
-
-    <div class = "text-body1 q-mt-md" >
-      Account page
-    </div>
-
-    <img
-      alt="PantryPal logo"
-      src="~assets/PantryPal-Logo.png"
-      style="width: 700px; height: 700px"
-    >
+  <q-page padding class="q-gutter-md">
+    <q-card>
+      <q-card-section>
+        Active Donations
+      </q-card-section>
+    </q-card>
+    <q-card>
+      <q-card-section>
+        Past Donations
+      </q-card-section>
+    </q-card>
+    <q-card>
+      <q-card-section>
+        Account Settings
+      </q-card-section>
+      
+    </q-card>
     
   </q-page>
 </template>

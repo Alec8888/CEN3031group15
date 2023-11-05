@@ -1,22 +1,28 @@
 <template>
   <q-page padding>
+    <!-- <q-card class="bg-info">
+      <q-card-section>
+      </q-card-section>
+      
+    </q-card> -->
+    
+    
     <q-input rounded outlined v-model="searchText" label="Search..." />
     
-
-    <div class="row items-start q-gutter-sm" style="margin-top: 5px;">
+    <div class="row q-gutter-md" style="margin-top: 5px;">
       
-      <q-card class="my-card bg-secondary text-white" v-for="(organization, index) in organizations" :key="index" style="width: 180px; height:fit-content;">
+      <q-card class="donationCards bg-secondary text-white" v-for="(organization, index) in organizations" :key="index">
         <q-card-section>
           <div class="text-h6">{{ organization.name }}</div>
-          <q-separator dark />
+        </q-card-section>
+        <q-card-section>
           <div class="text-subtitle2">{{ organization.food }}</div>
-          <q-separator dark />
+        </q-card-section>
+        <q-card-section>
           <div class="text-subtitle2">{{ organization.streetAddress }}</div>
           <div class="text-subtitle2">{{ organization.city }} , {{ organization.state }} {{ organization.zip }}</div>
         </q-card-section>
-
         <q-separator dark />
-        
         <q-card-actions class="justify-around">
           <q-btn flat @click="reserveDonation">Reserve</q-btn>
           <q-btn flat @click="() => contact(organization)">Contact</q-btn>
@@ -138,3 +144,11 @@ export default {
   }
 }
 </script>
+<style >
+  .donationCards
+  {
+    width: 100%;
+    max-width: 250px;
+  }
+
+</style>
