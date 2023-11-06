@@ -1,160 +1,163 @@
 <template>
-  <q-page class="bg-secondary q-pa-md">
-    <q-card class="bg-white">
-      <q-card-section>
-        <div class="text-h6">
-          Complete the form below to register for PantryPal.
-        </div>
-      </q-card-section>
-      <q-card-section>
+  <q-page class="q-pa-md">
+    <div class="row justify-center">
 
-          <q-form
-            @submit="onSubmit"
-            @reset="onReset"
-            class="q-gutter-md"
-            autofocus
-          >
-            <q-option-group
-              v-model="donate"
-              :options="[
-                { label: 'I want to donate food', value: true },
-                { label: 'I want to receive food', value: false }
-              ]"
-              color="primary"
-              inline
-              :rules="[ val => val !== null || 'Please select an option']"
-            />
-            <q-input
-              filled
-              v-model="name"
-              label="First and last name*"
-              color="secondary"
-              lazy-rules
-              :rules="[ val => val && val.length > 0 || 'Please type something']"
-            />
-      
-            <q-input
-              filled
-              type="email"
-              v-model="email"
-              label="Email address*"
-              hint="This will be your username"
-              lazy-rules
-              color="secondary"
-              :rules="[
-                val => val && val.length > 0 || 'Please type something',
-                val => /^.+@.+\..+$/.test(val) || 'Please type a valid email'
-              ]"
-            />
-      
-            
-            <q-input
-              filled
-              v-model="organization"
-              label="Organization or company name*"
-              lazy-rules
-              color="secondary"
-              :rules="[ val => val && val.length > 0 || 'Please type something']"
-            />
-            <q-input
-              filled
-              v-model="streetAddress"
-              label="Street address*"
-              lazy-rules
-              color="secondary"
-              :rules="[ val => val && val.length > 0 || 'Please type something']"
-            /> 
-      
-            <q-input
-              filled
-              v-model="city"
-              label="City*"
-              lazy-rules
-              color="secondary"
-              :rules="[ val => val && val.length > 0 || 'Please type something']"
-            />
-
-            <q-select
-              filled
-              v-model="state" 
-              :options="states" 
-              label="State*"
-              :rules="[ val => val !== null || 'Please select an option']"
-            />
-      
-            <q-input
-              filled
-              v-model="zip"
-              label="Zip code*"
-              lazy-rules
-              color="secondary"
-              mask="#####"
-              :rules="[ val => val && val.length > 0 || 'Please type something']"
-            />
-      
-            <q-input
-              type="tel"
-              filled
-              v-model="phone"
-              label="Phone number*"
-              lazy-rules
-              color="secondary"
-              mask="(###) ### - ####"
-              :rules="[ val => val && val.length > 0 || 'Please type something']"
-            />
-            <q-input
-                filled
-                v-model="password"
-                label="Password*"
-                lazy-rules
-                color="secondary"
-                :type="isPwd ? 'password' : 'text'"
-                :rules="[ val => val && val.length > 0 || 'Please type something',
-                          val => val && val.length > 7 || 'Password must be at least 8 characters long']"
+      <q-card class="bg-white">
+        <q-card-section>
+          <div class="text-h6">
+            Complete the form below to register for PantryPal.
+          </div>
+        </q-card-section>
+        <q-card-section>
+  
+            <q-form
+              @submit="onSubmit"
+              @reset="onReset"
+              class="q-gutter-md"
+              autofocus
             >
-              <template v-slot:append>
-                <q-icon
-                  :name="isPwd ? 'visibility_off' : 'visibility'"
-                  class="cursor-pointer"
-                  @click="isPwd = !isPwd"
-                />
-              </template>
-            </q-input>
-        
-            <q-input
+              <q-option-group
+                v-model="donate"
+                :options="[
+                  { label: 'I want to donate food', value: true },
+                  { label: 'I want to receive food', value: false }
+                ]"
+                color="primary"
+                inline
+                :rules="[ val => val !== null || 'Please select an option']"
+              />
+              <q-input
                 filled
-                v-model="confirm_password"
-                label="Confirm Password*"
+                v-model="name"
+                label="First and last name*"
+                color="secondary"
+                lazy-rules
+                :rules="[ val => val && val.length > 0 || 'Please type something']"
+              />
+        
+              <q-input
+                filled
+                type="email"
+                v-model="email"
+                label="Email address*"
+                hint="This will be your username"
                 lazy-rules
                 color="secondary"
-                :type="isPwd ? 'password' : 'text'"
-                :rules="[ val => val && val.length > 0 || 'Please type something',
-                          val => val && val.length > 7 || 'Password must be at least 8 characters long',
-                          val => val && val === password || 'Passwords must match']"
+                :rules="[
+                  val => val && val.length > 0 || 'Please type something',
+                  val => /^.+@.+\..+$/.test(val) || 'Please type a valid email'
+                ]"
+              />
+        
+              
+              <q-input
+                filled
+                v-model="organization"
+                label="Organization or company name*"
+                lazy-rules
+                color="secondary"
+                :rules="[ val => val && val.length > 0 || 'Please type something']"
+              />
+              <q-input
+                filled
+                v-model="streetAddress"
+                label="Street address*"
+                lazy-rules
+                color="secondary"
+                :rules="[ val => val && val.length > 0 || 'Please type something']"
+              /> 
+        
+              <q-input
+                filled
+                v-model="city"
+                label="City*"
+                lazy-rules
+                color="secondary"
+                :rules="[ val => val && val.length > 0 || 'Please type something']"
+              />
+  
+              <q-select
+                filled
+                v-model="state" 
+                :options="states" 
+                label="State*"
+                :rules="[ val => val !== null || 'Please select an option']"
+              />
+        
+              <q-input
+                filled
+                v-model="zip"
+                label="Zip code*"
+                lazy-rules
+                color="secondary"
+                mask="#####"
+                :rules="[ val => val && val.length > 0 || 'Please type something']"
+              />
+        
+              <q-input
+                type="tel"
+                filled
+                v-model="phone"
+                label="Phone number*"
+                lazy-rules
+                color="secondary"
+                mask="(###) ### - ####"
+                :rules="[ val => val && val.length > 0 || 'Please type something']"
+              />
+              <q-input
+                  filled
+                  v-model="password"
+                  label="Password*"
+                  lazy-rules
+                  color="secondary"
+                  :type="isPwd ? 'password' : 'text'"
+                  :rules="[ val => val && val.length > 0 || 'Please type something',
+                            val => val && val.length > 7 || 'Password must be at least 8 characters long']"
               >
-              <template v-slot:append>
-                <q-icon
-                  :name="isPwd ? 'visibility_off' : 'visibility'"
-                  class="cursor-pointer"
-                  @click="isPwd = !isPwd"
-                />
-              </template>
-            </q-input>
-            <q-chip clickable @click="read_eula = true">Read license and terms</q-chip>
-      
-            <div>
-              <q-toggle v-model="accept" label="I accept the license and terms" />
-            </div>
-      
-            <div>
-              <q-btn label="Submit" type="submit" color="primary"/>
-              <q-btn label="Reset Form" type="reset" color="primary" flat/>
-            </div>
-          </q-form>
-
-      </q-card-section>
-
-    </q-card>
+                <template v-slot:append>
+                  <q-icon
+                    :name="isPwd ? 'visibility_off' : 'visibility'"
+                    class="cursor-pointer"
+                    @click="isPwd = !isPwd"
+                  />
+                </template>
+              </q-input>
+          
+              <q-input
+                  filled
+                  v-model="confirm_password"
+                  label="Confirm Password*"
+                  lazy-rules
+                  color="secondary"
+                  :type="isPwd ? 'password' : 'text'"
+                  :rules="[ val => val && val.length > 0 || 'Please type something',
+                            val => val && val.length > 7 || 'Password must be at least 8 characters long',
+                            val => val && val === password || 'Passwords must match']"
+                >
+                <template v-slot:append>
+                  <q-icon
+                    :name="isPwd ? 'visibility_off' : 'visibility'"
+                    class="cursor-pointer"
+                    @click="isPwd = !isPwd"
+                  />
+                </template>
+              </q-input>
+              <q-chip clickable @click="read_eula = true">Read license and terms</q-chip>
+        
+              <div>
+                <q-toggle v-model="accept" label="I accept the license and terms" />
+              </div>
+        
+              <div>
+                <q-btn label="Submit" type="submit" color="primary"/>
+                <q-btn label="Reset Form" type="reset" color="primary" flat/>
+              </div>
+            </q-form>
+  
+        </q-card-section>
+  
+      </q-card>
+    </div>
   
     <q-dialog v-model="read_eula">
         <eula_popup />

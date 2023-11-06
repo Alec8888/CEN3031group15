@@ -1,5 +1,5 @@
 <template>
-  <q-page class="bg-secondary column items-center">
+  <q-page class="column items-center">
     <!-- <q-btn label="test route" @click="testRoutes" /> -->
 
     <q-card style="width: 300px; margin-top: 25px;" >
