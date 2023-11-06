@@ -1,5 +1,6 @@
 <template>
   <q-page class="bg-secondary column items-center">
+    <!-- <q-btn label="test route" @click="testRoutes" /> -->
 
     <q-card style="width: 300px; margin-top: 25px;" >
 
@@ -11,13 +12,10 @@
       
       <q-card-section class="q-gutter-sm">
         <q-form
-          action="http://localhost:8000/#/api"
-          method="post"
           @submit="onSubmit"
-          @reset="onReset"
-          
         >
           <q-input
+            name="email"
             autofocus
             filled
             type="email"
@@ -32,6 +30,7 @@
           />
     
           <q-input
+              name="password"
               filled
               v-model="password"
               label="Password*"
@@ -64,56 +63,87 @@
   </q-page>
 </template>
 
-<script>
+<script lang="ts">
 import { useQuasar } from 'quasar'
-import TabsLayout from 'src/layouts/tabsLayout.vue';
-import { ref } from 'vue'
+import { defineComponent, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-export default {
+export default defineComponent({
     setup() {
         const $q = useQuasar();
         const email = ref(null);
         const password = ref(null);
+        
         const isPwd = ref(true);
         const onSubmit = async () => {
-          console.log(email.value);
-              console.log(password.value);
+          console.log('log in clicked: ' + email.value + ' ' + password.value)
 
-              let response = await fetch('http://localhost:8000/#/api', {
-                  method: 'POST',
-                  body: JSON.stringify({
-                      email: email.value,
-                      password: password.value,
-                  })
-              });
+          let response = await fetch('http://localhost:3000/signin', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: email.value,
+              password: password.value,
+            }),
+          });
 
-              let formResponse = await response.json();
+          let data = await response.json();
+          
+          // if (response.status == 200) {
+          if (data.accessToken) {
+            // Store the JWT in localStorage
+            localStorage.setItem('token', data.accessToken);
+            console.log('token: ' + data.accessToken);
 
-              if (formResponse.isSuccess) {
-                  $q.notify({
-                      color: 'green-4',
-                      textColor: 'white',
-                      icon: 'cloud_done',
-                      message: 'Log in successfull'
-                  });
-                  // if successfull, route to posting page for donators else route to pantry
-                  // code here...
-              }
+            // Notify the user
+            $q.notify({
+              color: 'green-4',
+              textColor: 'white',
+              icon: 'cloud_done',
+              message: 'Log in successful'
+            });
+
+            // setCurrentUser();
+            console.log('email in setCurrentUser: ' + email.value);
+            let resp = await fetch('http://localhost:3000/currentUser', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                email: email.value,
+                isLogged: true
+              }),
+            });
+
+            // Redirect the user to the home page
+            router.push('/home')
+            
+          } else {
+            // Handle login failure...
+            $q.notify({
+              color: 'red-4',
+              textColor: 'white',
+              icon: 'cloud_done',
+              message: 'Log in failed'
+            });
+          }
         };
-        // this doesn't work. I can instead fake it with JSON SERVER later
-        const fakeLogin = () => {
-          console.log('Fake log in button clicked.');
-          TabsLayout.isLoggedIn.value = true;
-        }
+        const router = useRouter();
+        // const testRoutes = () => {
+        //   router.push('/home')
+        // };
 
         return {
             email,
             password,
             isPwd,
             onSubmit,
-            fakeLogin
+            router
 
         };
     }
-}
+})
 </script>
