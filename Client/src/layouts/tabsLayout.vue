@@ -38,11 +38,11 @@
             transition-hide="flip-left"
           >
             <q-list style="min-width: 100px">
-              <q-item clickable>
-                <q-item-section>{{ currentUser }}</q-item-section>
+              <q-item clickable to="/home">
+                <q-item-section>{{ userEmail }}</q-item-section>
               </q-item>
               <q-separator />
-              <q-item clickable>
+              <q-item clickable @click="logOut">
                 <q-item-section>Log Out</q-item-section>
               </q-item>
             </q-list>
@@ -53,9 +53,10 @@
       </q-toolbar>
 
       <q-tabs align="center">
-        <q-route-tab v-if="true" to="/signin" label="Sign In" />
-        <q-route-tab v-if="true" to="/register" label="Register" />
-        <q-route-tab v-if="isLoggedIn" to="/account" label="Home" />
+        <q-route-tab v-if="!isLoggedIn" to="/" label="Welcome" />
+        <q-route-tab v-if="!isLoggedIn" to="/signin" label="Sign In" />
+        <q-route-tab v-if="!isLoggedIn" to="/register" label="Register" />
+        <q-route-tab v-if="isLoggedIn" to="/home" label="Home" />
         <q-route-tab v-if="isLoggedIn" to="/pantry" label="Pantry" />
         <q-route-tab v-if="isLoggedIn" to="/donate" label="Donate" />
       </q-tabs>
@@ -69,21 +70,83 @@
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue'
+import EssentialLink from 'src/components/EssentialLink.vue'
+import { defineComponent, onUpdated, ref } from 'vue'
+import { onMounted} from 'vue'
+import { useRouter } from 'vue-router'
 
-export default {
+
+export default defineComponent({
   name: 'TabledLayout',
 
   setup () {
-    const isLoggedIn = ref(true)
-    const currentUser = ref('Current User')
+    const router = useRouter();
+    const isLoggedIn = ref(false)
+    const userEmail = ref(null)
+    const setLogInStatus = async () => {
+      let response = await fetch('http://localhost:3000/currentUser', {
+        method: 'GET'
+      });
+      let data = await response.json();
+      // if there is a current user, then set isLoggedIn to true
+      console.log(data)
+      console.log('current user: ' + data.email);
+      console.log('isLogged: ' + data.isLogged);
+      if (data.isLogged) {
+        userEmail.value = data.email;
+        isLoggedIn.value = true;
+      }
+      else {
+        userEmail.value = null;
+        isLoggedIn.value = false;
+      }
+    }
+
+    // need to move this to a differnt lifecyce hook
+    setLogInStatus();
+    
+    const logOut = async () => {
+      console.log('Log out clicked.');
+      let response = await fetch('http://localhost:3000/currentUser', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: "",
+          isLogged: false
+        }),
+      });
+      if (response.ok) {
+        // Clear the JWT from localStorage
+        localStorage.removeItem('token');
+
+        setLogInStatus();
+
+        // Optionally, redirect the user to the login page
+        
+        router.push('/signin')
+        } 
+      else {
+          console.error('Logout failed');
+      }
+    }
+
+    onUpdated( () => {
+      setLogInStatus();
+    })
 
     return {
       isLoggedIn,
-      currentUser
+      setLogInStatus,
+      userEmail,
+      logOut
+  
     }
-  }
-}
+    
+  },
+  
+})
 </script>
 
 <style >

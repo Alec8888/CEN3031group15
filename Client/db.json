@@ -1,4 +1,34 @@
 {
+  "currentUser": {
+    "email": "",
+    "isLogged": false
+  },
+  "users": [
+    {
+      "email": "a@gmail.com",
+      "password": "$2a$10$B828MVSgO1ugP7c1RnJPtOgZX0O4RVQZ5BG28OxEhZpYeaxclA7au",
+      "name": "Org A",
+      "streetAddress": "111 Tree Drive",
+      "city": "Clearwater",
+      "state": "IN",
+      "zip": "44512",
+      "phone": "(334) 445 - 5555",
+      "donate": true,
+      "id": 1
+    },
+    {
+      "email": "b@gmail.com",
+      "password": "$2a$10$NKVjyRKl37ITrYN5VEQZz.seHPGbtpJKzr5fy1xYR9M1J5QHhEO3C",
+      "name": "Org B",
+      "streetAddress": "32423  fds",
+      "city": "TAMPA",
+      "state": "ID",
+      "zip": "33333",
+      "phone": "(333) 444 - 3333",
+      "donate": true,
+      "id": 2
+    }
+  ],
   "donations": [
     {
       "id": 1,

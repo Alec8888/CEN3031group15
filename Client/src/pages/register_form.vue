@@ -11,8 +11,6 @@
 
           <!-- I don't think I'm using the action= part of this form, just using it for validation really. -->
           <q-form
-            action="http://localhost:8000/#/api"  
-            method="post"
             @submit="onSubmit"
             @reset="onReset"
             class="q-gutter-md"
@@ -281,7 +279,7 @@ export default {
                     console.log(state.value);
                     console.log(zip.value);
 
-                    let response = await fetch('http://localhost:3000/organizations', {
+                    let response = await fetch('http://localhost:3000/register', {
                         method: 'POST',
                         headers: {
                           'Content-Type': 'application/json'
@@ -296,11 +294,31 @@ export default {
                             email: email.value,
                             phone: phone.value,
                             donate: donate.value,
-                            // password: password.value,
+                            password: password.value,
                         }
 
                         )
                     });
+
+                    if (!response.ok) {
+                        $q.notify({
+                            color: 'red-5',
+                            textColor: 'white',
+                            icon: 'warning',
+                            message: 'Form submission failed'
+                        });
+                    }
+                    else {
+                        $q.notify({
+                            color: 'green-4',
+                            textColor: 'white',
+                            icon: 'cloud_done',
+                            message: 'Form submitted successfully'
+                        });
+                        // navigate to the login page
+                        this.$router.push('/signin');
+                    }
+
                     let formResponse = await response.json();
                     if (formResponse.isSuccess) {
                         // Go to the post food page

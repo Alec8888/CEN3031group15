@@ -19,3 +19,7 @@
     - `quasar dev`
 
 ## Back-end
+## JSON Server Auth
+- install JSON Server Auth globally: `npm install -g json-server-auth`
+- Start server: `json-server-auth --watch db.json`
+- More directions: `https://www.npmjs.com/package/json-server-auth`
