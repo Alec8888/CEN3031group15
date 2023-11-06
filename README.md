@@ -1,6 +1,6 @@
 # CEN3031group15
 
-## Front-end 
+## Client
 
 ### Setup environment
 
@@ -11,15 +11,18 @@
 4. Install JSON-Server  
     - `npm install -g json-server`
     - [More directions](https://www.npmjs.com/package/json-server01)
+5. Install JSON Server Auth
+    - `npm install -g json-server-auth`
+    - [More directions](https://www.npmjs.com/package/json-server-auth)
 
-### Run app
+### Start Client
 1. Start JSON server from /client
-    - `json-server --watch db.json`
+    - `json-server-auth --watch db.json`
 2. Start Quasar dev server
     - `quasar dev`
 
-## Back-end
-## JSON Server Auth
-- install JSON Server Auth globally: `npm install -g json-server-auth`
-- Start server: `json-server-auth --watch db.json`
-- More directions: `https://www.npmjs.com/package/json-server-auth`
+## Server
+
+### Setup environment
+
+### Start server
