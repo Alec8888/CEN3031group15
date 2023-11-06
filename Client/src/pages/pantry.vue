@@ -7,7 +7,7 @@
       
       <q-card class="donationCards bg-secondary text-white" v-for="(organization, index) in organizations" :key="index">
         <q-card-section>
-          <div class="text-h6">{{ organization.name }}</div>
+          <div class="text-h6">{{ organization.org }}</div>
         </q-card-section>
         <q-card-section>
           <div class="text-subtitle2">{{ organization.food }}</div>
@@ -118,7 +118,7 @@ export default {
       console.log('Search text changed.');
       // update organizations [] where name includes searchText
       organizations.value = organizations.value.filter((organization) => {
-        return organization.name.includes(searchText.value);
+        return organization.org.includes(searchText.value);
       });
       if (searchText.value === '') {
         fetchOrganization();

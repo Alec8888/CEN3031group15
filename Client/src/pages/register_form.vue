@@ -160,19 +160,21 @@
         <eula_popup />
     </q-dialog>
 
-  </q-page>
+      </q-page>
 </template>
 
 <script>
 import { useQuasar } from 'quasar'
 import { ref } from 'vue'
 import eula_popup from 'components/eula_popup.vue'
+import { useRouter } from 'vue-router'
 
 export default {
     components: { 
       eula_popup,
      },
     setup() {
+        const router = useRouter();
         const $q = useQuasar()
         const name = ref(null)
         const email = ref(null)
@@ -284,7 +286,7 @@ export default {
                         },
                         body: JSON.stringify({
                             // rep: name.value,
-                            name: organization.value,
+                            org: organization.value,
                             streetAddress: streetAddress.value,
                             city: city.value,
                             state: state.value.value,
@@ -314,7 +316,9 @@ export default {
                             message: 'Form submitted successfully'
                         });
                         // navigate to the login page
-                        this.$router.push('/signin');
+                        // this.$router.push('/signin');
+                        router.push('/signin')
+                       
                     }
 
                     let formResponse = await response.json();
