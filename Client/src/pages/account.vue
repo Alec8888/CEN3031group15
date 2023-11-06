@@ -1,12 +1,14 @@
 <template>
   <q-page padding class="q-gutter-md">
     <q-card>
-      <q-card-section>
-        Active Donations
-      </q-card-section>
+        <div class="text-subtitle1">
+          <q-btn flat color="secondary" :icon="showActivePanryItems ? 'expand_more' : 'chevron_right'" @click="showActive" />
+          Active Donations
+        </div>
     </q-card>
 
-    <div class="row q-gutter-md" style="margin-top: 5px;">
+    
+    <div v-if="showActivePanryItems" class="row q-gutter-md" style="margin-top: 5px;">
       <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems" :key="index">
         <q-card-section>
           <div class="text-h6">{{ pantry_item.org }}</div>
@@ -24,20 +26,21 @@
         </q-card-actions>
       </q-card>
     </div>
-
+    
     <q-card>
-      <q-card-section>
-        Past Donations
-      </q-card-section>
-    </q-card>
-
-    <q-card>
-      <q-card-section>
-        Account Settings
-      </q-card-section>
-      
+        <div class="text-subtitle1">
+          <q-btn flat color="secondary" icon="expand_more" />
+          Past Donations
+        </div>
     </q-card>
     
+    <q-card>
+        <div class="text-subtitle1">
+          <q-btn flat color="secondary" icon="expand_more" />
+          Account Settings
+        </div>
+    </q-card>
+
   </q-page>
 </template>
 
@@ -49,7 +52,7 @@ export default defineComponent({
   name: 'AccountPage',
   setup () {
     const pantryItems = ref([]);
-    const selectedOrganization = ref(null); // ??
+    const showActivePanryItems = ref(true);
     
     const fetchOrganization = async () => {
       const response = await fetch('http://localhost:3000/pantry', {
@@ -66,10 +69,16 @@ export default defineComponent({
     const cancel = () => {
      console.log('Cancel button clicked.');
     }
+    const showActive = () => {
+      console.log('Show Active button clicked.');
+      showActivePanryItems.value = !showActivePanryItems.value;
+    }
     return {
       pantryItems,
       fetchOrganization,
-      cancel
+      cancel,
+      showActivePanryItems,
+      showActive
       
     }
   }
