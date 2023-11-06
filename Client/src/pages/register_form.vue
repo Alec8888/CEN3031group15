@@ -8,8 +8,6 @@
       </q-card-section>
       <q-card-section>
 
-
-          <!-- I don't think I'm using the action= part of this form, just using it for validation really. -->
           <q-form
             @submit="onSubmit"
             @reset="onReset"
@@ -335,7 +333,6 @@ export default {
             onReset() {
                 name.value = null;
                 accept.value = false;
-                //reset all form fields
                 email.value = null;
                 donate.value = null;
                 organization.value = null;
