@@ -5,21 +5,21 @@
     
     <div class="row q-gutter-md" style="margin-top: 5px;">
       
-      <q-card class="donationCards bg-secondary text-white" v-for="(organization, index) in organizations" :key="index">
+      <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems" :key="index">
         <q-card-section>
-          <div class="text-h6">{{ organization.org }}</div>
+          <div class="text-h6">{{ pantry_item.org }}</div>
         </q-card-section>
         <q-card-section>
-          <div class="text-subtitle2">{{ organization.food }}</div>
+          <div class="text-subtitle2">{{ pantry_item.food }}</div>
         </q-card-section>
         <q-card-section>
-          <div class="text-subtitle2">{{ organization.streetAddress }}</div>
-          <div class="text-subtitle2">{{ organization.city }} , {{ organization.state }} {{ organization.zip }}</div>
+          <div class="text-subtitle2">{{ pantry_item.pickup_streetAddress }}</div>
+          <div class="text-subtitle2">{{ pantry_item.pickup_city }} , {{ pantry_item.pickup_state.value }} {{ pantry_item.pickup_zip }}</div>
         </q-card-section>
         <q-separator dark />
         <q-card-actions class="justify-around">
           <q-btn flat @click="reserveDonation">Reserve</q-btn>
-          <q-btn flat @click="() => contact(organization)">Contact</q-btn>
+          <q-btn flat @click="() => contact(pantry_item)">Contact</q-btn>
         </q-card-actions>
         
       </q-card>
@@ -81,10 +81,10 @@ export default {
   setup() {
     
     const selectedOrganization = ref(null);
-    const organizations = ref([]);
+    const pantryItems = ref([]);
 
     const fetchOrganization = async () => {
-      const response = await fetch('http://localhost:3000/donations', {
+      const response = await fetch('http://localhost:3000/pantry', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ export default {
       });
       
       const data = await response.json();
-      organizations.value = data;
+      pantryItems.value = data;
     };
 
     onMounted(fetchOrganization);
@@ -117,7 +117,7 @@ export default {
     watch(searchText, () => {
       console.log('Search text changed.');
       // update organizations [] where name includes searchText
-      organizations.value = organizations.value.filter((organization) => {
+      pantryItems.value = pantryItems.value.filter((organization) => {
         return organization.org.includes(searchText.value);
       });
       if (searchText.value === '') {
@@ -126,7 +126,7 @@ export default {
     });
     
     return {
-      organizations,
+      pantryItems,
       selectedOrganization,
       clickedCall,
       contact,

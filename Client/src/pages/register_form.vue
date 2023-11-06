@@ -9,7 +9,6 @@
           </div>
         </q-card-section>
         <q-card-section>
-  
             <q-form
               @submit="onSubmit"
               @reset="onReset"
