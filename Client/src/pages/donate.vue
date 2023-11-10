@@ -33,6 +33,15 @@
                   :rules="[ val => val && val.length > 0 || 'Please type something']"
               />
               <q-input
+                filled
+                v-model="orgDisplayName"
+                label="Organization Display Name*"
+                color="secondary"
+                lazy-rules
+                :rules="[ val => val && val.length > 0 || 'Please type something']"
+              />
+
+              <q-input
                 type="date"
                 filled
                 v-model="date_active"

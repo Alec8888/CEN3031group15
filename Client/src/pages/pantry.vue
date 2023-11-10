@@ -7,7 +7,7 @@
       
       <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems" :key="index">
         <q-card-section>
-          <div class="text-h6">{{ pantry_item.org }}</div>
+          <div class="text-h6">{{ pantry_item.orgDisplayName }}</div>
         </q-card-section>
         <q-card-section>
           <div class="text-subtitle2">{{ pantry_item.food }}</div>

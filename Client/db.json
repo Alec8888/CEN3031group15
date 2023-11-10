@@ -1,12 +1,52 @@
 {
   "currentUser": {
-    "email": "",
-    "isLogged": false
+    "email": "a@gmail.com",
+    "isLogged": true
   },
   "users": [
-
+    {
+      "email": "a@gmail.com",
+      "password": "$2a$10$O0xa6SkCcmLBRLxdMvWh2e.DUUDIsDTk0h.LuuRbNsaHBH6QKSlZW",
+      "org": "Joen Doe",
+      "streetAddress": "1100 Panni Lane",
+      "city": "Gainsville",
+      "state": "FL",
+      "zip": "32601",
+      "phone": "(352) 898 - 7665",
+      "donate": true,
+      "id": 1
+    }
   ],
-  "pantry": [ 
-
+  "pantry": [
+    {
+      "food": "Food and shit.",
+      "orgDisplayName": "Panera",
+      "contactName": "Jerry Jones",
+      "contactEmail": "notusualEmail@gmail.com",
+      "contactPhone": "(352) 898 - 7665",
+      "pickup_streetAddress": "1100 Panni Lane",
+      "pickup_city": "Gainsville",
+      "pickup_zip": "32601",
+      "pickup_state": {
+        "label": "Hawaii",
+        "value": "HI"
+      },
+      "id": 1
+    },
+    {
+      "food": "Rice and beans",
+      "orgDisplayName": "Panera",
+      "contactName": "Alexander J Patterson",
+      "contactEmail": "8888alec@gmail.com",
+      "contactPhone": "(172) 725 - 4888",
+      "pickup_streetAddress": "6615 Cambridge Park Dr",
+      "pickup_city": "Apollo Beach",
+      "pickup_zip": "33572",
+      "pickup_state": {
+        "label": "Kansas",
+        "value": "KS"
+      },
+      "id": 2
+    }
   ]
 }
