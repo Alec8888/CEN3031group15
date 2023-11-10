@@ -1,28 +1,24 @@
 <template>
   <q-page class="column items-center">
-  <!-- <div class="column items-center"> -->
+    <!-- <q-btn label="test route" @click="testRoutes" /> -->
 
-    <q-card>
-      <!-- <q-card-section>
-        <img
-          alt="PantryPal logo"
-          src="~assets/PantryPal-Logo.png"
-          style="width: 300px; height:300px"
-        >
-      </q-card-section> -->
+    <q-card style="width: 300px; margin-top: 25px;" >
+
       <q-card-section>
-        <div class="text-subtitle2">Sign in to PantryPal</div>
+        <div class="text-h6">
+          Sign in to PantryPal
+        </div>
       </q-card-section>
 
-      <q-card-section>
+      <q-card-section class="q-gutter-sm">
         <q-form
-          action="http://localhost:8000/home/"
+          action="http://localhost:8000/#/api"
           method="post"
           @submit="onSubmit"
-          @reset="onReset"
-          class="q-gutter-sm"
         >
           <q-input
+            name="email"
+            autofocus
             filled
             type="email"
             v-model="email"
@@ -36,107 +32,120 @@
           />
 
           <q-input
+              name="password"
               filled
               v-model="password"
               label="Password*"
               lazy-rules
               color="secondary"
+              :type="isPwd ? 'password' : 'text'"
               :rules="[ val => val && val.length > 0 || 'Please type something',
                         val => val && val.length > 7 || 'Password must be at least 8 characters long']"
-            />
+          >
+            <template v-slot:append>
+              <q-icon
+                :name="isPwd ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                @click="isPwd = !isPwd"
+              />
+            </template>
+          </q-input>
 
-            <q-btn label="Submit" type="submit" color="primary"/>
+
+          <q-btn label="Log In" type="submit" color="primary" style="width: 270px;"/>
+          <div class="text-caption">
+            Not registered? <router-link to="/register">Create an account</router-link>
+          </div>
         </q-form>
 
       </q-card-section>
 
     </q-card>
 
-
-
-
-  <!-- </div> -->
   </q-page>
 </template>
 
-<script>
+<script lang="ts">
 import { useQuasar } from 'quasar'
-import { ref } from 'vue'
+import { defineComponent, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-export default {
-    components: {
-
-     },
+export default defineComponent({
     setup() {
         const $q = useQuasar();
         const email = ref(null);
         const password = ref(null);
 
-        // define methods here, if any
+        const isPwd = ref(true);
+        const onSubmit = async () => {
+          console.log('log in clicked: ' + email.value + ' ' + password.value)
+
+          let response = await fetch('http://localhost:3000/signin', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: email.value,
+              password: password.value,
+            }),
+          });
+
+          let data = await response.json();
+
+          // if (response.status == 200) {
+          if (data.accessToken) {
+            // Store the JWT in localStorage
+            localStorage.setItem('token', data.accessToken);
+            console.log('token: ' + data.accessToken);
+
+            // Notify the user
+            $q.notify({
+              color: 'green-4',
+              textColor: 'white',
+              icon: 'cloud_done',
+              message: 'Log in successful'
+            });
+
+            // setCurrentUser();
+            console.log('email in setCurrentUser: ' + email.value);
+            let resp = await fetch('http://localhost:3000/currentUser', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                email: email.value,
+                isLogged: true
+              }),
+            });
+
+            // Redirect the user to the home page
+            router.push('/home')
+
+          } else {
+            // Handle login failure...
+            $q.notify({
+              color: 'red-4',
+              textColor: 'white',
+              icon: 'cloud_done',
+              message: 'Log in failed'
+            });
+          }
+        };
+        const router = useRouter();
+        // const testRoutes = () => {
+        //   router.push('/home')
+        // };
 
         return {
-
             email,
             password,
+            isPwd,
+            onSubmit,
+            router
 
-            async onSubmit() {
-
-                  console.log(email.value);
-                  console.log(password.value);
-
-                  let response = await fetch('http://localhost:8000/home/', {
-                      method: 'POST',
-                      body: JSON.stringify({
-                          requestType: "login",
-                          email: email.value,
-                          password: password.value,
-                      })
-                  });
-
-                  //collect returned user data
-                  let formResponse = await response;
-                  let formData = await formResponse.text()
-
-                  //variables for parsing data
-                  let nextAttribute = ""
-                  var userAttributes = []
-                  var currentPosition = 0
-
-                  //parse data
-                  for(let i = 0; i < formData.length; ++i)
-                  {
-                      if(formData.at(i) == '(' || formData.at(i) == ',' || formData.at(i) == '\'' || formData.at(i) == ')')
-                      {
-                        continue
-                      }
-                      else if(formData.at(i) == ' ')
-                      {
-                        userAttributes[currentPosition] = nextAttribute
-                        nextAttribute = ""
-                        currentPosition += 1
-                      }
-                      else
-                      {
-                         nextAttribute += formData.at(i)
-                      }
-                  }
-
-                  console.log(userAttributes)
-
-                  if (formResponse.ok) {
-                      console.log("success");
-                      $q.notify({
-                          color: 'green-4',
-                          textColor: 'white',
-                          icon: 'cloud_done',
-                          message: 'Log in successfull'
-                      });
-                  }
-            },
-            onReset() {
-
-            }
         };
     }
-}
+})
 </script>

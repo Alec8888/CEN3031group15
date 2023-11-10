@@ -1,12 +1,14 @@
 export default [
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/tabsLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue'), meta: { title: 'Welcome' } },
+      { path: '', component: () => import('pages/welcome.vue'), meta: { title: 'Welcome' } },
       { path: 'signin', component: () => import('pages/sign_in.vue'), meta: { title: 'Sign In' } },
-      { path: 'pantry', component: () => import('pages/pantry-find-food.vue'), meta: { title: 'Pantry' } },
-      { path: 'register', component: () => import('pages/register_form.vue'), meta: { title: 'Register' } }
+      { path: 'pantry', component: () => import('pages/pantry.vue'), meta: { title: 'Pantry' } },
+      { path: 'register', component: () => import('pages/register_form.vue'), meta: { title: 'Register' } },
+      { path: 'home', component: () => import('pages/account.vue'), meta: { title: 'Home' } },
+      { path: 'donate', component: () => import('pages/donate.vue'), meta: { title: 'Donate' } },
     ]
   },
   {

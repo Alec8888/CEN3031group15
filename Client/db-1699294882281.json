@@ -1,0 +1,37 @@
+{
+  "currentUser": {
+    "email": "panera@gmail.com",
+    "isLogged": true
+  },
+  "users": [
+    {
+      "email": "panera@gmail.com",
+      "password": "$2a$10$/GPYxZlJA.XF8VhFggOW2eyVUIUkrUnLqv3XrAE28jQ.27iKNUeQS",
+      "org": "Panera",
+      "streetAddress": "1100 Panni Lane",
+      "city": "Gainsville",
+      "state": "FL",
+      "zip": "32601",
+      "phone": "(352) 898 - 7665",
+      "donate": true,
+      "id": 1
+    }
+  ],
+  "pantry": [
+    {
+      "food": "10 Sandwhiches. Sliced Meats",
+      "orgDisplayName": "Panera",
+      "contactName": "Jerry Jones",
+      "contactEmail": "notusualEmail@gmail.com",
+      "contactPhone": "(352) 898 - 7665",
+      "pickup_streetAddress": "1100 Panni Lane",
+      "pickup_city": "Gainsville",
+      "pickup_zip": "32601",
+      "pickup_state": {
+        "label": "Florida",
+        "value": "FL"
+      },
+      "id": 1
+    }
+  ]
+}
