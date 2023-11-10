@@ -16,7 +16,7 @@
 
       <q-card-section>
         <q-form
-          action="http://localhost:8000/#/api"
+          action="http://localhost:8000/home/"
           method="post"
           @submit="onSubmit"
           @reset="onReset"
@@ -34,7 +34,7 @@
               val => /^.+@.+\..+$/.test(val) || 'Please type a valid email'
             ]"
           />
-    
+
           <q-input
               filled
               v-model="password"
@@ -44,15 +44,15 @@
               :rules="[ val => val && val.length > 0 || 'Please type something',
                         val => val && val.length > 7 || 'Password must be at least 8 characters long']"
             />
-    
+
             <q-btn label="Submit" type="submit" color="primary"/>
         </q-form>
 
       </q-card-section>
 
     </q-card>
-    
-    
+
+
 
 
   <!-- </div> -->
@@ -64,7 +64,7 @@ import { useQuasar } from 'quasar'
 import { ref } from 'vue'
 
 export default {
-    components: { 
+    components: {
 
      },
     setup() {
@@ -80,22 +80,51 @@ export default {
             password,
 
             async onSubmit() {
-               
+
                   console.log(email.value);
                   console.log(password.value);
 
-                  let response = await fetch('http://localhost:8000/#/api', {
+                  let response = await fetch('http://localhost:8000/home/', {
                       method: 'POST',
                       body: JSON.stringify({
+                          requestType: "login",
                           email: email.value,
                           password: password.value,
                       })
                   });
 
-                  let formResponse = await response.json();
+                  //collect returned user data
+                  let formResponse = await response;
+                  let formData = await formResponse.text()
 
-                  if (formResponse.isSuccess) {
-                      // do something
+                  //variables for parsing data
+                  let nextAttribute = ""
+                  var userAttributes = []
+                  var currentPosition = 0
+
+                  //parse data
+                  for(let i = 0; i < formData.length; ++i)
+                  {
+                      if(formData.at(i) == '(' || formData.at(i) == ',' || formData.at(i) == '\'' || formData.at(i) == ')')
+                      {
+                        continue
+                      }
+                      else if(formData.at(i) == ' ')
+                      {
+                        userAttributes[currentPosition] = nextAttribute
+                        nextAttribute = ""
+                        currentPosition += 1
+                      }
+                      else
+                      {
+                         nextAttribute += formData.at(i)
+                      }
+                  }
+
+                  console.log(userAttributes)
+
+                  if (formResponse.ok) {
+                      console.log("success");
                       $q.notify({
                           color: 'green-4',
                           textColor: 'white',
