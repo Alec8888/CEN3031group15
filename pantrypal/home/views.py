@@ -57,16 +57,18 @@ def index(request):
             print("Somethings wrong here. Invalid Email or Password.")
             #send invalid request back to front-end !!!!!TO DO!!!!!!!
             return HttpResponse("failed attempt")
+        # dictionary names
+        dictionaryNames = ['LastName', 'FirstName', 'UserName', 'Email', 'Phone', 'DOB', 'Password', 'i1', 'i2', 'i3']
 
-        ##### DEBUG see user attributes for query DEBUG #####
+        returnRequest = {}
+        # convert returned list into python dictionary
         for entities in res:
-            for attributes in entities:
-                print(attributes)
+            for i in range(len(entities)):
+                returnRequest[dictionaryNames[i]] = entities[i]
 
-        #build http response with desired user content
-        response = HttpResponse()
-        response.content = res
+        # convert python dictionary into json response and send back
+        response = JsonResponse(returnRequest)
         print(response.content)
-        #send profile information back to front-end !!!!!TO DO!!!!!!!
+        # send data back to front end
         return response
     

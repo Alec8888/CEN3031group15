@@ -80,12 +80,13 @@ export default defineComponent({
         const onSubmit = async () => {
           console.log('log in clicked: ' + email.value + ' ' + password.value)
 
-          let response = await fetch('http://localhost:3000/signin', {
+          let response = await fetch('http://localhost:8000/home/', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
+              requestType: "login",
               email: email.value,
               password: password.value,
             }),
