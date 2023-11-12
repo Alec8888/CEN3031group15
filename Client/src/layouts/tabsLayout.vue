@@ -3,12 +3,13 @@
 
     <q-header elevated class="bg-primary text-accent" height-hint="98">
       <q-toolbar>
-        <q-toolbar-title>
-          <q-avatar>
+        <q-toolbar-title style="width: 100%; display: flex; align-items: center; margin-left: 10px;">
+          <q-avatar style="transform: scale(1.2); margin-left: 10px;">
             <img src="~assets/PantryPal-Logo.png">
           </q-avatar>
-          PantryPal
+          <div class="custom-hammersmith" style="margin-left: 10px;">PantryPal</div>
         </q-toolbar-title>
+
 
         <div class="q-gutter-sm">
           <q-btn
@@ -149,10 +150,9 @@ export default defineComponent({
 })
 </script>
 
-<style >
+<style>
   .bg-image {
-    background-image: url('C:/dev/PantryPal/CEN3031group15/Client/src/assets/bg2.png');
+    background-image: url('../assets/bg2.png');
     background-size: cover;
   }
-
 </style>

@@ -1,67 +1,82 @@
 <template>
-  <q-page class="column items-center">
+  <q-page class="self-center">
     <!-- <q-btn label="test route" @click="testRoutes" /> -->
 
-    <q-card style="width: 300px; margin-top: 25px;" >
+    <div class="self-center">
+      <q-card style="width: 300px; margin-top: 25px;" >
 
-      <q-card-section> 
-        <div class="text-h6">
-          Sign in to PantryPal
-        </div>
-      </q-card-section>
-      
-      <q-card-section class="q-gutter-sm">
-        <q-form
-          @submit="onSubmit"
-        >
-          <q-input
-            name="email"
-            autofocus
-            filled
-            type="email"
-            v-model="email"
-            label="Email address*"
-            lazy-rules
-            color="secondary"
-            :rules="[
-              val => val && val.length > 0 || 'Please type something',
-              val => /^.+@.+\..+$/.test(val) || 'Please type a valid email'
-            ]"
-          />
-    
-          <q-input
-              name="password"
+        <q-card-section> 
+          <q-card-section class="center-text">
+            <div class="custom-hammersmith">Sign In to PantryPal</div>
+          </q-card-section>
+        </q-card-section>
+        
+        <q-card-section class="q-gutter-sm">
+          <q-form
+            @submit="onSubmit"
+          >
+            <q-input
+              name="email"
+              autofocus
               filled
-              v-model="password"
-              label="Password*"
+              type="email"
+              v-model="email"
+              label="Email address*"
               lazy-rules
               color="secondary"
-              :type="isPwd ? 'password' : 'text'"
-              :rules="[ val => val && val.length > 0 || 'Please type something',
-                        val => val && val.length > 7 || 'Password must be at least 8 characters long']"
-          >
-            <template v-slot:append>
-              <q-icon
-                :name="isPwd ? 'visibility_off' : 'visibility'"
-                class="cursor-pointer"
-                @click="isPwd = !isPwd"
-              />
-            </template>
-          </q-input>
+              :rules="[
+                val => val && val.length > 0 || 'Please type something',
+                val => /^.+@.+\..+$/.test(val) || 'Please type a valid email'
+              ]"
+            />
+      
+            <q-input
+                name="password"
+                filled
+                v-model="password"
+                label="Password*"
+                lazy-rules
+                color="secondary"
+                :type="isPwd ? 'password' : 'text'"
+                :rules="[ val => val && val.length > 0 || 'Please type something',
+                          val => val && val.length > 7 || 'Password must be at least 8 characters long']"
+            >
+              <template v-slot:append>
+                <q-icon
+                  :name="isPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="isPwd = !isPwd"
+                />
+              </template>
+            </q-input>
 
-    
-          <q-btn label="Log In" type="submit" color="primary" style="width: 270px;"/>
-          <div class="text-caption">
-            Not registered? <router-link to="/register">Create an account</router-link>
-          </div>
-        </q-form>
-        
-      </q-card-section>
+      
+            <q-btn label="Log In" type="submit" color="primary" style="width: 270px;"/>
+            <div class="center-text">
+              <div class="text-caption">
+                Not registered? <router-link to="/register">Create an account</router-link>
+              </div>
+            </div>
+          </q-form>
+          
+        </q-card-section>
 
-    </q-card>
-
+      </q-card>
+    </div>
   </q-page>
 </template>
+
+<style>
+
+.self-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+</style>
+
+
 
 <script lang="ts">
 import { useQuasar } from 'quasar'
