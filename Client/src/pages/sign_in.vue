@@ -4,14 +4,16 @@
 
     <q-card style="width: 300px; margin-top: 25px;" >
 
-      <q-card-section> 
+      <q-card-section>
         <div class="text-h6">
           Sign in to PantryPal
         </div>
       </q-card-section>
-      
+
       <q-card-section class="q-gutter-sm">
         <q-form
+          action="http://localhost:8000/#/api"
+          method="post"
           @submit="onSubmit"
         >
           <q-input
@@ -28,7 +30,7 @@
               val => /^.+@.+\..+$/.test(val) || 'Please type a valid email'
             ]"
           />
-    
+
           <q-input
               name="password"
               filled
@@ -49,13 +51,13 @@
             </template>
           </q-input>
 
-    
+
           <q-btn label="Log In" type="submit" color="primary" style="width: 270px;"/>
           <div class="text-caption">
             Not registered? <router-link to="/register">Create an account</router-link>
           </div>
         </q-form>
-        
+
       </q-card-section>
 
     </q-card>
@@ -73,24 +75,25 @@ export default defineComponent({
         const $q = useQuasar();
         const email = ref(null);
         const password = ref(null);
-        
+
         const isPwd = ref(true);
         const onSubmit = async () => {
           console.log('log in clicked: ' + email.value + ' ' + password.value)
 
-          let response = await fetch('http://localhost:3000/signin', {
+          let response = await fetch('http://localhost:8000/home/', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
+              requestType: "login",
               email: email.value,
               password: password.value,
             }),
           });
 
           let data = await response.json();
-          
+
           // if (response.status == 200) {
           if (data.accessToken) {
             // Store the JWT in localStorage
@@ -120,7 +123,7 @@ export default defineComponent({
 
             // Redirect the user to the home page
             router.push('/home')
-            
+
           } else {
             // Handle login failure...
             $q.notify({
