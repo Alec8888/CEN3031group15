@@ -53,12 +53,12 @@
       </q-card>
     </div>
     
-    <q-card>
+    <!-- <q-card>
         <div class="text-subtitle1">
           <q-btn @click="showSettings" flat color="secondary" :icon="showAccountSettings ? 'expand_more' : 'chevron_right'" />
           Account Settings
         </div>
-    </q-card>
+    </q-card> -->
 
   </q-page>
 </template>
