@@ -242,6 +242,8 @@ export default defineComponent({
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
+            dateActive: date_active.value,
+            dateExpires: date_expires.value,
             food: food.value,
             orgDisplayName: orgDisplayName.value,
             contactName: contactName.value,
