@@ -1,7 +1,7 @@
 {
   "currentUser": {
-    "email": "a@gmail.com",
-    "isLogged": true
+    "email": "",
+    "isLogged": false
   },
   "users": [
     {
@@ -15,6 +15,18 @@
       "phone": "(352) 898 - 7665",
       "donate": true,
       "id": 1
+    },
+    {
+      "email": "donator@gmail.com",
+      "password": "$2a$10$6xZDU1XmaEPlXNA79oCRku7ZPOZdDhnMNIH0b.AJHZ4l.iv6/oR..",
+      "org": "Donator",
+      "streetAddress": "Street",
+      "city": "City",
+      "state": "FL",
+      "zip": "12345",
+      "phone": "(123) 456 - 7890",
+      "donate": true,
+      "id": 2
     }
   ],
   "pantry": [
