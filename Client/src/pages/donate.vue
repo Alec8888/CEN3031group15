@@ -53,7 +53,7 @@
               <q-input
                 type="date"
                 filled
-                v-model="date_active"
+                v-model="date_expires"
                 label="Date you want this donation posting to expire*"
                 color="primary"
                 lazy-rules
