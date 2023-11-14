@@ -26,6 +26,7 @@ From /client directory:
     - `quasar dev`
 3. Start Cypress
     - `npm run cypress:open`
+    - 'click '
 
 
 ## Server
