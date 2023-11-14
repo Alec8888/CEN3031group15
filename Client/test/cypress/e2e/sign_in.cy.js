@@ -12,11 +12,9 @@ describe('Sign In Page', () => {
         cy.dataCy('email-input').should('exist');
     });
 
+
     it('Can type into email input', () => {
-        cy.dataCy('email-input').should('exist').then(($input) => {
-            cy.wait(500); // Wait for 500ms
-            cy.wrap($input).type('a@gmail.com', { force: true });
-        });
+        cy.dataCy('email-input').type('a@gmail.com');
     });
 
     it('Has a password input', () => {
@@ -31,13 +29,21 @@ describe('Sign In Page', () => {
       cy.get('button[type="submit"]').should('exist')
     })
   
-    // it('Can click the submit button', () => {
-    //   cy.get('button[type="submit"]').click()
-    // })
+    it('Can click the submit button', () => {
+      cy.get('button[type="submit"]').click()
+    })
 
     it('Create account link routes to register page', () => {
         cy.dataCy('link_register').click()
         cy.testRoute('/register')
+  })
+
+  it('Can sign in', () => {
+    cy.dataCy('email-input').type('a@gmail.com');
+    cy.dataCy('password-input').type('qwerasdf');
+    cy.get('button[type="submit"]').click()
+    cy.testRoute('/home')
+
   })
 
 })

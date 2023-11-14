@@ -1,7 +1,7 @@
 {
   "currentUser": {
-    "email": "",
-    "isLogged": false
+    "email": "a@gmail.com",
+    "isLogged": true
   },
   "users": [
     {
