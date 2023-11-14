@@ -24,6 +24,7 @@
               autofocus
             >
               <q-input
+                  data-cy="input-food"
                   type="textarea"
                   filled
                   v-model="food"
@@ -32,7 +33,8 @@
                   lazy-rules
                   :rules="[ val => val && val.length > 0 || 'Please type something']"
               />
-              <q-input
+              <q-input 
+                data-cy="input-orgName"
                 filled
                 v-model="orgDisplayName"
                 label="Organization Display Name*"
@@ -42,6 +44,7 @@
               />
 
               <q-input
+                data-cy="input-dateActive"
                 type="date"
                 filled
                 v-model="date_active"
@@ -51,6 +54,7 @@
                 :rules="[ val => val && val.length > 0 || 'Please type something']"
               />
               <q-input
+                data-cy="input-dateExpires"
                 type="date"
                 filled
                 v-model="date_expires"
@@ -60,6 +64,7 @@
                 :rules="[ val => val && val.length > 0 || 'Please type something']"
               />
               <q-input
+                  data-cy="input-contactName"
                   filled
                   v-model="contactName"
                   label="Contact Name*"
@@ -68,6 +73,7 @@
                   :rules="[ val => val && val.length > 0 || 'Please type something']"
               />
               <q-input
+                  data-cy="input-contactEmail"
                   type="email"
                   filled
                   v-model="contactEmail"
@@ -78,6 +84,7 @@
                             val => val && /.+@.+\..+/.test(val) || 'Please enter a valid email address']"
               />
               <q-input
+                  data-cy="input-contactPhone"
                   type="tel"
                   filled
                   v-model="contactPhone"
@@ -88,6 +95,7 @@
                   :rules="[ val => val && val.length > 0 || 'Please type something']"
               />
               <q-input
+                  data-cy="input-pickupStreetAddress"
                   filled
                   v-model="pickup_streetAddress"
                   label="Street Address of pickup location*"
@@ -96,6 +104,7 @@
                   :rules="[ val => val && val.length > 0 || 'Please type something']"
               />
               <q-input
+                  data-cy="input-pickupCity"
                   filled
                   v-model="pickup_city"
                   label="City of pickup location*"
@@ -104,6 +113,7 @@
                   :rules="[ val => val && val.length > 0 || 'Please type something']"
               />
               <q-select
+                data-cy="input-pickupState"
                 filled
                 v-model="pickup_state" 
                 :options="states" 
@@ -111,6 +121,7 @@
                 :rules="[ val => val !== null || 'Please select an option']"
               />
               <q-input
+                  data-cy="input-pickupZip"
                   filled
                   v-model="pickup_zip"
                   label="Zip Code of pickup location*"
@@ -120,7 +131,7 @@
                   :rules="[ val => val && val.length > 0 || 'Please type something']"
               />
               <div>
-                <q-btn label="Submit" type="submit" color="primary"/>
+                <q-btn label="Submit" type="submit" color="primary" data-cy="submit-donation"/>
                 <q-btn label="Reset Form" type="reset" color="primary" flat/>
               </div>
             </q-form>

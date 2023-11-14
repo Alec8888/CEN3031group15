@@ -16,10 +16,11 @@
               autofocus
             >
               <q-option-group
+                data-cy="donate-input"
                 v-model="donate"
                 :options="[
-                  { label: 'I want to donate food', value: true },
-                  { label: 'I want to receive food', value: false }
+                  { label: 'I want to donate food.', value: true },
+                  { label: 'I want to receive food.', value: false }
                 ]"
                 color="primary"
                 inline

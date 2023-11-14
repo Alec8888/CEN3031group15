@@ -29,7 +29,8 @@
 
         <div>
           <q-btn
-          v-if="isLoggedIn"
+          data-cy="user-btn"
+            v-if="isLoggedIn"
             color="secondary"
             icon="account_circle"
              >
@@ -42,7 +43,7 @@
                 <q-item-section>{{ userEmail }}</q-item-section>
               </q-item>
               <q-separator />
-              <q-item clickable @click="logOut">
+              <q-item clickable @click="logOut" data-cy="logout-btn">
                 <q-item-section>Log Out</q-item-section>
               </q-item>
             </q-list>
@@ -55,7 +56,7 @@
       <q-tabs align="center">
         <q-route-tab v-if="!isLoggedIn" to="/" label="Welcome" />
         <q-route-tab v-if="!isLoggedIn" to="/signin" label="Sign In" />
-        <q-route-tab v-if="!isLoggedIn" to="/register" label="Register" />
+        <q-route-tab v-if="!isLoggedIn" to="/register" label="Register" data-cy="register-tab" />
         <q-route-tab v-if="isLoggedIn" to="/home" label="Home" />
         <q-route-tab v-if="isLoggedIn" to="/pantry" label="Pantry" />
         <q-route-tab v-if="isLoggedIn" to="/donate" label="Donate" />
