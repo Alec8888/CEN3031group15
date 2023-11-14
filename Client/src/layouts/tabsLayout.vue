@@ -84,23 +84,34 @@ export default defineComponent({
     const isLoggedIn = ref(false)
     const userEmail = ref(null)
     const setLogInStatus = async () => {
-      let response = await fetch('http://localhost:3000/currentUser', {
-        method: 'GET'
-      });
-      let data = await response.json();
-      // if there is a current user, then set isLoggedIn to true
-      console.log(data)
-      console.log('current user: ' + data.email);
-      console.log('isLogged: ' + data.isLogged);
-      if (data.isLogged) {
-        userEmail.value = data.email;
-        isLoggedIn.value = true;
-      }
-      else {
-        userEmail.value = null;
-        isLoggedIn.value = false;
+        try {
+        let response = await fetch('http://localhost:3000/currentUser', {
+          method: 'GET'
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        let data = await response.json();
+        console.log(data);
+        console.log('current user: ' + data.email);
+        console.log('isLogged: ' + data.isLogged);
+
+        if (data.isLogged) {
+          userEmail.value = data.email;
+          isLoggedIn.value = true;
+        } else {
+          userEmail.value = null;
+          isLoggedIn.value = false;
+        }
+      } catch (error) {
+        console.error('Failed to fetch current user:', error);
+        // Handle the error according to your app's requirements
+        // For example, you may want to set isLoggedIn to false or redirect the user
       }
     }
+
 
     // need to move this to a differnt lifecyce hook
     setLogInStatus();

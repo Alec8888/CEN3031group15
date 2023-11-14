@@ -16,6 +16,7 @@
         >
           <q-input
             name="email"
+            data-cy="email-input"
             autofocus
             filled
             type="email"
@@ -31,7 +32,7 @@
     
           <q-input
               name="password"
-              data-cy="email-input"
+              data-cy="password-input"
               filled
               v-model="password"
               label="Password*"
@@ -138,9 +139,6 @@ export default defineComponent({
           }
         };
         const router = useRouter();
-        // const testRoutes = () => {
-        //   router.push('/home')
-        // };
 
         return {
             email,
