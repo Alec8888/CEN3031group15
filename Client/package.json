@@ -11,7 +11,7 @@
     "test": "echo \"See package.json => scripts for available tests.\" && exit 0",
     "dev": "concurrently \"json-server-auth --watch db.json\" \"quasar dev\"",
     "build": "quasar build",
-    "test:e2e": "cross-env NODE_ENV=test start-test \"quasar dev\" http-get://localhost:8080 \"cypress open --e2e\"",
+    "test:e2e": "cross-env NODE_ENV=test start-test \"quasar dev\" http-get://localhost:9000 \"cypress open --e2e\"",
     "test:e2e:ci": "cross-env NODE_ENV=test start-test \"quasar dev\" http-get://localhost:8080 \"cypress run --e2e\"",
     "test:component": "cross-env NODE_ENV=test cypress open --component",
     "test:component:ci": "cross-env NODE_ENV=test cypress run --component"
@@ -28,7 +28,6 @@
     "@quasar/app-vite": "^1.3.0",
     "@quasar/quasar-app-extension-testing": "^2.2.0",
     "@quasar/quasar-app-extension-testing-e2e-cypress": "^5.1.1",
-    "@quasar/quasar-app-extension-testing-unit-jest": "^2.2.3",
     "autoprefixer": "^10.4.2",
     "concurrently": "^8.2.2",
     "cypress": "^12.17.4",
