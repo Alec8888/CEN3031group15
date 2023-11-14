@@ -24,10 +24,13 @@ From /client directory:
     - `quasar dev`
 
 ### Testing Client
-Was able to run some tests with `quasar test --component cypress`.
-
-
-Open Cypress: `npx cypress open`
+### Cypress
+- Install: `quasar ext add @quasar/testing-e2e-cypress`
+- Docs: 
+  - https://testing.quasar.dev/packages/e2e-cypress/
+  - https://docs.cypress.io/guides/end-to-end-testing/writing-your-first-end-to-end-test
+- Open Cypress: `npx cypress open`
+- Run Cypress tests: `npx cypress run`
 
 
 ## Server
