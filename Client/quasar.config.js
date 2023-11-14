@@ -87,6 +87,7 @@ module.exports = configure(function (/* ctx */) {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
     devServer: {
+      port: 9000,
       proxy: {
         // proxy all requests starting with /api to Django backend
         '/api': {

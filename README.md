@@ -23,6 +23,12 @@ From /client directory:
 2. Start Quasar dev server
     - `quasar dev`
 
+### Testing Client
+Was able to run some tests with `quasar test --component cypress`.
+
+
+Open Cypress: `npx cypress open`
+
 
 ## Server
 

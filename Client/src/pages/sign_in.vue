@@ -31,6 +31,7 @@
     
           <q-input
               name="password"
+              data-cy="email-input"
               filled
               v-model="password"
               label="Password*"
@@ -52,7 +53,12 @@
     
           <q-btn label="Log In" type="submit" color="primary" style="width: 270px;"/>
           <div class="text-caption">
-            Not registered? <router-link to="/register">Create an account</router-link>
+            Not registered? 
+            <router-link 
+              to="/register"
+              data-cy="link_register">
+              Create an account
+            </router-link>
           </div>
         </q-form>
         
