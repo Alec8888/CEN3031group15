@@ -149,9 +149,9 @@ export default defineComponent({
 })
 </script>
 
-<style >
+<style>
   .bg-image {
-    background-image: url('C:/dev/PantryPal/CEN3031group15/Client/src/assets/bg2.png');
+    background-image: url('../assets/bg2.png');
     background-size: cover;
   }
 

@@ -1,12 +1,56 @@
 {
   "currentUser": {
-    "email": "",
-    "isLogged": false
+    "email": "a@gmail.com",
+    "isLogged": true
   },
   "users": [
-
+    {
+      "email": "a@gmail.com",
+      "password": "$2a$10$O0xa6SkCcmLBRLxdMvWh2e.DUUDIsDTk0h.LuuRbNsaHBH6QKSlZW",
+      "org": "Joen Doe",
+      "streetAddress": "1100 Panni Lane",
+      "city": "Gainsville",
+      "state": "FL",
+      "zip": "32601",
+      "phone": "(352) 898 - 7665",
+      "donate": true,
+      "id": 1
+    }
   ],
-  "pantry": [ 
-
+  "pantry": [
+    {
+      "dateActive": "2023-11-11",
+      "dateExpires": "2023-11-12",
+      "food": "werara",
+      "orgDisplayName": "werwe",
+      "contactName": "Alexander J Patterson",
+      "contactEmail": "a@gmail.com",
+      "contactPhone": "(222) 222 - 2222",
+      "pickup_streetAddress": "1100 Panni Lane",
+      "pickup_city": "6615 Cambridge Park Dr",
+      "pickup_zip": "33572",
+      "pickup_state": {
+        "label": "Minnesota",
+        "value": "MN"
+      },
+      "id": 1
+    },
+    {
+      "dateActive": "2023-11-13",
+      "dateExpires": "2023-11-16",
+      "food": "werwerw",
+      "orgDisplayName": "Org name",
+      "contactName": "Alexander J Patterson",
+      "contactEmail": "a@gmail.com",
+      "contactPhone": "(222) 222 - 2222",
+      "pickup_streetAddress": "1100 Panni Lane",
+      "pickup_city": "6615 Cambridge Park Dr",
+      "pickup_zip": "33572",
+      "pickup_state": {
+        "label": "Mississippi",
+        "value": "MS"
+      },
+      "id": 2
+    }
   ]
 }

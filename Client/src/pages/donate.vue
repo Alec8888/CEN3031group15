@@ -33,6 +33,15 @@
                   :rules="[ val => val && val.length > 0 || 'Please type something']"
               />
               <q-input
+                filled
+                v-model="orgDisplayName"
+                label="Organization Display Name*"
+                color="secondary"
+                lazy-rules
+                :rules="[ val => val && val.length > 0 || 'Please type something']"
+              />
+
+              <q-input
                 type="date"
                 filled
                 v-model="date_active"
@@ -44,7 +53,7 @@
               <q-input
                 type="date"
                 filled
-                v-model="date_active"
+                v-model="date_expires"
                 label="Date you want this donation posting to expire*"
                 color="primary"
                 lazy-rules
@@ -233,6 +242,8 @@ export default defineComponent({
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
+            dateActive: date_active.value,
+            dateExpires: date_expires.value,
             food: food.value,
             orgDisplayName: orgDisplayName.value,
             contactName: contactName.value,
