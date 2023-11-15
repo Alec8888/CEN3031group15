@@ -78,17 +78,23 @@ export default defineComponent({
     const today = ref(new Date());
     
     const fetchDonations = async () => {
-      const response = await fetch('http://localhost:3000/pantry', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await response.json();
+      try {
+        const response = await fetch('http://localhost:3000/pantry', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
 
-      console.log("data.dateActive: " + data[0].dateActive);
-      console.log("data.dateExpires: " + data[0].dateExpires);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
+        const data = await response.json();
+
+        console.log("data.dateActive: " + data[0].dateActive);
+        console.log("data.dateExpires: " + data[0].dateExpires);
+  
         for (let i = 0; i < data.length; i++) {
           let todayDate = new Date();
           todayDate.setHours(0, 0, 0, 0);
@@ -96,7 +102,7 @@ export default defineComponent({
           activeDate.setHours(0, 0, 0, 0);
           let expirationDate = new Date(data[i].dateExpires);
           expirationDate.setHours(0, 0, 0, 0);
-
+  
           console.log("today: " + todayDate);
           console.log("activeDate: " + activeDate);
           console.log("expirationDate: " + expirationDate);
@@ -111,10 +117,13 @@ export default defineComponent({
             console.log("today: " + today.value);
           }
         }
-
         if (pantryItems_active.value.length > 0) {
           showActiveItems.value = true;
+        }
+      } catch (error) {
+        console.error('Failed to fetch donations:', error);
       }
+
     };
 
     onMounted(() => {

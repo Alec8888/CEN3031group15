@@ -23,6 +23,15 @@ From /client directory:
 2. Start Quasar dev server
     - `quasar dev`
 
+### Testing Client
+### Cypress
+- Install: `quasar ext add @quasar/testing-e2e-cypress`
+- Docs: 
+  - https://testing.quasar.dev/packages/e2e-cypress/
+  - https://docs.cypress.io/guides/end-to-end-testing/writing-your-first-end-to-end-test
+- Open Cypress: `npx cypress open`
+- Run Cypress tests: `npx cypress run`
+
 
 ## Server
 
