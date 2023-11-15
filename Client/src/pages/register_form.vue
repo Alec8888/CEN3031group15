@@ -16,16 +16,18 @@
               autofocus
             >
               <q-option-group
+                data-cy="donate-input"
                 v-model="donate"
                 :options="[
-                  { label: 'I want to donate food', value: true },
-                  { label: 'I want to receive food', value: false }
+                  { label: 'I want to donate food.', value: true },
+                  { label: 'I want to receive food.', value: false }
                 ]"
                 color="primary"
                 inline
                 :rules="[ val => val !== null || 'Please select an option']"
               />
               <q-input
+                data-cy="name-input"
                 filled
                 v-model="name"
                 label="First and last name*"
@@ -36,6 +38,7 @@
         
               <q-input
                 filled
+                data-cy="email-input"
                 type="email"
                 v-model="email"
                 label="Email address*"
@@ -48,8 +51,8 @@
                 ]"
               />
         
-              
               <q-input
+                data-cy="orgName-input"
                 filled
                 v-model="organization"
                 label="Organization or company name*"
@@ -58,6 +61,7 @@
                 :rules="[ val => val && val.length > 0 || 'Please type something']"
               />
               <q-input
+                data-cy="streetAddress-input"
                 filled
                 v-model="streetAddress"
                 label="Street address*"
@@ -67,6 +71,7 @@
               /> 
         
               <q-input
+                data-cy="city-input"
                 filled
                 v-model="city"
                 label="City*"
@@ -76,6 +81,7 @@
               />
   
               <q-select
+                data-cy="state-input"
                 filled
                 v-model="state" 
                 :options="states" 
@@ -84,6 +90,7 @@
               />
         
               <q-input
+                data-cy="zip-input"
                 filled
                 v-model="zip"
                 label="Zip code*"
@@ -94,6 +101,7 @@
               />
         
               <q-input
+                data-cy="phone-input"
                 type="tel"
                 filled
                 v-model="phone"
@@ -104,6 +112,7 @@
                 :rules="[ val => val && val.length > 0 || 'Please type something']"
               />
               <q-input
+                  data-cy="password-input"
                   filled
                   v-model="password"
                   label="Password*"
@@ -123,6 +132,7 @@
               </q-input>
           
               <q-input
+                  data-cy="confirm-password-input"
                   filled
                   v-model="confirm_password"
                   label="Confirm Password*"
@@ -141,15 +151,21 @@
                   />
                 </template>
               </q-input>
-              <q-chip clickable @click="read_eula = true">Read license and terms</q-chip>
+              <q-chip 
+                clickable 
+                @click="read_eula = true"
+                data-cy="eula-link"
+                >
+                Read license and terms
+              </q-chip>
         
               <div>
-                <q-toggle v-model="accept" label="I accept the license and terms" />
+                <q-toggle data-cy="eula-accept" v-model="accept" label="I accept the license and terms" />
               </div>
         
               <div>
-                <q-btn label="Submit" type="submit" color="primary"/>
-                <q-btn label="Reset Form" type="reset" color="primary" flat/>
+                <q-btn data-cy="submit-register" label="Submit" type="submit" color="primary"/>
+                <q-btn data-cy="reset-btn" label="Reset Form" type="reset" color="primary" flat/>
               </div>
             </q-form>
   
