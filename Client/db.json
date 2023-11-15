@@ -1,12 +1,21 @@
 {
   "currentUser": {
-    "email": "",
-    "isLogged": false
+    "email": "a@gmail.com",
+    "isLogged": true
   },
   "users": [
-
+    {
+      "email": "a@gmail.com",
+      "password": "$2a$10$/GPYxZlJA.XF8VhFggOW2eyVUIUkrUnLqv3XrAE28jQ.27iKNUeQS",
+      "org": "Panera",
+      "streetAddress": "1100 Panni Lane",
+      "city": "Gainsville",
+      "state": "FL",
+      "zip": "32601",
+      "phone": "(352) 898 - 7665",
+      "donate": true,
+      "id": 1
+    }
   ],
-  "pantry": [ 
-
-  ]
+  "pantry": []
 }
