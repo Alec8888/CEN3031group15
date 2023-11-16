@@ -19,16 +19,18 @@
 ### Start Client
 From /client directory:
 1. Start JSON server
-    - `json-server-auth --watch db.json`
+    - Doesn't work with Cypress: `json-server-auth --watch db.json`
+    - Does work with Cypress: `json-server-auth --watch db.json --host 0.0.0.0`
 2. Start Quasar dev server
     - `quasar dev`
 
-### Testing Client
-### Cypress
-- Install: `quasar ext add @quasar/testing-e2e-cypress`
+### Cypress Testing
+#### Install 
+- I ran this from /client `quasar ext add @quasar/testing-e2e-cypress`
 - Docs: 
   - https://testing.quasar.dev/packages/e2e-cypress/
   - https://docs.cypress.io/guides/end-to-end-testing/writing-your-first-end-to-end-test
+#### Run Tests
 - Open Cypress: `npx cypress open`
 - Run Cypress tests: `npx cypress run`
 
