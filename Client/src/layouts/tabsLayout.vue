@@ -75,34 +75,35 @@ import EssentialLink from 'src/components/EssentialLink.vue'
 import { defineComponent, onUpdated, ref } from 'vue'
 import { onMounted} from 'vue'
 import { useRouter } from 'vue-router'
+import { useQuasar } from 'quasar'
 
 
 export default defineComponent({
   name: 'TabledLayout',
 
   setup () {
+    const $q = useQuasar()
+    const token = ref(null)
+    const payload = ref(null)
     const router = useRouter();
     const isLoggedIn = ref(false)
     const userEmail = ref(null)
     const setLogInStatus = async () => {
-        try {
-        let response = await fetch('http://localhost:3000/currentUser', {
-          method: 'GET'
-        });
+        
+      try {
+        //Fetch the token from local storage
+        token.value = $q.localStorage.getItem('token');
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        if (!token.value) throw new Error('No token found');
 
-        let data = await response.json();
-        console.log(data);
-        console.log('current user: ' + data.email);
-        console.log('isLogged: ' + data.isLogged);
+        payload.value = JSON.parse(atob(token.value.split('.')[1]));
 
-        if (data.isLogged) {
-          userEmail.value = data.email;
+        if(token.value)
+        {
+          userEmail.value = payload.value.email;
           isLoggedIn.value = true;
-        } else {
+        }
+       else {
           userEmail.value = null;
           isLoggedIn.value = false;
         }
@@ -111,6 +112,7 @@ export default defineComponent({
         // Handle the error according to your app's requirements
         // For example, you may want to set isLoggedIn to false or redirect the user
       }
+
     }
 
 
