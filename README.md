@@ -26,6 +26,8 @@ From /client directory:
 3. Start Quasar and JSON server
     - `npm run dev`
     - located in package.json
+4. Clear the JSON databse
+    - `npm run reset-db`
 
 ### Cypress Testing
 #### Install 
