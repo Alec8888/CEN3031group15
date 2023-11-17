@@ -1,8 +1,21 @@
 {
   "currentUser": {
-    "email": "",
-    "isLogged": false
+    "email": "test@test.com",
+    "isLogged": true
   },
-  "users": [],
+  "users": [
+    {
+      "email": "test@test.com",
+      "password": "$2a$10$8oDp804YEJ8VYWiig7yHlOOnV0v7xyJzK8ZD6Tt0vxgre4lP4U5jW",
+      "org": "test",
+      "streetAddress": "test",
+      "city": "tset",
+      "state": "FL",
+      "zip": "12345",
+      "phone": "(123) 456 - 7890",
+      "donate": true,
+      "id": 1
+    }
+  ],
   "pantry": []
 }
