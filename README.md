@@ -23,6 +23,9 @@ From /client directory:
     - Does work with Cypress: `json-server-auth --watch db.json --host 0.0.0.0`
 2. Start Quasar dev server
     - `quasar dev`
+3. Start Quasar and JSON server
+    - `npm run dev`
+    - located in package.json
 
 ### Cypress Testing
 #### Install 
