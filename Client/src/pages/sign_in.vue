@@ -104,8 +104,11 @@ export default defineComponent({
           // if (response.status == 200) {
           if (data.accessToken) {
             // Store the JWT in localStorage
-            localStorage.setItem('token', data.accessToken);
+            $q.localStorage.set('token', data.accessToken)
             console.log('token: ' + data.accessToken);
+            console.log('user from token: ' + data.accessToken.split('.')[1]);
+            console.log('email from token: ' + JSON.parse(atob(data.accessToken.split('.')[1])).email);
+            console.log('user id from token: ' + JSON.parse(atob(data.accessToken.split('.')[1])).sub);
 
             // Notify the user
             $q.notify({

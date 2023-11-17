@@ -64,12 +64,14 @@
 </template>
 
 <script>
+import { useQuasar } from 'quasar'
 import { defineComponent, toDisplayString } from 'vue'
 import { ref, watch, onMounted } from 'vue';
 
 export default defineComponent({
   name: 'AccountPage',
   setup () {
+    const $q = useQuasar();
     const pantryItems_active = ref([]);
     const pantryItems_expired = ref([]);
     const showActiveItems = ref(false);
@@ -132,6 +134,15 @@ export default defineComponent({
       today.value = todayDate.toISOString().split('T')[0];
       todayDate.setHours(0, 0, 0, 0);
       console.log("onMounted todays date: " + today.value);
+      // get user id and email from token
+      try {
+          let token = $q.localStorage.getItem('token');
+          console.log('token from local storage: ' + token);
+          console.log('email from token: ' + JSON.parse(atob(token.split('.')[1])).email);
+          console.log('user id from token: ' + JSON.parse(atob(token.split('.')[1])).sub);
+        } catch (error) {
+          console.error('Failed to fetch user id and email from local storage token:', error);
+        }
     });
     
 

@@ -146,18 +146,37 @@
 
 <script>
 import { useQuasar } from 'quasar'
-import { defineComponent } from 'vue'
+import { defineComponent, onMounted } from 'vue'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'PantryPage',
   setup () {
+    const $q = useQuasar()
+    const currentUserEmail = ref(null)
+    const currentUserId = ref(null)
+    const token = ref(null)
+    const payload = ref(null)
+    try {
+      token.value = $q.localStorage.getItem('token');
+      if (!token.value) throw new Error('No token found');
+
+      payload.value = JSON.parse(atob(token.value.split('.')[1]));
+
+      currentUserEmail.value  = payload.value.email;
+      currentUserId.value = payload.value.sub;
+
+      // Use currentUserEmail and currentUserId here
+      console.log('Current user email and id: ' + currentUserEmail.value, currentUserId.value);
+    } catch (error) {
+      console.error('Failed to parse token: ', error);
+    }
+
     const date_active = ref(null)
     const date_expires = ref(null)
     const date_pickup = ref(null)
     const router = useRouter();
-    const $q = useQuasar()
     const food = ref(null)
     const orgDisplayName = ref(null)
     const contactName = ref(null)
@@ -219,7 +238,18 @@ export default defineComponent({
           { label: 'Wisconsin', value: 'WI' },
           { label: 'Wyoming', value: 'WY' },
         ])
+    onMounted(() => {
+      console.log('Donate page mounted!')
+      try {
+          // token = $q.localStorage.getItem('token');
+          // console.log('token from local storage: ' + token);
+          // console.log('email from token: ' + JSON.parse(atob(token.split('.')[1])).email);
+          // console.log('user id from token: ' + JSON.parse(atob(token.split('.')[1])).sub);
+        } catch (error) {
+          console.error('Failed to fetch user id and email from local storage token:', error);
+        }
 
+    });
 
     return {
       food,
@@ -235,8 +265,15 @@ export default defineComponent({
       date_active,
       date_expires,
       date_pickup,
+      token,
+      payload,
+      currentUserId,
+      currentUserEmail,
+
+      
       async onSubmit () {
         console.log('Submitted!')
+        console.log('Current user email and id: ' + currentUserEmail.value, currentUserId.value);
         console.log(food.value)
         console.log(orgDisplayName.value)
         console.log(contactName.value)
@@ -246,6 +283,8 @@ export default defineComponent({
         console.log(pickup_city.value)
         console.log(pickup_zip.value)
         console.log(pickup_state.value)
+
+        
 
         let response = await fetch('http://localhost:3000/pantry', {
           method: 'POST',
@@ -263,8 +302,10 @@ export default defineComponent({
             pickup_streetAddress: pickup_streetAddress.value,
             pickup_city: pickup_city.value,
             pickup_zip: pickup_zip.value,
-            pickup_state: pickup_state.value
-            // add current user id or email
+            pickup_state: pickup_state.value,
+            userId: currentUserId.value,
+            userEmail: currentUserId.value,
+
           }),
         });
 
