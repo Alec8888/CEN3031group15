@@ -48,10 +48,36 @@
         </q-card-section>
         <q-separator dark />
         <q-card-actions class="justify-around">
-          <q-btn flat @click="cancel">Cancel</q-btn>
+          <q-btn flat @click="showReview">Leave a Review</q-btn>
         </q-card-actions>
       </q-card>
     </div>
+
+    <q-dialog
+      v-model="clickedReview"
+    >
+      <q-card style="width: 300px">
+        <div class="q-pd-md" style="display: flex; flex-direction: column; align-items: center;">
+          <q-card-section>
+            Please leave a star rating for your donation!
+          </q-card-section>
+
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <q-rating
+              v-model="ratingModel"
+              size="3.5em"
+              color="primary"
+              icon="star_border"
+              icon-selected="star"
+            />
+          </div>
+           
+        </div>
+        <q-card-actions align="right" class="bg-white text-teal">
+          <q-btn flat label="OK" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     
     <!-- <q-card>
         <div class="text-subtitle1">
@@ -75,7 +101,9 @@ export default defineComponent({
     const showActiveItems = ref(false);
     const showPastItems = ref(false);
     const showAccountSettings = ref(false);
+    const clickedReview = ref(false);
     const today = ref(new Date());
+    const ratingModel = ref(0);
     
     const fetchDonations = async () => {
       try {
@@ -150,6 +178,10 @@ export default defineComponent({
       console.log('Show Settings button clicked.');
       showAccountSettings.value = !showAccountSettings.value;
     }
+    const showReview = () => {
+      console.log('Add review button clicked.');
+      clickedReview.value = true;
+    };
     return {
       pantryItems_active,
       pantryItems_expired,
@@ -160,8 +192,10 @@ export default defineComponent({
       showPastItems,
       showAccountSettings,
       showPast,
-      showSettings
-      
+      showSettings,
+      showReview,
+      clickedReview,
+      ratingModel
     }
   }
 })
