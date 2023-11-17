@@ -3,10 +3,6 @@
     "email": "",
     "isLogged": false
   },
-  "users": [
-    {
-    
-    }
-  ],
+  "users": [],
   "pantry": []
 }
