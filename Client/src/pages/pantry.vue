@@ -7,14 +7,14 @@
       
       <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems" :key="index">
         <q-card-section>
-          <div class="text-h6">{{ pantry_item.orgDisplayName }}</div>
+          <div class="text-h6">{{ pantry_item.orgdisplayname }}</div>
         </q-card-section>
         <q-card-section>
           <div class="text-subtitle2">{{ pantry_item.food }}</div>
         </q-card-section>
         <q-card-section>
           <div class="text-subtitle2">{{ pantry_item.pickup_streetAddress }}</div>
-          <div class="text-subtitle2">{{ pantry_item.pickup_city }} , {{ pantry_item.pickup_state.value }} {{ pantry_item.pickup_zip }}</div>
+          <div class="text-subtitle2">{{ pantry_item.pickup_city }} , {{ pantry_item.pickup_state_value }} {{ pantry_item.pickup_zip }}</div>
         </q-card-section>
         <q-separator dark />
         <q-card-actions class="justify-around">
@@ -75,6 +75,7 @@
 
 <script>
 import { ref, watch, onMounted } from 'vue';
+import { supabase } from '../lib/supabaseClient'
 
 export default {
   name: 'pantry-find-food',
@@ -83,20 +84,22 @@ export default {
     const selectedOrganization = ref(null);
     const pantryItems = ref([]);
 
-    const fetchOrganization = async () => {
-      const response = await fetch('http://localhost:3000/pantry', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      const data = await response.json();
-      pantryItems.value = data;
+    const fetchDonations = async () => {
+      try {
+        const { data, error } = await supabase.from('donations').select()
+        if (error) {
+          console.error('Error fetching donations:', error);
+          return;
+        }
+        pantryItems.value = data;
+        console.log("pantryItems: ", pantryItems.value);
+        console.log("pantryItems (stringified): " + JSON.stringify(pantryItems.value, null, 2));
+      } catch (error) {
+        console.error('Error fetching donations:', error);
+      }
     };
 
-    onMounted(fetchOrganization);
-
+    onMounted(fetchDonations);
 
     const clickedCall = ref(false);
     const clickedReserve = ref(false);
@@ -121,7 +124,7 @@ export default {
         return organization.org.includes(searchText.value);
       });
       if (searchText.value === '') {
-        fetchOrganization();
+        fetchDonations();
       }
     });
     
@@ -133,7 +136,8 @@ export default {
       clickedReserve,
       reserveDonation,
       searchText,
-      watch
+      watch,
+      fetchDonations // was working without this?
     };
   }
 }
