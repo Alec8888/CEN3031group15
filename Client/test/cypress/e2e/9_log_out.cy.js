@@ -1,21 +1,20 @@
 describe('Sign In Page', () => {
-    // beforeEach(() => {
-    //   cy.visit('/signin')
-    // })
-
-    // it('Can sign in', () => {
-    //     cy.visit('/signin')
-    //     cy.dataCy('email-input').type('a@gmail.com');
-    //     cy.dataCy('password-input').type('qwerasdf');
-    //     cy.get('button[type="submit"]').click()
-    //     cy.testRoute('/home')
-    // })
-
+    
     it('Can sign out', () => {
+        // sign in to get JWT token
+        cy.visit('/signin')
+        cy.dataCy('email-input').type('a@gmail.com');
+        cy.dataCy('password-input').type('qwerasdf');
+        cy.get('button[type="submit"]').click()
+        cy.testRoute('/home')
+
+        // log out
         cy.visit('/home')
         cy.dataCy('user-btn').click()
         cy.dataCy('logout-btn').click()
         cy.testRoute('/signin')
+        // add a check for the token in local storage, 
+        // and status variables: currentUser, isloggedIn
     })
 
 
