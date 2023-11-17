@@ -304,7 +304,7 @@ export default defineComponent({
             pickup_zip: pickup_zip.value,
             pickup_state: pickup_state.value,
             userId: currentUserId.value,
-            userEmail: currentUserId.value,
+            userEmail: currentUserEmail.value,
 
           }),
         });
