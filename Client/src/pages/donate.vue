@@ -158,20 +158,7 @@ export default defineComponent({
     const currentUserId = ref(null)
     const token = ref(null)
     const payload = ref(null)
-    try {
-      token.value = $q.localStorage.getItem('token');
-      if (!token.value) throw new Error('No token found');
-
-      payload.value = JSON.parse(atob(token.value.split('.')[1]));
-
-      currentUserEmail.value  = payload.value.email;
-      currentUserId.value = payload.value.sub;
-
-      // Use currentUserEmail and currentUserId here
-      console.log('Current user email and id: ' + currentUserEmail.value, currentUserId.value);
-    } catch (error) {
-      console.error('Failed to parse token: ', error);
-    }
+    
 
     const date_active = ref(null)
     const date_expires = ref(null)
@@ -247,6 +234,21 @@ export default defineComponent({
           // console.log('user id from token: ' + JSON.parse(atob(token.split('.')[1])).sub);
         } catch (error) {
           console.error('Failed to fetch user id and email from local storage token:', error);
+        }
+
+        try {
+          token.value = $q.localStorage.getItem('token');
+          if (!token.value) throw new Error('No token found');
+
+          payload.value = JSON.parse(atob(token.value.split('.')[1]));
+
+          currentUserEmail.value  = payload.value.email;
+          currentUserId.value = payload.value.sub;
+
+          // Use currentUserEmail and currentUserId here
+          console.log('Current user email and id: ' + currentUserEmail.value, currentUserId.value);
+        } catch (error) {
+          console.error('Failed to parse token: ', error);
         }
 
     });
