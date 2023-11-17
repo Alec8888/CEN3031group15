@@ -7,14 +7,14 @@
       
       <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems" :key="index">
         <q-card-section>
-          <div class="text-h6">{{ pantry_item.orgdisplayname }}</div>
+          <div class="text-h6">{{ pantry_item.org_displayname }}</div>
         </q-card-section>
         <q-card-section>
           <div class="text-subtitle2">{{ pantry_item.food }}</div>
         </q-card-section>
         <q-card-section>
-          <div class="text-subtitle2">{{ pantry_item.pickup_streetAddress }}</div>
-          <div class="text-subtitle2">{{ pantry_item.pickup_city }} , {{ pantry_item.pickup_state_value }} {{ pantry_item.pickup_zip }}</div>
+          <div class="text-subtitle2">{{ pantry_item.pickup_streetaddress }}</div>
+          <div class="text-subtitle2">{{ pantry_item.pickup_city }} , {{ pantry_item.pickup_state }} {{ pantry_item.pickup_zip }}</div>
         </q-card-section>
         <q-separator dark />
         <q-card-actions class="justify-around">
