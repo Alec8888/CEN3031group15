@@ -9,7 +9,7 @@
     "lint": "eslint --ext .js,.vue ./",
     "format": "prettier --write \"**/*.{js,vue,scss,html,md,json}\" --ignore-path .gitignore",
     "test": "echo \"See package.json => scripts for available tests.\" && exit 0",
-    "dev": "concurrently \"json-server-auth --watch db.json\" \"quasar dev\"",
+    "dev": "concurrently \"json-server-auth --watch db.json --host 0.0.0.0\" \"quasar dev\"",
     "build": "quasar build",
     "test:e2e": "cross-env NODE_ENV=test start-test \"quasar dev\" http-get://localhost:9000 \"cypress open --e2e\"",
     "test:e2e:ci": "cross-env NODE_ENV=test start-test \"quasar dev\" http-get://localhost:8080 \"cypress run --e2e\"",
