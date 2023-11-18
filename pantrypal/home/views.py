@@ -125,8 +125,17 @@ def index(request):
     
     if dict_request["requestType"] == "postDonation":
 
-        insertDonation = "INSERT INTO postings (donateeid, donatorid, fooditems, postdate, expiration, reserved, expired, pickedup) "
+        #generate random id and verify uniqueness
+        new_post_id = randrange(10000000, 100000000)
+        cursor.execute("SELECT * FROM unique_ids_posts WHERE (IDS = " + str(new_post_id) + ")")
+        print(new_post_id)
+        while len(cursor.fetchall()) > 0:
+            new_post_id = randrange(10000000, 100000000)
+            cursor.execute("SELECT * FROM unique_ids_posts WHERE (IDS = " + str(new_post_id) + ")")
+
+        insertDonation = "INSERT INTO postings (postid, donateeid, donatorid, fooditems, postdate, expiration, reserved, expired, pickedup) "
         insertDonation += "VALUES  ("
+        insertDonation += str(new_post_id) + ", "
         insertDonation += "NULL, "
         insertDonation += "\'" + dict_request["donatorid"] + "\', "
         insertDonation += "\'" + dict_request["food"] + "\', "
@@ -136,6 +145,9 @@ def index(request):
         insertDonation += "" + str(0) + ", "
         insertDonation += "" + str(0) + ")"
 
+        return HttpResponse("success")
+    
+    if dict_request["requestType"] == "reserve":
         return HttpResponse("success")
 
     
