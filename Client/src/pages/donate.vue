@@ -157,10 +157,6 @@ export default defineComponent({
     const $q = useQuasar()
     const currentUserEmail = ref(null)
     const currentUserId = ref(null)
-    const token = ref(null)
-    const payload = ref(null)
-    
-
     const date_active = ref(null)
     const date_expires = ref(null)
     const date_pickup = ref(null)
@@ -226,32 +222,22 @@ export default defineComponent({
           { label: 'Wisconsin', value: 'WI' },
           { label: 'Wyoming', value: 'WY' },
         ])
+
+      // Get current user from Supabase session
+      const getCurrentUser = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        currentUserEmail.value  = user.email;
+        currentUserId.value = user.id;
+        console.log('Current user email and id from getCurrentUser: ' + currentUserEmail.value, currentUserId.value);
+
+        } catch (error) {
+          console.error('Failed to fetch user id and email from supa session', error);
+        }
+      };
+
     onMounted(() => {
       console.log('Donate page mounted!')
-      try {
-          // token = $q.localStorage.getItem('token');
-          // console.log('token from local storage: ' + token);
-          // console.log('email from token: ' + JSON.parse(atob(token.split('.')[1])).email);
-          // console.log('user id from token: ' + JSON.parse(atob(token.split('.')[1])).sub);
-        } catch (error) {
-          console.error('Failed to fetch user id and email from local storage token:', error);
-        }
-
-        try {
-          token.value = $q.localStorage.getItem('token');
-          if (!token.value) throw new Error('No token found');
-
-          payload.value = JSON.parse(atob(token.value.split('.')[1]));
-
-          currentUserEmail.value  = payload.value.email;
-          currentUserId.value = payload.value.sub;
-
-          // Use currentUserEmail and currentUserId here
-          console.log('Current user email and id: ' + currentUserEmail.value, currentUserId.value);
-        } catch (error) {
-          console.error('Failed to parse token: ', error);
-        }
-
     });
 
     return {
@@ -268,12 +254,11 @@ export default defineComponent({
       date_active,
       date_expires,
       date_pickup,
-      token,
-      payload,
       currentUserId,
       currentUserEmail,
+      getCurrentUser,
 
-      
+
       async onSubmit () {
         console.log('Submitted!')
         console.log('Current user email and id: ' + currentUserEmail.value, currentUserId.value);
@@ -287,6 +272,9 @@ export default defineComponent({
         console.log(pickup_zip.value)
         console.log(pickup_state.value.value)
 
+        await getCurrentUser();
+
+        console.log('Current user email and id: ' + currentUserEmail.value, currentUserId.value);
         try {
           let { error } = await supabase
             .from('donations')
@@ -344,8 +332,6 @@ export default defineComponent({
         pickup_state.value = null
 
       }
-      
-
     }
   }
 })
