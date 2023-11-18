@@ -14,7 +14,9 @@
 5. Install JSON Server Auth
     - `npm install -g json-server-auth`
     - [More directions](https://www.npmjs.com/package/json-server-auth)
-
+6. Install dotenv of environment variables
+    - `npm install dotenv`
+    
 
 ### Start Client
 From /client directory:
