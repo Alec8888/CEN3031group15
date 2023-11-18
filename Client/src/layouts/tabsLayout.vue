@@ -71,11 +71,11 @@
 </template>
 
 <script>
-import EssentialLink from 'src/components/EssentialLink.vue'
 import { defineComponent, onUpdated, ref } from 'vue'
 import { onMounted} from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
+import { supabase } from 'src/lib/supabaseClient'
 
 
 export default defineComponent({
@@ -83,70 +83,77 @@ export default defineComponent({
 
   setup () {
     const $q = useQuasar()
-    const token = ref(null)
-    const payload = ref(null)
     const router = useRouter();
     const isLoggedIn = ref(false)
     const userEmail = ref(null)
     const setLogInStatus = async () => {
         
       try {
-        //Fetch the token from local storage
-        token.value = $q.localStorage.getItem('token');
+        // Get current user from Supabase session
+        console.log("attempting to get user from supa session")
 
-        if (!token.value) throw new Error('No token found');
+        // get the logged in user with the current existing session
+        const { data: { user } } = await supabase.auth.getUser()
+        
+        // get the logged in user with JWT, not working
+        // const { data: { user } } = await supabase.auth.getUser(jwt)
+        
+        // recomended for faster results but it's not working
+        // const { data: { user }} = await supabase.auth.getSession().session.user 
 
-        payload.value = JSON.parse(atob(token.value.split('.')[1]));
+        console.log("user from supa: " + user.email)
 
-        if(token.value)
-        {
-          userEmail.value = payload.value.email;
-          isLoggedIn.value = true;
-        }
-       else {
-          userEmail.value = null;
-          isLoggedIn.value = false;
-        }
+        userEmail.value = user.email;
+        isLoggedIn.value = true;
+  
       } catch (error) {
-        console.error('Failed to fetch current user:', error);
-        // Handle the error according to your app's requirements
-        // For example, you may want to set isLoggedIn to false or redirect the user
+        console.error('Failed to fetch current user:', error.message);
+        
+        userEmail.value = null;
+        isLoggedIn.value = false;
       }
 
     }
-
 
     // need to move this to a differnt lifecyce hook
     setLogInStatus();
     
     const logOut = async () => {
       console.log('Log out clicked.');
-      let response = await fetch('http://localhost:3000/currentUser', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: "",
-          isLogged: false
-        }),
-      });
-      if (response.ok) {
-        // Clear the JWT from localStorage
-        localStorage.removeItem('token');
 
-        setLogInStatus();
+      // Sign out from Supabase Auth
+      let { error } = await supabase.auth.signOut()
+      
+      if (!error) {
+          console.log('Logout successful');
 
-        // Optionally, redirect the user to the login page
-        
-        router.push('/signin')
+          isLoggedIn.value = false;
+          userEmail.value = null;
+          router.push('/signin')
+
+          q.notify({
+            color: 'green-4',
+            textColor: 'white',
+            icon: 'cloud_done',
+            message: 'Log out successful'
+          });
         } 
       else {
           console.error('Logout failed');
+
+          q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'cloud_done',
+            message: 'Log out failed'
+          });
       }
     }
 
     onUpdated( () => {
+      setLogInStatus();
+    }),
+    onMounted( () => {
       setLogInStatus();
     })
 
