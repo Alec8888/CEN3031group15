@@ -6,6 +6,7 @@ from django.http import response
 from random import randrange
 import json
 import oracledb
+import datetime
 
 #################################### THINGS TO COMPLETE ########################################
 # Querying Posting Page                                                                        #
@@ -125,7 +126,15 @@ def index(request):
     if dict_request["requestType"] == "postDonation":
 
         insertDonation = "INSERT INTO postings (donateeid, donatorid, fooditems, postdate, expiration, reserved, expired, pickedup) "
-
+        insertDonation += "VALUES  ("
+        insertDonation += "NULL, "
+        insertDonation += "\'" + dict_request["donatorid"] + "\', "
+        insertDonation += "\'" + dict_request["food"] + "\', "
+        insertDonation += "\'" + str(datetime.date.today()) + "\', "
+        insertDonation += "\'" + dict_request["date_expires"] + "\', "
+        insertDonation += "" + str(0) + ", "
+        insertDonation += "" + str(0) + ", "
+        insertDonation += "" + str(0) + ")"
 
         return HttpResponse("success")
 
