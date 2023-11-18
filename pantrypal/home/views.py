@@ -10,7 +10,6 @@ import datetime
 
 #################################### THINGS TO COMPLETE ########################################
 # Querying Posting Page                                                                        #
-# Adding users to account table (Verifying unique IDs Maybe additional available ID tables)    #
 # Placing New Postings into Posting table                                                      #
 # Editing Postings in posting table (reserved o no)                                            #
 # Removing Postings from Posting table                                                         #
@@ -122,6 +121,10 @@ def index(request):
             cursor = connection.cursor()
 
             return HttpResponse("success")
+        
+    ####################################
+    ####### POST DONATION LOGIC ########
+    ####################################
     
     if dict_request["requestType"] == "postDonation":
 
@@ -141,13 +144,30 @@ def index(request):
         insertDonation += "\'" + dict_request["food"] + "\', "
         insertDonation += "\'" + str(datetime.date.today()) + "\', "
         insertDonation += "\'" + dict_request["date_expires"] + "\', "
-        insertDonation += "" + str(0) + ", "
-        insertDonation += "" + str(0) + ", "
-        insertDonation += "" + str(0) + ")"
+        insertDonation += "\'" + str(0) + "\', "
+        insertDonation += "\'" + str(0) + "\', "
+        insertDonation += "\'" + str(0) + "\')"
 
         return HttpResponse("success")
     
+    ####################################
+    ####### RESERVE POST LOGIC #########
+    ####################################
+    
     if dict_request["requestType"] == "reserve":
+
+        updateQuery = "UPDATE postings"
+        updateQuery += "SET reserved = \'1\', donateeid = " + dict_request["userid"]
+        updateQuery += "WHERE (postid = " + dict_request["postid"] + ")"
+
+        return HttpResponse("success")
+    
+    ####################################
+    ####### RETRIEVE POST LOGIC ########
+    ####################################
+    
+    if dict_request["requestType"] == "retrievePosts":
+
         return HttpResponse("success")
 
     
