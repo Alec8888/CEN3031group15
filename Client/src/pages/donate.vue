@@ -263,7 +263,8 @@ export default defineComponent({
             pickup_streetAddress: pickup_streetAddress.value,
             pickup_city: pickup_city.value,
             pickup_zip: pickup_zip.value,
-            pickup_state: pickup_state.value
+            pickup_state: pickup_state.value,
+            reservedBy: null
             // add current user id or email
           }),
         });
@@ -273,7 +274,7 @@ export default defineComponent({
               color: 'red-5',
               textColor: 'white',
               icon: 'warning',
-              message: 'Doneation submission failed'
+              message: 'Donation submission failed'
           });
         }
         else {
@@ -281,7 +282,7 @@ export default defineComponent({
                 color: 'green-4',
                 textColor: 'white',
                 icon: 'cloud_done',
-                message: 'Donation added to panry'
+                message: 'Donation added to pantry'
             });
             // navigate to the login page
             // this.$router.push('/signin');

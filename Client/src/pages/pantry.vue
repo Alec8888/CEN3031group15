@@ -59,12 +59,13 @@
           </q-card-section>
   
           <q-card-section>
-            After clicking OK, this food will be reserved for you and it will appear on your home page.
+            After clicking ACCEPT, this food will be reserved for you and it will appear on your profile page in Active Donations.
           </q-card-section>
            
         </div>
         <q-card-actions align="right" class="bg-white text-teal">
-          <q-btn flat label="OK" v-close-popup />
+          <q-btn flat @click="onSubmit" label="SUBMIT" v-close-popup />
+          <q-btn flat label="CANCEL" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -124,6 +125,8 @@ export default {
         fetchOrganization();
       }
     });
+
+    
     
     return {
       pantryItems,
@@ -133,7 +136,42 @@ export default {
       clickedReserve,
       reserveDonation,
       searchText,
-      watch
+      watch,
+      async onSubmit () {
+        console.log('Accepted reservation!')
+
+        let response = await fetch('http://localhost:3000/pantry', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            reservedBy: selectedOrganization.value
+          })
+        });
+
+        if (!response.ok) {
+          $q.notify({
+              color: 'red-5',
+              textColor: 'white',
+              icon: 'warning',
+              message: 'Reservation attempt failed!'
+          });
+        }
+        else {
+            $q.notify({
+                color: 'green-4',
+                textColor: 'white',
+                icon: 'cloud_done',
+                message: 'Successfully reserved!'
+            });
+            // navigate to the login page
+            // this.$router.push('/signin');
+            router.push('/home')
+            
+        }
+
+      }
     };
   }
 }
