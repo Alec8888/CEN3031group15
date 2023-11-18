@@ -52,14 +52,14 @@
       <q-card style="width: 300px">
         <div class="q-pd-md">
           <q-card-section>
-            Are you sure you want to  reserve this food?
+            Are you sure you want to reserve this food?
           </q-card-section>
           <q-card-section>
             You will have 24 hours to pick up the food.
           </q-card-section>
   
           <q-card-section>
-            After clicking OK, this food will be reserved for you and it will appear on your home page.
+            After clicking OK, this food will be reserved for you and it will appear on your profile page.
           </q-card-section>
            
         </div>

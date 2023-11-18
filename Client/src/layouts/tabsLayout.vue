@@ -40,7 +40,7 @@
             transition-hide="flip-left"
           >
             <q-list style="min-width: 100px">
-              <q-item clickable to="/home">
+              <q-item clickable to="/profile">
                 <q-item-section>{{ userEmail }}</q-item-section>
               </q-item>
               <q-separator />
@@ -58,7 +58,7 @@
         <q-route-tab v-if="!isLoggedIn" to="/" label="Welcome" />
         <q-route-tab v-if="!isLoggedIn" to="/signin" label="Sign In" />
         <q-route-tab v-if="!isLoggedIn" to="/register" label="Register" data-cy="register-tab" />
-        <q-route-tab v-if="isLoggedIn" to="/home" label="Home" />
+        <q-route-tab v-if="isLoggedIn" to="/profile" label="Profile" />
         <q-route-tab v-if="isLoggedIn" to="/pantry" label="Pantry" />
         <q-route-tab v-if="isLoggedIn" to="/donate" label="Donate" />
       </q-tabs>

@@ -13,7 +13,7 @@
         
           </div>
           <div class="text-subtitle2">
-            Then track your donation status on your home page.
+            Then track your donation status on your profile page.
            </div> 
         </q-card-section>
         <q-card-section>
@@ -285,7 +285,7 @@ export default defineComponent({
             });
             // navigate to the login page
             // this.$router.push('/signin');
-            router.push('/home')
+            router.push('/profile')
             
         }
 

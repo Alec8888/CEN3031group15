@@ -100,7 +100,7 @@ export default defineComponent({
         const onSubmit = async () => {
           console.log('log in clicked: ' + email.value + ' ' + password.value)
 
-          let response = await fetch('http://localhost:8000/home/', {
+          let response = await fetch('http://localhost:8000/profile/', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -141,8 +141,8 @@ export default defineComponent({
               }),
             });
 
-            // Redirect the user to the home page
-            router.push('/home')
+            // Redirect the user to the profile page
+            router.push('/profile')
 
           } else {
             // Handle login failure...

@@ -1,12 +1,29 @@
 <template>
   <q-page padding class="q-gutter-md">
+
+    <q-card style="height: 33vh;">
+      <div class="q-pd-md" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+        <div class="q-gutter-y-md column" style="text-align: center;">
+          <div style="display: flex; align-items: center; justify-content: center;">
+            <div class="text-h6" style="margin-right: 10px;">My Community Rating</div>
+            <q-rating
+              v-model="ratingModel"
+              size="2em"
+              color="secondary"
+              readonly
+            />
+          </div>
+        </div>
+      </div>
+    </q-card>
+    
+
     <q-card>
         <div class="text-subtitle1">
           <q-btn flat color="secondary" :icon="showActiveItems ? 'expand_more' : 'chevron_right'" @click="showActive" />
           Active Donations
         </div>
     </q-card>
-
     
     <div v-if="showActiveItems" class="row q-gutter-md" style="margin-top: 5px;">
       <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems_active" :key="index">
@@ -104,6 +121,7 @@ export default defineComponent({
     const clickedReview = ref(false);
     const today = ref(new Date());
     const ratingModel = ref(0);
+    const organzationRating = ref(0);
     
     const fetchDonations = async () => {
       try {
