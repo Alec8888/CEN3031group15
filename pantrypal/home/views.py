@@ -4,6 +4,8 @@ from django.template import loader
 from django.http import JsonResponse
 from django.http import response
 from random import randrange
+import os
+import binascii
 import json
 import oracledb
 import datetime
@@ -66,11 +68,17 @@ def index(request):
             for i in range(len(entities)):
                 returnRequest[dictionaryNames[i]] = entities[i]
 
+        #create authentication token
+        returnRequest['accessToken'] = binascii.hexlify(os.urandom(20)).decode()
+
         # convert python dictionary into json response and send back
         response = JsonResponse(returnRequest)
         print(response.content)
+        print(returnRequest['accessToken'])
         # send data back to front end
         return response
+    
+    
     
     ####################################
     ####### REGISTER USER LOGIC ########
@@ -167,7 +175,7 @@ def index(request):
     ####################################
     
     if dict_request["requestType"] == "retrievePosts":
-
+       
         return HttpResponse("success")
 
     
