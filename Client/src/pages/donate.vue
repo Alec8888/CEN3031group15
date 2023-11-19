@@ -291,7 +291,7 @@ export default defineComponent({
                 pickup_city: pickup_city.value,
                 pickup_zip: pickup_zip.value,
                 pickup_state: pickup_state.value.value,
-                user_id: currentUserId.value,
+                donator_id: currentUserId.value,
                 user_email: currentUserEmail.value,
               },
             )
