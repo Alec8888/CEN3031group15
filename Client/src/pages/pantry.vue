@@ -89,9 +89,16 @@ export default {
         var currentDate = new Date();
         currentDate = currentDate.toISOString().slice(0, 10);
         console.log(currentDate);
-        const { data, error } = await supabase.from('donations').select().eq("reserved", null).lt("date_expires", currentDate)
+
+        const { data, error } = await supabase.from('donations').select().eq("reserved", false)
+        // need to filter out donations that are expired: 
+        // ideally do it with supabase: .lt("date_expires", currentDate)
+        // or do it in javascript like on account page
+
+        console.log("data: ", data);
+
         if (error) {
-          console.error('Error fetching donations:', error);
+          console.error('Error fetching donations:', error.message);
           return;
         }
         pantryItems.value = data;
