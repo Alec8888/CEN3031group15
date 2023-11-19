@@ -15,7 +15,7 @@
     - `npm install -g json-server-auth`
     - [More directions](https://www.npmjs.com/package/json-server-auth)
 6. Install dotenv of environment variables
-    - `npm install dotenv`
+    - from /client run `npm install dotenv`
     - create a file called `.env` in the root directory and add the following line:
         - SUPABASE_KEY="supbase-key-here"
         - Get the supabase key [here](https://supabase.com/dashboard/project/preudbpdnhcigtnuiuit/settings/api).
