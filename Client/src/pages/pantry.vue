@@ -109,6 +109,8 @@ export default {
       clickedReserve.value = true;
     };
 
+    // take in a donation and return the organization
+    // not sure we still need this with supabase
     const contact = (organization) => {
       console.log('Contact button clicked.');
       console.log(organization);
@@ -120,8 +122,8 @@ export default {
     watch(searchText, () => {
       console.log('Search text changed.');
       // update organizations [] where name includes searchText
-      pantryItems.value = pantryItems.value.filter((organization) => {
-        return organization.org.includes(searchText.value);
+      pantryItems.value = pantryItems.value.filter((donation) => {
+        return donation.org_displayname.includes(searchText.value);
       });
       if (searchText.value === '') {
         fetchDonations();

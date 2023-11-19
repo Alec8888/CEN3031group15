@@ -5,7 +5,7 @@
       <q-toolbar>
         <q-toolbar-title>
           <q-avatar>
-            <img src="~assets/PantryPal-Logo.png">
+            <img src="https://preudbpdnhcigtnuiuit.supabase.co/storage/v1/object/public/images/PantryPal-Logo.png?t=2023-11-19T00%3A56%3A02.143Z">
           </q-avatar>
           PantryPal
         </q-toolbar-title>
@@ -76,6 +76,7 @@ import { onMounted} from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { supabase } from 'src/lib/supabaseClient'
+import { compileScript } from 'vue/compiler-sfc'
 
 
 export default defineComponent({
@@ -115,9 +116,6 @@ export default defineComponent({
 
     }
 
-    // need to move this to a differnt lifecyce hook
-    setLogInStatus();
-    
     const logOut = async () => {
       console.log('Log out clicked.');
 
@@ -161,8 +159,7 @@ export default defineComponent({
       isLoggedIn,
       setLogInStatus,
       userEmail,
-      logOut
-  
+      logOut,
     }
     
   },
@@ -172,7 +169,7 @@ export default defineComponent({
 
 <style>
   .bg-image {
-    background-image: url('../assets/bg2.png');
+    background-image: url("https://preudbpdnhcigtnuiuit.supabase.co/storage/v1/object/public/images/bg.png?t=2023-11-19T00%3A53%3A40.968Z");
     background-size: cover;
   }
 
