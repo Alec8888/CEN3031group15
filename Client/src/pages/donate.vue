@@ -10,11 +10,11 @@
         <q-card-section>
           <div class="text-h6" >
             Complete the form below to donate food to the pantry.
-        
+
           </div>
           <div class="text-subtitle2">
             Then track your donation status on your home page.
-           </div> 
+           </div>
         </q-card-section>
         <q-card-section>
             <q-form
@@ -96,8 +96,8 @@
               />
               <q-select
                 filled
-                v-model="pickup_state" 
-                :options="states" 
+                v-model="pickup_state"
+                :options="states"
                 label="State of pickup location*"
                 :rules="[ val => val !== null || 'Please select an option']"
               />
@@ -233,6 +233,7 @@ export default defineComponent({
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
+            requestType: "postDonation",
             food: food.value,
             orgDisplayName: orgDisplayName.value,
             contactName: contactName.value,
@@ -264,7 +265,7 @@ export default defineComponent({
             // navigate to the login page
             // this.$router.push('/signin');
             router.push('/home')
-            
+
         }
 
       },
@@ -280,7 +281,7 @@ export default defineComponent({
         pickup_state.value = null
 
       }
-      
+
 
     }
   }

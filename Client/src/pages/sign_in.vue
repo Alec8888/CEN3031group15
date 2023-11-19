@@ -93,9 +93,9 @@ export default defineComponent({
           });
 
           let data = await response.json();
+          console.log(data.accessToken);
+          if (response.status == 200) {
 
-          // if (response.status == 200) {
-          if (data.accessToken) {
             // Store the JWT in localStorage
             localStorage.setItem('token', data.accessToken);
             console.log('token: ' + data.accessToken);

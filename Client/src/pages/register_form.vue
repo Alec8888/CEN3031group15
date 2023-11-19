@@ -27,13 +27,22 @@
               />
               <q-input
                 filled
-                v-model="name"
-                label="First and last name*"
+                v-model="fname"
+                label="First name*"
                 color="secondary"
                 lazy-rules
                 :rules="[ val => val && val.length > 0 || 'Please type something']"
               />
-        
+
+              <q-input
+                filled
+                v-model="lname"
+                label="Last name*"
+                color="secondary"
+                lazy-rules
+                :rules="[ val => val && val.length > 0 || 'Please type something']"
+              />
+
               <q-input
                 filled
                 type="email"
@@ -47,8 +56,8 @@
                   val => /^.+@.+\..+$/.test(val) || 'Please type a valid email'
                 ]"
               />
-        
-              
+
+
               <q-input
                 filled
                 v-model="organization"
@@ -64,8 +73,8 @@
                 lazy-rules
                 color="secondary"
                 :rules="[ val => val && val.length > 0 || 'Please type something']"
-              /> 
-        
+              />
+
               <q-input
                 filled
                 v-model="city"
@@ -74,15 +83,15 @@
                 color="secondary"
                 :rules="[ val => val && val.length > 0 || 'Please type something']"
               />
-  
+
               <q-select
                 filled
-                v-model="state" 
-                :options="states" 
+                v-model="state"
+                :options="states"
                 label="State*"
                 :rules="[ val => val !== null || 'Please select an option']"
               />
-        
+
               <q-input
                 filled
                 v-model="zip"
@@ -92,7 +101,7 @@
                 mask="#####"
                 :rules="[ val => val && val.length > 0 || 'Please type something']"
               />
-        
+
               <q-input
                 type="tel"
                 filled
@@ -121,7 +130,7 @@
                   />
                 </template>
               </q-input>
-          
+
               <q-input
                   filled
                   v-model="confirm_password"
@@ -142,22 +151,22 @@
                 </template>
               </q-input>
               <q-chip clickable @click="read_eula = true">Read license and terms</q-chip>
-        
+
               <div>
                 <q-toggle v-model="accept" label="I accept the license and terms" />
               </div>
-        
+
               <div>
                 <q-btn label="Submit" type="submit" color="primary"/>
                 <q-btn label="Reset Form" type="reset" color="primary" flat/>
               </div>
             </q-form>
-  
+
         </q-card-section>
-  
+
       </q-card>
     </div>
-  
+
     <q-dialog v-model="read_eula">
         <eula_popup />
     </q-dialog>
@@ -172,13 +181,14 @@ import eula_popup from 'components/eula_popup.vue'
 import { useRouter } from 'vue-router'
 
 export default {
-    components: { 
+    components: {
       eula_popup,
      },
     setup() {
         const router = useRouter();
         const $q = useQuasar()
-        const name = ref(null)
+        const fname = ref(null)
+        const lname = ref(null)
         const email = ref(null)
         const donate = ref(null)
         const organization = ref(null)
@@ -246,7 +256,8 @@ export default {
         ])
 
         return {
-            name,
+            fname,
+            lname,
             email,
             organization,
             donate,
@@ -272,7 +283,8 @@ export default {
                     });
                 }
                 else {
-                    console.log(name.value);
+                    console.log(fname.value);
+                    console.log(lname.value);
                     console.log(email.value);
                     console.log(organization.value);
                     console.log(donate.value);
@@ -281,13 +293,16 @@ export default {
                     console.log(state.value);
                     console.log(zip.value);
 
-                    let response = await fetch('http://localhost:3000/register', {
+                    let response = await fetch('http://localhost:8000/home/', {
                         method: 'POST',
                         headers: {
                           'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
                             // rep: name.value,
+                            requestType: "register",
+                            firstName: fname.value,
+                            lastName: lname.value,
                             org: organization.value,
                             streetAddress: streetAddress.value,
                             city: city.value,
@@ -320,13 +335,13 @@ export default {
                         // navigate to the login page
                         // this.$router.push('/signin');
                         router.push('/signin')
-                       
+
                     }
 
                     let formResponse = await response.json();
                     if (formResponse.isSuccess) {
                         // Go to the post food page
-                      
+
                         $q.notify({
                             color: 'green-4',
                             textColor: 'white',
@@ -337,7 +352,8 @@ export default {
                 }
             },
             onReset() {
-                name.value = null;
+                fname.value = null;
+                lname.value = null;
                 accept.value = false;
                 email.value = null;
                 donate.value = null;

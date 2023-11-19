@@ -1,12 +1,8 @@
 {
   "currentUser": {
-    "email": "",
-    "isLogged": false
+    "email": "emedero@gmail.com",
+    "isLogged": true
   },
-  "users": [
-
-  ],
-  "pantry": [ 
-
-  ]
+  "users": [],
+  "pantry": []
 }
