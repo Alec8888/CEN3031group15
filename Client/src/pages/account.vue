@@ -7,7 +7,6 @@
         </div>
     </q-card>
 
-    
     <div v-if="showActiveItems" class="row q-gutter-md" style="margin-top: 5px;">
       <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems_active" :key="index">
         <q-card-section>
@@ -65,8 +64,9 @@
 
 <script>
 import { useQuasar } from 'quasar'
-import { defineComponent, toDisplayString } from 'vue'
-import { ref, watch, onMounted } from 'vue';
+import { defineComponent } from 'vue'
+import { ref, onMounted } from 'vue';
+import { supabase } from '../lib/supabaseClient'
 
 export default defineComponent({
   name: 'AccountPage',
@@ -81,35 +81,35 @@ export default defineComponent({
     
     const fetchDonations = async () => {
       try {
-        const response = await fetch('http://localhost:3000/pantry', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+        // get current user id
+        const { data: { user } } = await supabase.auth.getUser()
+        const currentUser_id = user.id;
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        // get donation from supabase for current user
+        const { data , error } = await supabase
+          .from('donations')
+          .select()
+          .eq('user_id', currentUser_id);
+
+        if (error) {
+          throw new Error('Failed to fetch donations, error: ' + error.message);
         }
 
-        const data = await response.json();
-
-        console.log("data.dateActive: " + data[0].dateActive);
-        console.log("data.dateExpires: " + data[0].dateExpires);
-  
+        // filter the items into active and expired
+        // this should be moved into a seperate function
         for (let i = 0; i < data.length; i++) {
-          let todayDate = new Date();
-          todayDate.setHours(0, 0, 0, 0);
-          let activeDate = new Date(data[i].dateActive);
-          activeDate.setHours(0, 0, 0, 0);
-          let expirationDate = new Date(data[i].dateExpires);
-          expirationDate.setHours(0, 0, 0, 0);
+          let date_today = new Date();
+          date_today.setHours(0, 0, 0, 0);
+          let date_active = new Date(data[i].date_active);
+          date_active.setHours(0, 0, 0, 0);
+          let date_expires = new Date(data[i].date_expires);
+          date_expires.setHours(0, 0, 0, 0);
   
-          console.log("today: " + todayDate);
-          console.log("activeDate: " + activeDate);
-          console.log("expirationDate: " + expirationDate);
+          console.log("today: " + date_today);
+          console.log("activeDate: " + date_active);
+          console.log("expirationDate: " + date_expires);
           
-          if (activeDate <= todayDate && todayDate <= expirationDate) {
+          if (date_active <= date_today && date_today <= date_expires) {
             pantryItems_active.value.push(data[i]);
             console.log("found active item: " + data[i].food);
           }
@@ -123,7 +123,7 @@ export default defineComponent({
           showActiveItems.value = true;
         }
       } catch (error) {
-        console.error('Failed to fetch donations:', error);
+        console.error('Failed to fetch donations:', error.message);
       }
 
     };
@@ -134,18 +134,8 @@ export default defineComponent({
       today.value = todayDate.toISOString().split('T')[0];
       todayDate.setHours(0, 0, 0, 0);
       console.log("onMounted todays date: " + today.value);
-      // get user id and email from token
-      try {
-          let token = $q.localStorage.getItem('token');
-          console.log('token from local storage: ' + token);
-          console.log('email from token: ' + JSON.parse(atob(token.split('.')[1])).email);
-          console.log('user id from token: ' + JSON.parse(atob(token.split('.')[1])).sub);
-        } catch (error) {
-          console.error('Failed to fetch user id and email from local storage token:', error);
-        }
     });
     
-
     const cancel = () => {
      console.log('Cancel button clicked.');
     }
@@ -172,7 +162,6 @@ export default defineComponent({
       showAccountSettings,
       showPast,
       showSettings
-      
     }
   }
 })
