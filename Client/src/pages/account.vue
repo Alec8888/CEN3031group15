@@ -89,7 +89,7 @@ export default defineComponent({
         const { data , error } = await supabase
           .from('donations')
           .select()
-          .eq('user_id', currentUser_id);
+          .eq('donator_id', currentUser_id);
 
         if (error) {
           throw new Error('Failed to fetch donations, error: ' + error.message);
