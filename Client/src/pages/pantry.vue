@@ -2,9 +2,9 @@
   <q-page padding>
 
     <q-input rounded outlined v-model="searchText" label="Search..." />
-    
+
     <div class="row q-gutter-md" style="margin-top: 5px;">
-      
+
       <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems" :key="index">
         <q-card-section>
           <div class="text-h6">{{ pantry_item.org_displayname }}</div>
@@ -21,9 +21,9 @@
           <q-btn flat @click="reserveDonation">Reserve</q-btn>
           <q-btn flat @click="() => contact(pantry_item)">Contact</q-btn>
         </q-card-actions>
-        
+
       </q-card>
-      
+
     </div>
     <q-dialog
       v-model="clickedCall"
@@ -33,7 +33,7 @@
           <q-card-section>
             Email: {{ selectedOrganization.email }}
           </q-card-section>
-  
+
           <q-card-section>
             Phone: {{ selectedOrganization.phone }}
           </q-card-section>
@@ -57,11 +57,11 @@
           <q-card-section>
             You will have 24 hours to pick up the food.
           </q-card-section>
-  
+
           <q-card-section>
             After clicking OK, this food will be reserved for you and it will appear on your home page.
           </q-card-section>
-           
+
         </div>
         <q-card-actions align="right" class="bg-white text-teal">
           <q-btn flat label="OK" v-close-popup />
@@ -69,7 +69,7 @@
       </q-card>
     </q-dialog>
 
-    
+
   </q-page>
 </template>
 
@@ -80,13 +80,16 @@ import { supabase } from '../lib/supabaseClient'
 export default {
   name: 'pantry-find-food',
   setup() {
-    
+
     const selectedOrganization = ref(null);
     const pantryItems = ref([]);
 
     const fetchDonations = async () => {
       try {
-        const { data, error } = await supabase.from('donations').select()
+        var currentDate = new Date();
+        currentDate = currentDate.toISOString().slice(0, 10);
+        console.log(currentDate);
+        const { data, error } = await supabase.from('donations').select().eq("reserved", null).lt("date_expires", currentDate)
         if (error) {
           console.error('Error fetching donations:', error);
           return;
@@ -129,7 +132,7 @@ export default {
         fetchDonations();
       }
     });
-    
+
     return {
       pantryItems,
       selectedOrganization,
