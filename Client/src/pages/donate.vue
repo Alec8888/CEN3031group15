@@ -146,18 +146,21 @@
 
 <script>
 import { useQuasar } from 'quasar'
-import { defineComponent } from 'vue'
+import { defineComponent, onMounted } from 'vue'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { supabase } from '../lib/supabaseClient'
 
 export default defineComponent({
   name: 'PantryPage',
   setup () {
+    const $q = useQuasar()
+    const currentUserEmail = ref(null)
+    const currentUserId = ref(null)
     const date_active = ref(null)
     const date_expires = ref(null)
     const date_pickup = ref(null)
     const router = useRouter();
-    const $q = useQuasar()
     const food = ref(null)
     const orgDisplayName = ref(null)
     const contactName = ref(null)
@@ -220,6 +223,22 @@ export default defineComponent({
           { label: 'Wyoming', value: 'WY' },
         ])
 
+      // Get current user from Supabase session
+      const getCurrentUser = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        currentUserEmail.value  = user.email;
+        currentUserId.value = user.id;
+        console.log('Current user email and id from getCurrentUser: ' + currentUserEmail.value, currentUserId.value);
+
+        } catch (error) {
+          console.error('Failed to fetch user id and email from supa session', error);
+        }
+      };
+
+    onMounted(() => {
+      console.log('Donate page mounted!')
+    });
 
     return {
       food,
@@ -235,8 +254,14 @@ export default defineComponent({
       date_active,
       date_expires,
       date_pickup,
+      currentUserId,
+      currentUserEmail,
+      getCurrentUser,
+
+
       async onSubmit () {
         console.log('Submitted!')
+        console.log('Current user email and id: ' + currentUserEmail.value, currentUserId.value);
         console.log(food.value)
         console.log(orgDisplayName.value)
         console.log(contactName.value)
@@ -245,48 +270,53 @@ export default defineComponent({
         console.log(pickup_streetAddress.value)
         console.log(pickup_city.value)
         console.log(pickup_zip.value)
-        console.log(pickup_state.value)
+        console.log(pickup_state.value.value)
 
-        let response = await fetch('http://localhost:3000/pantry', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            dateActive: date_active.value,
-            dateExpires: date_expires.value,
-            food: food.value,
-            orgDisplayName: orgDisplayName.value,
-            contactName: contactName.value,
-            contactEmail: contactEmail.value,
-            contactPhone: contactPhone.value,
-            pickup_streetAddress: pickup_streetAddress.value,
-            pickup_city: pickup_city.value,
-            pickup_zip: pickup_zip.value,
-            pickup_state: pickup_state.value
-            // add current user id or email
-          }),
-        });
+        await getCurrentUser();
 
-        if (!response.ok) {
-          $q.notify({
+        console.log('Current user email and id: ' + currentUserEmail.value, currentUserId.value);
+        try {
+          let { error } = await supabase
+            .from('donations')
+            .insert(
+              {
+                date_active: date_active.value,
+                date_expires: date_expires.value,
+                food: food.value,
+                org_displayname: orgDisplayName.value,
+                contact_name: contactName.value,
+                contact_email: contactEmail.value,
+                contact_phone: contactPhone.value,
+                pickup_streetaddress: pickup_streetAddress.value,
+                pickup_city: pickup_city.value,
+                pickup_zip: pickup_zip.value,
+                pickup_state: pickup_state.value.value,
+                donator_id: currentUserId.value,
+                user_email: currentUserEmail.value,
+              },
+            )
+
+          if (error) {
+            console.error('Error inserting donation:', error);
+            $q.notify({
               color: 'red-5',
               textColor: 'white',
               icon: 'warning',
               message: 'Doneation submission failed'
-          });
-        }
-        else {
+            });
+
+          } else {
+            console.log('Donation added to pantry');
             $q.notify({
                 color: 'green-4',
                 textColor: 'white',
                 icon: 'cloud_done',
                 message: 'Donation added to panry'
             });
-            // navigate to the login page
-            // this.$router.push('/signin');
             router.push('/home')
-            
+          }
+        } catch (error) {
+          console.error('Error inserting donation:', error);
         }
 
       },
@@ -302,8 +332,6 @@ export default defineComponent({
         pickup_state.value = null
 
       }
-      
-
     }
   }
 })

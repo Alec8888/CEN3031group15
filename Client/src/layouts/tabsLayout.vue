@@ -5,7 +5,7 @@
       <q-toolbar>
         <q-toolbar-title>
           <q-avatar>
-            <img src="~assets/PantryPal-Logo.png">
+            <img src="https://preudbpdnhcigtnuiuit.supabase.co/storage/v1/object/public/images/PantryPal-Logo.png?t=2023-11-19T00%3A56%3A02.143Z">
           </q-avatar>
           PantryPal
         </q-toolbar-title>
@@ -71,80 +71,87 @@
 </template>
 
 <script>
-import EssentialLink from 'src/components/EssentialLink.vue'
 import { defineComponent, onUpdated, ref } from 'vue'
 import { onMounted} from 'vue'
 import { useRouter } from 'vue-router'
+import { useQuasar } from 'quasar'
+import { supabase } from 'src/lib/supabaseClient'
+import { compileScript } from 'vue/compiler-sfc'
 
 
 export default defineComponent({
   name: 'TabledLayout',
 
   setup () {
+    const $q = useQuasar()
     const router = useRouter();
     const isLoggedIn = ref(false)
     const userEmail = ref(null)
     const setLogInStatus = async () => {
-        try {
-        let response = await fetch('http://localhost:3000/currentUser', {
-          method: 'GET'
-        });
+        
+      try {
+        // Get current user from Supabase session
+        console.log("attempting to get user from supa session")
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        // get the logged in user with the current existing session
+        const { data: { user } } = await supabase.auth.getUser()
+        
+        // get the logged in user with JWT, not working
+        // const { data: { user } } = await supabase.auth.getUser(jwt)
+        
+        // recomended for faster results but it's not working
+        // const { data: { user }} = await supabase.auth.getSession().session.user 
 
-        let data = await response.json();
-        console.log(data);
-        console.log('current user: ' + data.email);
-        console.log('isLogged: ' + data.isLogged);
+        console.log("user from supa: " + user.email)
 
-        if (data.isLogged) {
-          userEmail.value = data.email;
-          isLoggedIn.value = true;
-        } else {
-          userEmail.value = null;
-          isLoggedIn.value = false;
-        }
+        userEmail.value = user.email;
+        isLoggedIn.value = true;
+  
       } catch (error) {
-        console.error('Failed to fetch current user:', error);
-        // Handle the error according to your app's requirements
-        // For example, you may want to set isLoggedIn to false or redirect the user
+        console.error('Failed to fetch current user:', error.message);
+        
+        userEmail.value = null;
+        isLoggedIn.value = false;
       }
+
     }
 
-
-    // need to move this to a differnt lifecyce hook
-    setLogInStatus();
-    
     const logOut = async () => {
       console.log('Log out clicked.');
-      let response = await fetch('http://localhost:3000/currentUser', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: "",
-          isLogged: false
-        }),
-      });
-      if (response.ok) {
-        // Clear the JWT from localStorage
-        localStorage.removeItem('token');
 
-        setLogInStatus();
+      // Sign out from Supabase Auth
+      let { error } = await supabase.auth.signOut()
+      
+      if (!error) {
+          console.log('Logout successful');
 
-        // Optionally, redirect the user to the login page
-        
-        router.push('/signin')
+          isLoggedIn.value = false;
+          userEmail.value = null;
+          router.push('/signin')
+
+          q.notify({
+            color: 'green-4',
+            textColor: 'white',
+            icon: 'cloud_done',
+            message: 'Log out successful'
+          });
         } 
       else {
           console.error('Logout failed');
+
+          q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'cloud_done',
+            message: 'Log out failed'
+          });
       }
     }
 
     onUpdated( () => {
+      setLogInStatus();
+    }),
+    onMounted( () => {
       setLogInStatus();
     })
 
@@ -152,8 +159,7 @@ export default defineComponent({
       isLoggedIn,
       setLogInStatus,
       userEmail,
-      logOut
-  
+      logOut,
     }
     
   },
@@ -163,7 +169,7 @@ export default defineComponent({
 
 <style>
   .bg-image {
-    background-image: url('../assets/bg2.png');
+    background-image: url("https://preudbpdnhcigtnuiuit.supabase.co/storage/v1/object/public/images/bg.png?t=2023-11-19T00%3A53%3A40.968Z");
     background-size: cover;
   }
 
