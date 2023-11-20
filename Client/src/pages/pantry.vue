@@ -2,28 +2,28 @@
   <q-page padding>
 
     <q-input rounded outlined v-model="searchText" label="Search..." />
-    
+
     <div class="row q-gutter-md" style="margin-top: 5px;">
-      
+
       <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems" :key="index">
         <q-card-section>
-          <div class="text-h6">{{ pantry_item.orgDisplayName }}</div>
+          <div class="text-h6">{{ pantry_item.org_displayname }}</div>
         </q-card-section>
         <q-card-section>
           <div class="text-subtitle2">{{ pantry_item.food }}</div>
         </q-card-section>
         <q-card-section>
-          <div class="text-subtitle2">{{ pantry_item.pickup_streetAddress }}</div>
-          <div class="text-subtitle2">{{ pantry_item.pickup_city }} , {{ pantry_item.pickup_state.value }} {{ pantry_item.pickup_zip }}</div>
+          <div class="text-subtitle2">{{ pantry_item.pickup_streetaddress }}</div>
+          <div class="text-subtitle2">{{ pantry_item.pickup_city }} , {{ pantry_item.pickup_state }} {{ pantry_item.pickup_zip }}</div>
         </q-card-section>
         <q-separator dark />
         <q-card-actions class="justify-around">
           <q-btn flat @click="reserveDonation">Reserve</q-btn>
           <q-btn flat @click="() => contact(pantry_item)">Contact</q-btn>
         </q-card-actions>
-        
+
       </q-card>
-      
+
     </div>
     <q-dialog
       v-model="clickedCall"
@@ -33,7 +33,7 @@
           <q-card-section>
             Email: {{ selectedOrganization.email }}
           </q-card-section>
-  
+
           <q-card-section>
             Phone: {{ selectedOrganization.phone }}
           </q-card-section>
@@ -57,11 +57,11 @@
           <q-card-section>
             You will have 24 hours to pick up the food.
           </q-card-section>
-  
+
           <q-card-section>
             After clicking OK, this food will be reserved for you and it will appear on your home page.
           </q-card-section>
-           
+
         </div>
         <q-card-actions align="right" class="bg-white text-teal">
           <q-btn flat label="OK" v-close-popup />
@@ -69,34 +69,47 @@
       </q-card>
     </q-dialog>
 
-    
+
   </q-page>
 </template>
 
 <script>
 import { ref, watch, onMounted } from 'vue';
+import { supabase } from '../lib/supabaseClient'
 
 export default {
   name: 'pantry-find-food',
   setup() {
-    
+
     const selectedOrganization = ref(null);
     const pantryItems = ref([]);
 
-    const fetchOrganization = async () => {
-      const response = await fetch('http://localhost:3000/pantry', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      const data = await response.json();
-      pantryItems.value = data;
+    const fetchDonations = async () => {
+      try {
+        var currentDate = new Date();
+        currentDate = currentDate.toISOString().slice(0, 10);
+        console.log(currentDate);
+
+        const { data, error } = await supabase.from('donations').select().eq("reserved", false)
+        // need to filter out donations that are expired: 
+        // ideally do it with supabase: .lt("date_expires", currentDate)
+        // or do it in javascript like on account page
+
+        console.log("data: ", data);
+
+        if (error) {
+          console.error('Error fetching donations:', error.message);
+          return;
+        }
+        pantryItems.value = data;
+        console.log("pantryItems: ", pantryItems.value);
+        console.log("pantryItems (stringified): " + JSON.stringify(pantryItems.value, null, 2));
+      } catch (error) {
+        console.error('Error fetching donations:', error);
+      }
     };
 
-    onMounted(fetchOrganization);
-
+    onMounted(fetchDonations);
 
     const clickedCall = ref(false);
     const clickedReserve = ref(false);
@@ -106,6 +119,8 @@ export default {
       clickedReserve.value = true;
     };
 
+    // take in a donation and return the organization
+    // not sure we still need this with supabase
     const contact = (organization) => {
       console.log('Contact button clicked.');
       console.log(organization);
@@ -117,14 +132,14 @@ export default {
     watch(searchText, () => {
       console.log('Search text changed.');
       // update organizations [] where name includes searchText
-      pantryItems.value = pantryItems.value.filter((organization) => {
-        return organization.org.includes(searchText.value);
+      pantryItems.value = pantryItems.value.filter((donation) => {
+        return donation.org_displayname.includes(searchText.value);
       });
       if (searchText.value === '') {
-        fetchOrganization();
+        fetchDonations();
       }
     });
-    
+
     return {
       pantryItems,
       selectedOrganization,
@@ -133,7 +148,8 @@ export default {
       clickedReserve,
       reserveDonation,
       searchText,
-      watch
+      watch,
+      fetchDonations // was working without this?
     };
   }
 }

@@ -74,62 +74,37 @@
 
 <script lang="ts">
 import { useQuasar } from 'quasar'
+import { supabase } from 'src/lib/supabaseClient';
 import { defineComponent, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 export default defineComponent({
     setup() {
         const $q = useQuasar();
+        const router = useRouter();
         const email = ref(null);
         const password = ref(null);
-
         const isPwd = ref(true);
+
+        // when the user clicks the login button
         const onSubmit = async () => {
           console.log('log in clicked: ' + email.value + ' ' + password.value)
 
-          let response = await fetch('http://localhost:8000/home/', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              requestType: "login",
-              email: email.value,
-              password: password.value,
-            }),
+          // sign in with Supabase
+          let { data, error } = await supabase.auth.signInWithPassword({
+            email: email.value,
+            password: password.value
           });
 
-          let data = await response.json();
-
-          // if (response.status == 200) {
-          if (data.accessToken) {
-            // Store the JWT in localStorage
-            localStorage.setItem('token', data.accessToken);
-            console.log('token: ' + data.accessToken);
-
-            // Notify the user
+          if (!error) {
+            // Handle log in success
             $q.notify({
               color: 'green-4',
               textColor: 'white',
               icon: 'cloud_done',
               message: 'Log in successful'
             });
-
-            // setCurrentUser();
-            console.log('email in setCurrentUser: ' + email.value);
-            let resp = await fetch('http://localhost:3000/currentUser', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                email: email.value,
-                isLogged: true
-              }),
-            });
-
-            // Redirect the user to the home page
-            router.push('/home')
+            router.push('/home');
 
           } else {
             // Handle login failure...
@@ -141,7 +116,6 @@ export default defineComponent({
             });
           }
         };
-        const router = useRouter();
 
         return {
             email,

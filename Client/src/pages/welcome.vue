@@ -1,11 +1,11 @@
 <template>
-  <q-page class="q-pa-md">
+  <q-page padding>
     <div class="row justify-center">
 
       <q-card class="bg-white" style="max-width: 600px;">
         <q-img
           alt="PantryPal logo"
-          src="~assets/PantryPal_Logo_noBG.png"
+          src="https://preudbpdnhcigtnuiuit.supabase.co/storage/v1/object/public/images/PantryPal_Logo_noBG.png?t=2023-11-19T00%3A53%3A32.290Z"
           fit="contain"
         />
         <div class="q-px-lg q-py-md">
