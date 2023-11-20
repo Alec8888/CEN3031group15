@@ -7,6 +7,7 @@
 
       <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems" :key="index">
         <q-card-section>
+          <div class="text-h6 hidden">{{ pantry_item.id }}</div>
           <div class="text-h6">{{ pantry_item.org_displayname }}</div>
         </q-card-section>
         <q-card-section>
@@ -18,7 +19,7 @@
         </q-card-section>
         <q-separator dark />
         <q-card-actions class="justify-around">
-          <q-btn flat @click="reserveDonation">Reserve</q-btn>
+          <q-btn flat @click="() => reserveDonation(pantry_item)">Reserve</q-btn>
           <q-btn flat @click="() => contact(pantry_item)">Contact</q-btn>
         </q-card-actions>
 
@@ -52,14 +53,14 @@
       <q-card style="width: 300px">
         <div class="q-pd-md">
           <q-card-section>
-            Are you sure you want to  reserve this food?
+            Your reservation has been sucessfully saved.
           </q-card-section>
           <q-card-section>
             You will have 24 hours to pick up the food.
           </q-card-section>
 
           <q-card-section>
-            After clicking OK, this food will be reserved for you and it will appear on your home page.
+            You can now see this reservation in your Home tab.
           </q-card-section>
 
         </div>
@@ -76,6 +77,7 @@
 <script>
 import { ref, watch, onMounted } from 'vue';
 import { supabase } from '../lib/supabaseClient'
+import { event } from 'quasar';
 
 export default {
   name: 'pantry-find-food',
@@ -89,7 +91,7 @@ export default {
         var currentDate = new Date();
         currentDate = currentDate.toISOString().slice(0, 10);
         console.log(currentDate);
-        const { data, error } = await supabase.from('donations').select().eq("reserved", null).lt("date_expires", currentDate)
+        const { data, error } = await supabase.from('donations').select().neq('reserved', true)
         if (error) {
           console.error('Error fetching donations:', error);
           return;
@@ -107,9 +109,23 @@ export default {
     const clickedCall = ref(false);
     const clickedReserve = ref(false);
 
-    const reserveDonation = () => {
+    const reserveDonation = async (pantry_item) => {
       console.log('Reserve food button clicked.');
+      console.log(pantry_item)
+      //get current user to make reservation
+      const currentUserId = ref(null);
+      const { data: { user } } = await supabase.auth.getUser()
+        currentUserId.value = user.id;
       clickedReserve.value = true;
+      const { error } = await supabase.from('donations').update([{reserved: true, donatee_id: currentUserId.value}]).eq('id', pantry_item.id)
+        if (error) {
+          console.error('Error fetching donations:', error);
+          return;
+        }
+        else
+        {
+          console.log("Donation successfully reserved.")
+        }
     };
 
     // take in a donation and return the organization

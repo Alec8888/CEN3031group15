@@ -25,7 +25,7 @@
         </q-card-actions>
       </q-card>
     </div>
-    
+
     <q-card>
         <div class="text-subtitle1">
           <q-btn @click="showPast" flat color="secondary" :icon="showPastItems ? 'expand_more' : 'chevron_right'" />
@@ -51,7 +51,7 @@
         </q-card-actions>
       </q-card>
     </div>
-    
+
     <!-- <q-card>
         <div class="text-subtitle1">
           <q-btn @click="showSettings" flat color="secondary" :icon="showAccountSettings ? 'expand_more' : 'chevron_right'" />
@@ -78,18 +78,19 @@ export default defineComponent({
     const showPastItems = ref(false);
     const showAccountSettings = ref(false);
     const today = ref(new Date());
-    
+
     const fetchDonations = async () => {
       try {
         // get current user id
         const { data: { user } } = await supabase.auth.getUser()
         const currentUser_id = user.id;
+        console.log(currentUser_id);
 
         // get donation from supabase for current user
         const { data , error } = await supabase
           .from('donations')
           .select()
-          .eq('user_id', currentUser_id);
+          .eq('donator_id', currentUser_id);
 
         if (error) {
           throw new Error('Failed to fetch donations, error: ' + error.message);
@@ -104,11 +105,11 @@ export default defineComponent({
           date_active.setHours(0, 0, 0, 0);
           let date_expires = new Date(data[i].date_expires);
           date_expires.setHours(0, 0, 0, 0);
-  
+
           console.log("today: " + date_today);
           console.log("activeDate: " + date_active);
           console.log("expirationDate: " + date_expires);
-          
+
           if (date_active <= date_today && date_today <= date_expires) {
             pantryItems_active.value.push(data[i]);
             console.log("found active item: " + data[i].food);
@@ -135,7 +136,7 @@ export default defineComponent({
       todayDate.setHours(0, 0, 0, 0);
       console.log("onMounted todays date: " + today.value);
     });
-    
+
     const cancel = () => {
      console.log('Cancel button clicked.');
     }
