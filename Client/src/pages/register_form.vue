@@ -186,6 +186,7 @@ import { useQuasar } from 'quasar'
 import { ref } from 'vue'
 import eula_popup from 'components/eula_popup.vue'
 import { useRouter } from 'vue-router'
+import { supabase } from 'src/lib/supabaseClient'
 
 export default {
     components: { 
@@ -288,37 +289,19 @@ export default {
                     });
                 }
                 else {
-                    console.log(name.value);
-                    console.log(email.value);
-                    console.log(organization.value);
-                    console.log(donate.value);
-                    console.log(streetAddress.value);
-                    console.log(city.value);
-                    console.log(state.value);
-                    console.log(zip.value);
+                    // Register user with Supabase
+                    let { data, error } = await supabase.auth.signUp({
+                        email: email.value,
+                        password: password.value,
+                    })
 
-                    let response = await fetch('http://localhost:3000/register', {
-                        method: 'POST',
-                        headers: {
-                          'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            // rep: name.value,
-                            org: organization.value,
-                            streetAddress: streetAddress.value,
-                            city: city.value,
-                            state: state.value.value,
-                            zip: zip.value,
-                            email: email.value,
-                            phone: phone.value,
-                            donate: donate.value,
-                            password: password.value,
-                        }
+                    // TODO:
+                    // If registration successful, add user/org to user_profiles table
+                        // get user id from supabase
+                        // insert user/org into user_profiles table
 
-                        )
-                    });
-
-                    if (!response.ok) {
+                    // If registration fails, display error message
+                    if (error) {
                         $q.notify({
                             color: 'red-5',
                             textColor: 'white',
@@ -326,30 +309,18 @@ export default {
                             message: 'Form submission failed'
                         });
                     }
+                    // If registration successful,
+                    // display success message and redirect to login page
                     else {
                         $q.notify({
                             color: 'green-4',
                             textColor: 'white',
                             icon: 'cloud_done',
-                            message: 'Form submitted successfully'
+                            message: 'Registration successful!'
                         });
-                        // navigate to the login page
-                        // this.$router.push('/signin');
                         router.push('/signin')
-                       
                     }
 
-                    let formResponse = await response.json();
-                    if (formResponse.isSuccess) {
-                        // Go to the post food page
-                      
-                        $q.notify({
-                            color: 'green-4',
-                            textColor: 'white',
-                            icon: 'cloud_done',
-                            message: 'Form submitted successfully'
-                        });
-                    }
                 }
             },
             onReset() {
