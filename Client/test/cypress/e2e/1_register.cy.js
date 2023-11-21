@@ -32,9 +32,11 @@ describe('Register Page', () => {
         cy.dataCy('donate-input')
             .contains('I want to donate food.')
             .click()
-
         cy.dataCy('name-input').type('Test User')
-        cy.dataCy('email-input').type('a@gmail.com')
+
+        // create a unique email using the current timestamp
+        cy.dataCy('email-input').type(`${Date.now()}@test.com`)
+        
         cy.dataCy('orgName-input').type('Test Org')
         cy.dataCy('streetAddress-input').type('123 Test St')
         cy.dataCy('city-input').type('Test City')
