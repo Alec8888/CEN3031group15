@@ -1,8 +1,24 @@
 <template>
   <q-page padding>
 
-    <q-input rounded outlined v-model="searchText" label="Search..." />
+    <!-- <q-input rounded outlined v-model="searchText" label="Search..." /> -->
 
+    <q-btn-dropdown
+      class="glossy"
+      color="accent"
+      label="Zip Code"
+      icon="filter_list"
+    >
+      <div class="column">
+        <q-option-group
+          v-model="zipCodes_selected"
+          :options="zipCodes"
+          color="primary"
+          type="checkbox"
+        />
+      </div>
+    </q-btn-dropdown>
+    
     <div class="row q-gutter-md" style="margin-top: 5px;">
 
       <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems" :key="index">
@@ -83,6 +99,8 @@ export default {
 
     const selectedOrganization = ref(null);
     const pantryItems = ref([]);
+    const zipCodes = ref([]);
+    const zipCodes_selected = ref([]);
 
     const fetchDonations = async () => {
       try {
@@ -102,14 +120,34 @@ export default {
           return;
         }
         pantryItems.value = data;
-        console.log("pantryItems: ", pantryItems.value);
-        console.log("pantryItems (stringified): " + JSON.stringify(pantryItems.value, null, 2));
+        // console.log("pantryItems: ", pantryItems.value);
+        // console.log("pantryItems (stringified): " + JSON.stringify(pantryItems.value, null, 2));
       } catch (error) {
         console.error('Error fetching donations:', error);
       }
     };
+    
+    onMounted(async () => {
+      await fetchDonations();
+      updateZipCodes();
+    });
 
-    onMounted(fetchDonations);
+    const updateZipCodes = () => {
+      console.log('Updating zip codes.');
+      console.log('zipCodes: ', zipCodes.value)
+
+      zipCodes.value = [];
+      pantryItems.value.forEach((donation) => {
+        // if zip code is not in zipCodes, add it
+        if (!zipCodes.value.some(zipCode => zipCode.value === donation.pickup_zip)) {
+          console.log('Adding zip code: ', donation.pickup_zip);
+          zipCodes.value.push({ label: donation.pickup_zip, value: donation.pickup_zip });
+        }
+      });
+
+      console.log('zipCodes: ', zipCodes);
+    }
+
 
     const clickedCall = ref(false);
     const clickedReserve = ref(false);
@@ -140,6 +178,26 @@ export default {
       }
     });
 
+
+    // update pantryItems from zipCodes_selected
+    watch(zipCodes_selected, async () => {
+      console.log('zipCodes_selected changed.');
+      if (zipCodes_selected.value.length === 0) {
+        console.log('zipCodes_selected is empty.');
+        fetchDonations();
+        return;
+      }
+      
+      // Fetch donations again before filtering
+      await fetchDonations();
+      pantryItems.value = pantryItems.value.filter((donation) => {
+        console.log("zipCodes_selected.value: ", zipCodes_selected.value)
+
+        // Compare donation.pickup_zip with the strings in zipCodes_selected.value
+        return zipCodes_selected.value.includes(donation.pickup_zip);
+      });
+    });
+
     return {
       pantryItems,
       selectedOrganization,
@@ -149,7 +207,12 @@ export default {
       reserveDonation,
       searchText,
       watch,
-      fetchDonations // was working without this?
+      fetchDonations, // was working without this?
+      mobileData: ref(false),
+      bluetooth: ref(false),
+      zipCodes,
+      zipCodes_selected,
+      updateZipCodes
     };
   }
 }
