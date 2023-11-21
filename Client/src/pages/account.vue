@@ -1,5 +1,17 @@
 <template>
+  
+  
   <q-page padding class="q-gutter-md">
+
+    <q-card>
+        <div class="text-subtitle1">
+          <q-btn flat color="secondary" :icon="showAccountNotifications ? 'expand_more' : 'chevron_right'" @click="showNotifications" />
+          Notifications
+        </div>
+    </q-card>
+
+
+
     <q-card>
         <div class="text-subtitle1">
           <q-btn flat color="secondary" :icon="showActiveItems ? 'expand_more' : 'chevron_right'" @click="showActive" />
@@ -59,6 +71,9 @@
         </div>
     </q-card> -->
 
+  
+    
+
   </q-page>
 </template>
 
@@ -77,6 +92,7 @@ export default defineComponent({
     const showActiveItems = ref(false);
     const showPastItems = ref(false);
     const showAccountSettings = ref(false);
+    const showAccountNotifications = ref(false);
     const today = ref(new Date());
     
     const fetchDonations = async () => {
@@ -151,6 +167,10 @@ export default defineComponent({
       console.log('Show Settings button clicked.');
       showAccountSettings.value = !showAccountSettings.value;
     }
+    const showNotifications = () => {
+      console.log('Show Notifications button clicked.');
+      showAccountNotifications.value = !showAccountNotifications.value;
+    }
     return {
       pantryItems_active,
       pantryItems_expired,
@@ -161,7 +181,9 @@ export default defineComponent({
       showPastItems,
       showAccountSettings,
       showPast,
-      showSettings
+      showSettings,
+      showAccountNotifications,
+      showNotifications
     }
   }
 })
