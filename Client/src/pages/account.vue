@@ -10,23 +10,19 @@
         </div>
     </q-card>
 
-    <!--
     <div v-if="showAccountNotifications" class="row q-gutter-md" style="margin-top: 5px;">
-      <q-card class="donationCards bg-secondary text-white" v-for="loop through notifications">
-        <q-card-section>
-          <div class="text-h6">{{ notification type }}</div>
-        </q-card-section>
-        <q-card-section>
-          <div class="text-subtitle2">{{ Donatee Id }}</div>
-          <div class="text-subtitle2">{{ Time Created }} </div>
-        </q-card-section>
-        <q-separator dark />
-        <q-card-actions class="justify-around">
-          <q-btn flat @click="acknowledge">Acknowledge</q-btn> removes the notification from the array
-        </q-card-actions>
-      </q-card>
+      <q-item class="bg-secondary text-white" v-for="(message,index) in messages" :key="index">
+        <q-item-section>
+          <q-item-label>{{ message.title }}</q-item-label>
+          <q-item-label >{{ message.time }}</q-item-label>
+          <q-item-label >{{ message.donatee }} {{message.message}}</q-item-label>
+        </q-item-section>
+    
+        <q-item-actions>
+          <q-btn flat @click="acknowledge">Acknowledge</q-btn>
+          </q-item-actions>
+      </q-item>
     </div>
-    -->
 
 
 
@@ -112,6 +108,7 @@ export default defineComponent({
     const showAccountSettings = ref(false);
     const showAccountNotifications = ref(false);
     const today = ref(new Date());
+    const messages = ref([]);
     
     const fetchDonations = async () => {
       try {
@@ -162,8 +159,31 @@ export default defineComponent({
 
     };
 
+    const fetchMessages = async () => {
+      messages.value.push({
+        title: 'New Reservation',
+        message: 'is on the way to pickup your donation.',
+        time: '11/21/2023',
+        donatee: 'donatee_id'
+      });
+      messages.value.push({
+        title: 'Reservation cancelled',
+        message: ' cancelled their pickup',
+        time: '11/21/2023',
+        donatee: 'donatee_id'
+      });
+      messages.value.push({
+        title: 'Pickup Complete',
+        message: 'has picked up your donation.',
+        time: '11/21/2023',
+        donatee: 'donatee_id'
+      });
+
+    };
+
     onMounted(() => {
       fetchDonations();
+      fetchMessages();
       let todayDate = new Date();
       today.value = todayDate.toISOString().split('T')[0];
       todayDate.setHours(0, 0, 0, 0);
@@ -189,6 +209,12 @@ export default defineComponent({
       console.log('Show Notifications button clicked.');
       showAccountNotifications.value = !showAccountNotifications.value;
     }
+    const acknowledge = (index) => {
+      console.log('Acknowledge button clicked.');
+      messages.value.splice(index, 1);
+    }
+
+    
     return {
       pantryItems_active,
       pantryItems_expired,
@@ -201,7 +227,10 @@ export default defineComponent({
       showPast,
       showSettings,
       showAccountNotifications,
-      showNotifications
+      showNotifications,
+      messages,
+      fetchMessages,
+      acknowledge
     }
   }
 })
