@@ -2,7 +2,7 @@
   <q-page padding>
 
     <!-- <q-input rounded outlined v-model="searchText" label="Search..." /> -->
-    <div class="q-gutter-md">
+    <div class="q-gutter-md row justify-center" >
 
       <q-btn-dropdown
         class="glossy"
@@ -70,7 +70,7 @@
       </q-btn-dropdown>
   </div>
     
-    <div class="row q-gutter-md" style="margin-top: 5px;">
+    <div class="row q-gutter-md justify-center" style="margin-top: 5px;">
 
       <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems" :key="index">
         <q-card-section>
