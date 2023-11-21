@@ -1,8 +1,21 @@
 {
   "currentUser": {
     "email": "",
-    "isLogged": false
+    "isLogged": true
   },
-  "users": [],
+  "users": [
+    {
+      "email": "jd@gmail.com",
+      "password": "$2a$10$.6F.pB.bcQJjDkFE.Mvk7ODPIHacQdLzFtvAt5tyvWARGplYmqTm6",
+      "org": "Jane Inc",
+      "streetAddress": "3251 Arden Cir",
+      "city": "Melbourne",
+      "state": "FL",
+      "zip": "32934",
+      "phone": "(321) 368 - 1250",
+      "donate": true,
+      "id": 1
+    }
+  ],
   "pantry": []
 }

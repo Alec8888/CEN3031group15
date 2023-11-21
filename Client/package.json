@@ -12,7 +12,7 @@
     "dev": "concurrently \"json-server-auth --watch db.json --host 0.0.0.0\" \"quasar dev\"",
     "build": "quasar build",
     "deploy": "vercel",
-    "test:e2e": "cross-env NODE_ENV=test start-test \"quasar dev\" http-get://localhost:9000 \"cypress open --e2e\"",
+    "test:e2e": "cross-env NODE_ENV=test start-test \"quasar dev\" http-get://localhost:8080 \"cypress open --e2e\"",
     "test:e2e:ci": "cross-env NODE_ENV=test start-test \"quasar dev\" http-get://localhost:8080 \"cypress run --e2e\"",
     "test:component": "cross-env NODE_ENV=test cypress open --component",
     "test:component:ci": "cross-env NODE_ENV=test cypress run --component"
