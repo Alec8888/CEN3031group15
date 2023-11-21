@@ -29,14 +29,17 @@
     <q-dialog
       v-model="clickedCall"
     >
-      <q-card style="width: 300px">
+      <q-card style="width: 300px" >
         <div class="q-pd-md">
           <q-card-section>
-            Email: {{ selectedOrganization.email }}
+
           </q-card-section>
 
-          <q-card-section>
-            Phone: {{ selectedOrganization.phone }}
+          <q-card-section v-for="(user, index) in selectedOrganization" :key="index">
+            Email: {{ user.Email }}
+            <br>
+            <br>
+            Phone: {{ user.Phone }}
           </q-card-section>
 
         </div>
@@ -130,10 +133,15 @@ export default {
 
     // take in a donation and return the organization
     // not sure we still need this with supabase
-    const contact = (organization) => {
+    const contact = async (pantry_item) => {
+      const {data, error } = await supabase.from('Accounts').select().eq('user_id', pantry_item.donator_id)
       console.log('Contact button clicked.');
-      console.log(organization);
-      selectedOrganization.value = organization;
+      if (error) {
+          console.error('Error fetching contact information:', error);
+          return;
+        }
+      selectedOrganization.value = data;
+      console.log(selectedOrganization.value);
       clickedCall.value = true;
     };
 
