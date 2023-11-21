@@ -10,6 +10,24 @@
         </div>
     </q-card>
 
+    <!--
+    <div v-if="showAccountNotifications" class="row q-gutter-md" style="margin-top: 5px;">
+      <q-card class="donationCards bg-secondary text-white" v-for="loop through notifications">
+        <q-card-section>
+          <div class="text-h6">{{ notification type }}</div>
+        </q-card-section>
+        <q-card-section>
+          <div class="text-subtitle2">{{ Donatee Id }}</div>
+          <div class="text-subtitle2">{{ Time Created }} </div>
+        </q-card-section>
+        <q-separator dark />
+        <q-card-actions class="justify-around">
+          <q-btn flat @click="acknowledge">Acknowledge</q-btn> removes the notification from the array
+        </q-card-actions>
+      </q-card>
+    </div>
+    -->
+
 
 
     <q-card>
