@@ -1,6 +1,4 @@
 describe('Sign In Page', () => {
-    // set state of db.json
-    
 
     beforeEach(() => {
       cy.visit('/signin')
