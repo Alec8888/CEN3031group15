@@ -135,7 +135,7 @@
 
         </div>
         <q-card-actions align="right" class="bg-white text-teal">
-          <q-btn @click="fetchDonations" flat label="OK" v-close-popup />
+        <q-btn to="/home" flat label="OK" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -146,7 +146,6 @@
 <script>
 import { ref, watch, onMounted } from 'vue';
 import { supabase } from '../lib/supabaseClient'
-import { event } from 'quasar';
 
 export default {
   name: 'pantry-find-food',
