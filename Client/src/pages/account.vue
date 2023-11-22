@@ -179,6 +179,29 @@ export default defineComponent({
         donatee: 'donatee_id'
       });
 
+      try {
+        // get current user id
+        const { data: { user } } = await supabase.auth.getUser()
+        const currentUser_id = user.id;
+
+        // get messages from supabase for current user
+        const { data , error } = await supabase
+          .from('messages')
+          .select()
+          .eq('donator_id', currentUser_id);
+
+        if (error) {
+          throw new Error('Failed to fetch messages, error: ' + error.message);
+        }
+
+        for (let i = 0; i < data.length; i++) {
+          messages.value.push(data[i]);
+        }
+
+      } catch (error) {
+        console.error('Failed to fetch messages:', error.message);
+      }
+
     };
 
     onMounted(() => {
