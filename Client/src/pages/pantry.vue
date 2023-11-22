@@ -135,7 +135,7 @@
 
         </div>
         <q-card-actions align="right" class="bg-white text-teal">
-          <q-btn flat label="OK" v-close-popup />
+          <q-btn @click="fetchDonations" flat label="OK" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -252,8 +252,10 @@ export default {
       //get current user to make reservation
       const currentUserId = ref(null);
       const { data: { user } } = await supabase.auth.getUser()
-        currentUserId.value = user.id;
+      currentUserId.value = user.id;
       clickedReserve.value = true;
+
+      // update donation in db to reserved
       const { error } = await supabase.from('donations').update([{reserved: true, donatee_id: currentUserId.value}]).eq('id', pantry_item.id)
         if (error) {
           console.error('Error fetching donations:', error);
