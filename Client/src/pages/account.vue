@@ -1,6 +1,5 @@
 <template>
   
-  
   <q-page padding class="q-gutter-md">
 
     <q-card>
@@ -21,8 +20,6 @@
           </q-item-actions>
       </q-item>
     </div>
-
-
 
     <q-card>
         <div class="text-subtitle1">
@@ -82,9 +79,6 @@
           Account Settings
         </div>
     </q-card> -->
-
-  
-    
 
   </q-page>
 </template>
@@ -242,7 +236,7 @@ export default defineComponent({
           console.error('Failed to dismiss message:', error.message);
         }
     }
-     const formatMessageTime = (time) => {
+    const formatMessageTime = (time) => {
       const dateObject = new Date(time);
       const formatter = new Intl.DateTimeFormat('default', {
         year: 'numeric',
@@ -256,6 +250,7 @@ export default defineComponent({
 
       return formatter.format(dateObject);
     };
+
     return {
       pantryItems_active,
       pantryItems_expired,
