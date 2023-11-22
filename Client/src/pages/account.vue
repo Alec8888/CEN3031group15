@@ -77,20 +77,23 @@
           <q-card-section>
             Please leave a star rating for your donation!
           </q-card-section>
-          <q-form @submit="onSubmit" class="q-gutter-md">
+          <q-card-section>
             <div style="display: flex; flex-direction: column; align-items: center;">
-              <q-rating
-                v-model="ratingModel"
-                size="3.5em"
-                color="primary"
-                icon="star_border"
-                icon-selected="star"
-              />
+              <q-form @submit="onSubmit" class="q-gutter-md">
+                <q-rating
+                  name="numStars"
+                  v-model="numStars"
+                  size="3.5em"
+                  color="primary"
+                  icon="star_border"
+                  icon-selected="star"
+                />
+              </q-form>
             </div>
-          </q-form>
+          </q-card-section>
         </div>
         <q-card-actions align="right" class="bg-white text-teal">
-          <q-btn flat label="COMPLETE REVIEW" v-close-popup />
+          <q-btn flat @click="submitReview" label="COMPLETE REVIEW" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -123,9 +126,9 @@ export default defineComponent({
     const clickedReview = ref(false);
     const today = ref(new Date());
     const selected_donation = ref([]);
-    const ratingModel = ref(0);
-    const numStars = ref([]);
+    const numStars = ref(0);
     const myRating = ref(0);
+    const submitResult = ref([])
     
     const fetchDonations = async () => {
       try {
@@ -204,6 +207,7 @@ export default defineComponent({
       selected_donation.value = donation;
       clickedReview.value = true;
     }
+    
     return {
       pantryItems_active,
       pantryItems_expired,
@@ -217,53 +221,67 @@ export default defineComponent({
       showSettings,
       showReview,
       clickedReview,
-      ratingModel,
       numStars,
       myRating,
+      submitResult,
 
-      async onSubmit() {
+      onSubmit (evt) {
+        const formData = new FormData(evt.target)
+        const data = []
+
+        for (const [ name, value ] of formData.entries()) {
+          data.push({
+            name,
+            value
+          })
+        }
+
+        submitResult.value = data
+      },
+
+      async submitReview() {
+        console.log("submitReview function entered.");
+
         const { data: { user } } = await supabase.auth.getUser()
         console.log(user.id);
+
         const userType = ref([]);
+
         // User Type is a Donatee, set id of user_id to review to donator
         if (user.donation_status == false) {
+            console.log("selected donation id: " + selected_donation.value.donator_id);
             userType.value = selected_donation.value.donator_id;
         }
         // User Type is a Donator, set id of user_id to review to donatee
         else {
+          console.log("selected donation id: " + selected_donation.value.donatee_id);
           userType.value = selected_donation.value.donatee_id;
         }
 
+        console.log("user_id: " + userType.value);
+        console.log("rating: " + numStars.value);
+        console.log("donation_id: " + selected_donation.value.id);
+        console.log("reviewer_id: " + user.id);
+
+        // Send review data to SupaBase
         let { error1 } = await supabase.from('reviews').
         insert({
-
-          // TODO: get donation id from card clicked for remaining data
           user_id: userType.value,
           rating: numStars.value,
-          donation_id: selected_donation.value.donation_id,
+          donation_id: selected_donation.value.id,
           reviewer_id: user.id
           })
 
         // If review form fails, display error message
-        if (error) {
+        if (error1) {
             $q.notify({
                 color: 'red-5',
                 textColor: 'white',
                 icon: 'warning',
-                message: 'Review submission failed authorization'
+                message: 'Review submission failed!'
             });
         }
-        else if (error1) {
-          console.log(error1)
-            $q.notify({
-                color: 'red-5',
-                textColor: 'white',
-                icon: 'warning',
-                message: 'Review submission failed database'
-            });
-        }
-        // If registration successful,
-        // display success message and redirect to login page
+        // If review succeeds, display success message
         else {
             $q.notify({
                 color: 'green-4',
@@ -271,8 +289,9 @@ export default defineComponent({
                 icon: 'cloud_done',
                 message: 'Review submitted!'
             });
-            router.push('/profile')
         }
+        // Reset value of stars to 0 for future reviews
+        numStars.value = 0;
       }
     }
   }
