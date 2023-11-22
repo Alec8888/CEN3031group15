@@ -1,5 +1,26 @@
 <template>
+  
   <q-page padding class="q-gutter-md">
+
+    <q-card>
+        <div class="text-subtitle1">
+          <q-btn flat color="secondary" :icon="showAccountNotifications ? 'expand_more' : 'chevron_right'" @click="showNotifications" />
+          Notifications
+        </div>
+    </q-card>
+
+    <div v-if="showAccountNotifications" class="row q-gutter-md" style="margin-top: 5px;">
+      <q-item class="bg-secondary text-white" v-for="(message,index) in messages" :key="index">
+        <q-item-section>
+          <q-item-label>{{ message.notification_type }}</q-item-label>
+          <q-item-label >{{ formatMessageTime(message.time) }}</q-item-label>
+        </q-item-section>
+        <q-item-actions>
+          <q-btn flat @click="dismiss(index)">Dismiss</q-btn>
+          </q-item-actions>
+      </q-item>
+    </div>
+
     <q-card>
         <div class="text-subtitle1">
           <q-btn flat color="secondary" :icon="showActiveItems ? 'expand_more' : 'chevron_right'" @click="showActive" />
@@ -77,8 +98,9 @@ export default defineComponent({
     const showActiveItems = ref(false);
     const showPastItems = ref(false);
     const showAccountSettings = ref(false);
+    const showAccountNotifications = ref(false);
     const today = ref(new Date());
-
+    const messages = ref(null);
     const fetchDonations = async () => {
       try {
         // get current user id
@@ -129,8 +151,40 @@ export default defineComponent({
 
     };
 
+    const fetchMessages = async () => {
+      console.log("fetching messages")
+
+      try {
+        // get current user id
+        let { data: { user } } = await supabase.auth.getUser()
+        let currentUser_id = user.id;
+        console.log("current user id: " + currentUser_id);
+
+        // get messages from supabase for current user
+        let { data , error } = await supabase
+          .from('Notifications')
+          .select()
+          .filter('dismissed', 'eq', false)
+
+        if (error) {
+          throw new Error('Failed to fetch messages, error: ' + error.message);
+        }
+
+        messages.value = data;
+        console.log("messages: " + messages.value);
+        console.log(data[0])
+
+      } catch (error) {
+        console.error('Failed to fetch messages:', error.message);
+      }
+
+      console.log("done fetching messages")
+
+    };
+
     onMounted(() => {
       fetchDonations();
+      fetchMessages();
       let todayDate = new Date();
       today.value = todayDate.toISOString().split('T')[0];
       todayDate.setHours(0, 0, 0, 0);
@@ -152,6 +206,51 @@ export default defineComponent({
       console.log('Show Settings button clicked.');
       showAccountSettings.value = !showAccountSettings.value;
     }
+    const showNotifications = () => {
+      console.log('Show Notifications button clicked.');
+      showAccountNotifications.value = !showAccountNotifications.value;
+    }
+    const dismiss = async (index) => {
+      console.log('Dismiss button clicked.');
+
+      // Get the ID of the message to dismiss
+      const messageId = messages.value[index].id;
+
+      try {
+        // Update the 'dismissed' column to true in Supabase
+        let { data, error } = await supabase
+        .from('Notifications')
+        .update({ dismissed: true })
+        .eq('id', messageId);
+
+        if (error) {
+          throw new Error('Failed to dismiss message, error: ' + error.message);
+        }
+
+      console.log('Message dismissed:', data);
+
+      // Remove the dismissed message from the local messages array
+      messages.value.splice(index, 1);
+
+        } catch (error) {
+          console.error('Failed to dismiss message:', error.message);
+        }
+    }
+    const formatMessageTime = (time) => {
+      const dateObject = new Date(time);
+      const formatter = new Intl.DateTimeFormat('default', {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        timeZoneName: 'short'
+      });
+
+      return formatter.format(dateObject);
+    };
+
     return {
       pantryItems_active,
       pantryItems_expired,
@@ -162,7 +261,13 @@ export default defineComponent({
       showPastItems,
       showAccountSettings,
       showPast,
-      showSettings
+      showSettings,
+      showAccountNotifications,
+      showNotifications,
+      messages,
+      fetchMessages,
+      dismiss,
+      formatMessageTime
     }
   }
 })
