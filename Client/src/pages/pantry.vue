@@ -4,6 +4,14 @@
     <!-- <q-input rounded outlined v-model="searchText" label="Search..." /> -->
     <div class="q-gutter-md row justify-center" >
 
+      <q-btn
+        class="glossy"
+        color="accent"
+        label="Clear Filters"
+        icon="filter_list"
+        @click="clearFilters"
+      />
+
       <q-btn-dropdown
         class="glossy"
         color="accent"
@@ -182,6 +190,15 @@ export default {
         console.error('Error fetching donations:', error);
       }
     };
+
+    const clearFilters = () => {
+      console.log('Clearing filters.');
+      zipCodes_selected.value = [];
+      states_selected.value = [];
+      cities_selected.value = [];
+      organizations_selected.value = [];
+      fetchDonations();
+    }
     
     onMounted(async () => {
       await fetchDonations();
@@ -381,7 +398,7 @@ export default {
       reserveDonation,
       searchText,
       watch,
-      fetchDonations, // was working without this?
+      fetchDonations,
       mobileData: ref(false),
       bluetooth: ref(false),
       zipCodes,
@@ -396,6 +413,7 @@ export default {
       organizations,
       organizations_selected,
       updateOrganizations,
+      clearFilters,
       pantryItem
 
     };
