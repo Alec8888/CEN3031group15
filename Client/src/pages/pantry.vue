@@ -35,11 +35,11 @@
 
           </q-card-section>
 
-          <q-card-section v-for="(user, index) in selectedOrganization" :key="index">
-            Email: {{ user.Email }}
+          <q-card-section>
+            Email: {{ selectedOrganization[0].Email }}
             <br>
             <br>
-            Phone: {{ user.Phone }}
+            Phone: {{ selectedOrganization[0].Phone }}
           </q-card-section>
 
         </div>
