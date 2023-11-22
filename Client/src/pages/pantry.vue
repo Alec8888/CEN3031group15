@@ -74,6 +74,7 @@
 
       <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems" :key="index">
         <q-card-section>
+          <div class="text-h6 hidden">{{ pantry_item.id }}</div>
           <div class="text-h6">{{ pantry_item.org_displayname }}</div>
         </q-card-section>
         <q-card-section>
@@ -85,7 +86,7 @@
         </q-card-section>
         <q-separator dark />
         <q-card-actions class="justify-around">
-          <q-btn flat @click="reserveDonation">Reserve</q-btn>
+          <q-btn flat @click="() => reserveDonation(pantry_item)">Reserve</q-btn>
           <q-btn flat @click="() => contact(pantry_item)">Contact</q-btn>
         </q-card-actions>
 
@@ -95,14 +96,17 @@
     <q-dialog
       v-model="clickedCall"
     >
-      <q-card style="width: 300px">
+      <q-card style="width: 300px" >
         <div class="q-pd-md">
           <q-card-section>
-            Email: {{ selectedOrganization.email }}
+
           </q-card-section>
 
           <q-card-section>
-            Phone: {{ selectedOrganization.phone }}
+            Email: {{ selectedOrganization[0].Email }}
+            <br>
+            <br>
+            Phone: {{ selectedOrganization[0].Phone }}
           </q-card-section>
 
         </div>
@@ -119,14 +123,14 @@
       <q-card style="width: 300px">
         <div class="q-pd-md">
           <q-card-section>
-            Are you sure you want to  reserve this food?
+            Your reservation has been sucessfully saved.
           </q-card-section>
           <q-card-section>
             You will have 24 hours to pick up the food.
           </q-card-section>
 
           <q-card-section>
-            After clicking OK, this food will be reserved for you and it will appear on your home page.
+            You can now see this reservation in your Home tab.
           </q-card-section>
 
         </div>
@@ -142,6 +146,7 @@
 <script>
 import { ref, watch, onMounted } from 'vue';
 import { supabase } from '../lib/supabaseClient'
+import { event } from 'quasar';
 
 export default {
   name: 'pantry-find-food',
@@ -164,12 +169,7 @@ export default {
         currentDate = currentDate.toISOString().slice(0, 10);
         console.log(currentDate);
 
-        const { data, error } = await supabase.from('donations').select().eq("reserved", false)
-        // need to filter out donations that are expired: 
-        // ideally do it with supabase: .lt("date_expires", currentDate)
-        // or do it in javascript like on account page
-
-        console.log("data: ", data);
+        const { data, error } = await supabase.from('donations').select().neq('reserved', true)
 
         if (error) {
           console.error('Error fetching donations:', error.message);
@@ -246,17 +246,36 @@ export default {
     const clickedCall = ref(false);
     const clickedReserve = ref(false);
 
-    const reserveDonation = () => {
+    const reserveDonation = async (pantry_item) => {
       console.log('Reserve food button clicked.');
+      console.log(pantry_item)
+      //get current user to make reservation
+      const currentUserId = ref(null);
+      const { data: { user } } = await supabase.auth.getUser()
+        currentUserId.value = user.id;
       clickedReserve.value = true;
+      const { error } = await supabase.from('donations').update([{reserved: true, donatee_id: currentUserId.value}]).eq('id', pantry_item.id)
+        if (error) {
+          console.error('Error fetching donations:', error);
+          return;
+        }
+        else
+        {
+          console.log("Donation successfully reserved.")
+        }
     };
 
     // take in a donation and return the organization
     // not sure we still need this with supabase
-    const contact = (organization) => {
+    const contact = async (pantry_item) => {
+      const {data, error } = await supabase.from('Accounts').select().eq('user_id', pantry_item.donator_id)
       console.log('Contact button clicked.');
-      console.log(organization);
-      selectedOrganization.value = organization;
+      if (error) {
+          console.error('Error fetching contact information:', error);
+          return;
+        }
+      selectedOrganization.value = data;
+      console.log(selectedOrganization.value);
       clickedCall.value = true;
     };
 

@@ -35,7 +35,7 @@
                 lazy-rules
                 :rules="[ val => val && val.length > 0 || 'Please type something']"
               />
-        
+
               <q-input
                 filled
                 data-cy="email-input"
@@ -50,7 +50,7 @@
                   val => /^.+@.+\..+$/.test(val) || 'Please type a valid email'
                 ]"
               />
-        
+
               <q-input
                 data-cy="orgName-input"
                 filled
@@ -68,8 +68,8 @@
                 lazy-rules
                 color="secondary"
                 :rules="[ val => val && val.length > 0 || 'Please type something']"
-              /> 
-        
+              />
+
               <q-input
                 data-cy="city-input"
                 filled
@@ -79,16 +79,16 @@
                 color="secondary"
                 :rules="[ val => val && val.length > 0 || 'Please type something']"
               />
-  
+
               <q-select
                 data-cy="state-input"
                 filled
-                v-model="state" 
-                :options="states" 
+                v-model="state"
+                :options="states"
                 label="State*"
                 :rules="[ val => val !== null || 'Please select an option']"
               />
-        
+
               <q-input
                 data-cy="zip-input"
                 filled
@@ -99,7 +99,7 @@
                 mask="#####"
                 :rules="[ val => val && val.length > 0 || 'Please type something']"
               />
-        
+
               <q-input
                 data-cy="phone-input"
                 type="tel"
@@ -130,7 +130,7 @@
                   />
                 </template>
               </q-input>
-          
+
               <q-input
                   data-cy="confirm-password-input"
                   filled
@@ -151,29 +151,29 @@
                   />
                 </template>
               </q-input>
-              <q-chip 
-                clickable 
+              <q-chip
+                clickable
                 @click="read_eula = true"
                 data-cy="eula-link"
                 >
                 Read license and terms
               </q-chip>
-        
+
               <div>
                 <q-toggle data-cy="eula-accept" v-model="accept" label="I accept the license and terms" />
               </div>
-        
+
               <div>
                 <q-btn data-cy="submit-register" label="Submit" type="submit" color="primary"/>
                 <q-btn data-cy="reset-btn" label="Reset Form" type="reset" color="primary" flat/>
               </div>
             </q-form>
-  
+
         </q-card-section>
-  
+
       </q-card>
     </div>
-  
+
     <q-dialog v-model="read_eula">
         <eula_popup />
     </q-dialog>
@@ -189,7 +189,7 @@ import { useRouter } from 'vue-router'
 import { supabase } from 'src/lib/supabaseClient'
 
 export default {
-    components: { 
+    components: {
       eula_popup,
      },
     setup() {
@@ -295,10 +295,26 @@ export default {
                         password: password.value,
                     })
 
+                    const { data: { user } } = await supabase.auth.getUser()
+                    console.log(user.id);
+
                     // TODO:
                     // If registration successful, add user/org to user_profiles table
-                        // get user id from supabase
-                        // insert user/org into user_profiles table
+                        let { error1 } = await supabase.from('Accounts').
+                        insert({
+                          Name: name.value,
+                          Phone: phone.value,
+                          Donation_Status: donate.value,
+                          Address: streetAddress.value,
+                          City: city.value,
+                          State: state.value,
+                          Zip: zip.value,
+                          Organization: organization.value,
+                          user_id: user.id,
+                          Email: email.value,
+
+                          },
+                          )
 
                     // If registration fails, display error message
                     if (error) {
@@ -306,7 +322,16 @@ export default {
                             color: 'red-5',
                             textColor: 'white',
                             icon: 'warning',
-                            message: 'Form submission failed'
+                            message: 'Form submission failed authorization'
+                        });
+                    }
+                    else if (error1) {
+                      console.log(error1)
+                        $q.notify({
+                            color: 'red-5',
+                            textColor: 'white',
+                            icon: 'warning',
+                            message: 'Form submission failed database'
                         });
                     }
                     // If registration successful,

@@ -10,11 +10,11 @@
         <q-card-section>
           <div class="text-h6" >
             Complete the form below to donate food to the pantry.
-        
+
           </div>
           <div class="text-subtitle2">
             Then track your donation status on your home page.
-           </div> 
+           </div>
         </q-card-section>
         <q-card-section>
             <q-form
@@ -33,7 +33,7 @@
                   lazy-rules
                   :rules="[ val => val && val.length > 0 || 'Please type something']"
               />
-              <q-input 
+              <q-input
                 data-cy="input-orgName"
                 filled
                 v-model="orgDisplayName"
@@ -115,8 +115,8 @@
               <q-select
                 data-cy="input-pickupState"
                 filled
-                v-model="pickup_state" 
-                :options="states" 
+                v-model="pickup_state"
+                :options="states"
                 label="State of pickup location*"
                 :rules="[ val => val !== null || 'Please select an option']"
               />
@@ -293,6 +293,8 @@ export default defineComponent({
                 pickup_state: pickup_state.value.value,
                 donator_id: currentUserId.value,
                 user_email: currentUserEmail.value,
+                reserved: false,
+                donatee_id: null,
               },
             )
 
