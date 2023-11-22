@@ -42,9 +42,8 @@ From /client directory:
 - Open Cypress: `npx cypress open`
 - Run Cypress tests: `npx cypress run`
 
-
-## Server
-
-### Setup environment
-
-### Start server
+### Deploy
+- Package the quasar app: `quasar build`
+- log in to vercel: `vercel login`
+  - Note, the free version only allows one person, so for now I'm the only one who can deploy. Howeever, the goal is to set up CI/CD so that it will automatically deploy when we push to main.
+- Deploy to vercel: `vercel --prod`

@@ -1,9 +1,76 @@
 <template>
   <q-page padding>
 
-    <q-input rounded outlined v-model="searchText" label="Search..." />
+    <!-- <q-input rounded outlined v-model="searchText" label="Search..." /> -->
+    <div class="q-gutter-md row justify-center" >
 
-    <div class="row q-gutter-md" style="margin-top: 5px;">
+      <q-btn-dropdown
+        class="glossy"
+        color="accent"
+        label="Company"
+        icon="filter_list"
+      >
+        <div class="column">
+          <q-option-group
+            v-model="organizations_selected"
+            :options="organizations"
+            color="primary"
+            type="checkbox"
+          />
+        </div>
+      </q-btn-dropdown>
+
+      <q-btn-dropdown
+        class="glossy q-ml-md"
+        color="accent"
+        label="City"
+        icon="filter_list"
+        >
+        <div class="column">
+          <q-option-group
+          v-model="cities_selected"
+          :options="cities"
+          color="primary"
+          type="checkbox"
+          />
+        </div>
+      </q-btn-dropdown>
+
+      <q-btn-dropdown
+        class="glossy"
+        color="accent"
+        label="State"
+        icon="filter_list"
+        >
+        <div class="column">
+          <q-option-group
+          v-model="states_selected"
+          :options="states"
+          color="primary"
+          type="checkbox"
+          />
+        </div>
+      </q-btn-dropdown>
+    
+
+      <q-btn-dropdown
+        class="glossy"
+        color="accent"
+        label="Zip Code"
+        icon="filter_list"
+      >
+        <div class="column">
+          <q-option-group
+            v-model="zipCodes_selected"
+            :options="zipCodes"
+            color="primary"
+            type="checkbox"
+          />
+        </div>
+      </q-btn-dropdown>
+  </div>
+    
+    <div class="row q-gutter-md justify-center" style="margin-top: 5px;">
 
       <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems" :key="index">
         <q-card-section>
@@ -73,7 +140,6 @@
       </q-card>
     </q-dialog>
 
-
   </q-page>
 </template>
 
@@ -88,26 +154,94 @@ export default {
 
     const selectedOrganization = ref(null);
     const pantryItems = ref([]);
+    const zipCodes = ref([]);
+    const zipCodes_selected = ref([]);
+    const states = ref([]);
+    const states_selected = ref([]);
+    const cities = ref([]);
+    const cities_selected = ref([]);
+    const organizations = ref([]);
+    const organizations_selected = ref([]);
 
     const fetchDonations = async () => {
       try {
         var currentDate = new Date();
         currentDate = currentDate.toISOString().slice(0, 10);
         console.log(currentDate);
+
         const { data, error } = await supabase.from('donations').select().neq('reserved', true)
+
         if (error) {
-          console.error('Error fetching donations:', error);
+          console.error('Error fetching donations:', error.message);
           return;
         }
         pantryItems.value = data;
-        console.log("pantryItems: ", pantryItems.value);
-        console.log("pantryItems (stringified): " + JSON.stringify(pantryItems.value, null, 2));
+        // console.log("pantryItems: ", pantryItems.value);
+        // console.log("pantryItems (stringified): " + JSON.stringify(pantryItems.value, null, 2));
       } catch (error) {
         console.error('Error fetching donations:', error);
       }
     };
+    
+    onMounted(async () => {
+      await fetchDonations();
+      updateZipCodes();
+      updateStates();
+      updateCities();
+      updateOrganizations();
+    });
 
-    onMounted(fetchDonations);
+    const updateZipCodes = () => {
+      console.log('Updating zip codes.');
+      console.log('zipCodes: ', zipCodes.value)
+
+      zipCodes.value = [];
+      pantryItems.value.forEach((donation) => {
+        // if zip code is not in zipCodes, add it
+        if (!zipCodes.value.some(zipCode => zipCode.value === donation.pickup_zip)) {
+          console.log('Adding zip code: ', donation.pickup_zip);
+          zipCodes.value.push({ label: donation.pickup_zip, value: donation.pickup_zip });
+        }
+      });
+      console.log('zipCodes: ', zipCodes);
+    }
+    // update states from donations
+    const updateStates = () => {
+      console.log('pantryItems changed.');
+      states.value = [];
+      pantryItems.value.forEach((donation) => {
+        // if state is not in states, add it
+        if (!states.value.some(state => state.value === donation.pickup_state)) {
+          console.log('Adding state: ', donation.pickup_state);
+          states.value.push({ label: donation.pickup_state, value: donation.pickup_state });
+        }
+      });
+    }
+    // update cities from donations
+    const updateCities = () => {
+      console.log('pantryItems changed.');
+      cities.value = [];
+      pantryItems.value.forEach((donation) => {
+        // if city is not in cities, add it
+        if (!cities.value.some(city => city.value === donation.pickup_city)) {
+          console.log('Adding city: ', donation.pickup_city);
+          cities.value.push({ label: donation.pickup_city, value: donation.pickup_city });
+        }
+      });
+    }
+
+    // update organizations from donations
+    const updateOrganizations = () => {
+      console.log('pantryItems changed.');
+      organizations.value = [];
+      pantryItems.value.forEach((donation) => {
+        // if organization is not in organizations, add it
+        if (!organizations.value.some(organization => organization.value === donation.org_displayname)) {
+          console.log('Adding organization: ', donation.org_displayname);
+          organizations.value.push({ label: donation.org_displayname, value: donation.org_displayname });
+        }
+      });
+    }
 
     const clickedCall = ref(false);
     const clickedReserve = ref(false);
@@ -157,6 +291,82 @@ export default {
       }
     });
 
+    // update pantryItems from zipCodes_selected
+    watch(zipCodes_selected, async () => {
+      console.log('zipCodes_selected changed.');
+      if (zipCodes_selected.value.length === 0) {
+        console.log('zipCodes_selected is empty.');
+        fetchDonations();
+        return;
+      }
+      
+      // Fetch donations again before filtering
+      await fetchDonations();
+      pantryItems.value = pantryItems.value.filter((donation) => {
+        console.log("zipCodes_selected.value: ", zipCodes_selected.value)
+
+        // Compare donation.pickup_zip with the strings in zipCodes_selected.value
+        return zipCodes_selected.value.includes(donation.pickup_zip);
+      });
+    });
+
+    // update pantryItems from states_selected
+    watch(states_selected, async () => {
+      console.log('states_selected changed.');
+      if (states_selected.value.length === 0) {
+        console.log('states_selected is empty.');
+        fetchDonations();
+        return;
+      }
+      
+      // Fetch donations again before filtering
+      await fetchDonations();
+      pantryItems.value = pantryItems.value.filter((donation) => {
+        console.log("states_selected.value: ", states_selected.value)
+
+        // Compare donation.pickup_state with the strings in states_selected.value
+        return states_selected.value.includes(donation.pickup_state);
+      });
+    });
+
+    // update pantryItems from cities_selected
+    watch(cities_selected, async () => {
+      console.log('cities_selected changed.');
+      if (cities_selected.value.length === 0) {
+        console.log('cities_selected is empty.');
+        fetchDonations();
+        return;
+      }
+      
+      // Fetch donations again before filtering
+      await fetchDonations();
+      pantryItems.value = pantryItems.value.filter((donation) => {
+        console.log("cities_selected.value: ", cities_selected.value)
+
+        // Compare donation.pickup_city with the strings in cities_selected.value
+        return cities_selected.value.includes(donation.pickup_city);
+      });
+    });
+
+    // update pantryItems from organizations_selected
+    watch(organizations_selected, async () => {
+      console.log('organizations_selected changed.');
+      if (organizations_selected.value.length === 0) {
+        console.log('organizations_selected is empty.');
+        fetchDonations();
+        return;
+      }
+      
+      // Fetch donations again before filtering
+      await fetchDonations();
+      pantryItems.value = pantryItems.value.filter((donation) => {
+        console.log("organizations_selected.value: ", organizations_selected.value)
+
+        // Compare donation.org_displayname with the strings in organizations_selected.value
+        return organizations_selected.value.includes(donation.org_displayname);
+      });
+    });
+
     return {
       pantryItems,
       selectedOrganization,
@@ -166,7 +376,22 @@ export default {
       reserveDonation,
       searchText,
       watch,
-      fetchDonations // was working without this?
+      fetchDonations, // was working without this?
+      mobileData: ref(false),
+      bluetooth: ref(false),
+      zipCodes,
+      zipCodes_selected,
+      updateZipCodes,
+      states,
+      states_selected,
+      cities,
+      cities_selected,
+      updateCities,
+      updateStates,
+      organizations,
+      organizations_selected,
+      updateOrganizations
+
     };
   }
 }
