@@ -14,10 +14,8 @@
       <q-item class="bg-secondary text-white" v-for="(message,index) in messages" :key="index">
         <q-item-section>
           <q-item-label>{{ message.notification_type }}</q-item-label>
-          <q-item-label >{{ message.time }}</q-item-label>
-          
+          <q-item-label >{{ formatMessageTime(message.time) }}</q-item-label>
         </q-item-section>
-    
         <q-item-actions>
           <q-btn flat @click="dismiss(index)">Dismiss</q-btn>
           </q-item-actions>
@@ -235,19 +233,29 @@ export default defineComponent({
           throw new Error('Failed to dismiss message, error: ' + error.message);
         }
 
-    console.log('Message dismissed:', data);
+      console.log('Message dismissed:', data);
 
-     // Remove the dismissed message from the local messages array
-     messages.value.splice(index, 1);
+      // Remove the dismissed message from the local messages array
+      messages.value.splice(index, 1);
 
-      } catch (error) {
-        console.error('Failed to dismiss message:', error.message);
-      }
+        } catch (error) {
+          console.error('Failed to dismiss message:', error.message);
+        }
+    }
+     const formatMessageTime = (time) => {
+      const dateObject = new Date(time);
+      const formatter = new Intl.DateTimeFormat('default', {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        timeZoneName: 'short'
+      });
+
+      return formatter.format(dateObject);
     };
-
-    
-
-    
     return {
       pantryItems_active,
       pantryItems_expired,
@@ -263,7 +271,8 @@ export default defineComponent({
       showNotifications,
       messages,
       fetchMessages,
-      dismiss
+      dismiss,
+      formatMessageTime
     }
   }
 })
