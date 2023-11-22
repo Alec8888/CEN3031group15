@@ -103,10 +103,10 @@
           </q-card-section>
 
           <q-card-section>
-            Email: {{ selectedOrganization[0].Email }}
-            <br>
-            <br>
-            Phone: {{ selectedOrganization[0].Phone }}
+            Email: {{ pantryItem.contact_email }}
+          </q-card-section>
+          <q-card-section>
+            Phone: {{ pantryItem.contact_phone }}
           </q-card-section>
 
         </div>
@@ -152,7 +152,7 @@ export default {
   name: 'pantry-find-food',
   setup() {
 
-    const selectedOrganization = ref(null);
+    const pantryItem = ref(null);
     const pantryItems = ref([]);
     const zipCodes = ref([]);
     const zipCodes_selected = ref([]);
@@ -265,18 +265,24 @@ export default {
         }
     };
 
-    // take in a donation and return the organization
-    // not sure we still need this with supabase
     const contact = async (pantry_item) => {
-      const {data, error } = await supabase.from('Accounts').select().eq('user_id', pantry_item.donator_id)
       console.log('Contact button clicked.');
-      if (error) {
-          console.error('Error fetching contact information:', error);
+      try {
+        console.log("donatorID: " + pantry_item.donator_id)
+        // get the contact info for the donator of the donation
+        const {data, error } = await supabase.from('donations').select().eq('donator_id', pantry_item.donator_id)
+        console.log('data: ' + JSON.stringify(data, null, 2));
+        if (error) {
+          console.error('Error fetching donations:', error.message);
           return;
         }
-      selectedOrganization.value = data;
-      console.log(selectedOrganization.value);
-      clickedCall.value = true;
+        pantryItem.value = data[0];
+        console.log("pantryItem value: " + pantryItem.value.contact_email);
+        console.log("pantryItem value: " + pantryItem.value.contact_phone);
+        clickedCall.value = true;
+      } catch (error) {
+        console.error('Error fetching donations:', error);
+      }
     };
 
     const searchText = ref('');
@@ -369,7 +375,6 @@ export default {
 
     return {
       pantryItems,
-      selectedOrganization,
       clickedCall,
       contact,
       clickedReserve,
@@ -390,7 +395,8 @@ export default {
       updateStates,
       organizations,
       organizations_selected,
-      updateOrganizations
+      updateOrganizations,
+      pantryItem
 
     };
   }
