@@ -7,7 +7,7 @@
           <div style="display: flex; align-items: center; justify-content: center;">
             <div class="text-h6" style="margin-right: 10px;">My Community Rating</div>
             <q-rating
-              v-model="ratingModel"
+              v-model="myRating"
               size="2em"
               color="secondary"
               readonly
@@ -16,7 +16,6 @@
         </div>
       </div>
     </q-card>
-    
 
     <q-card>
         <div class="text-subtitle1">
@@ -65,7 +64,7 @@
         </q-card-section>
         <q-separator dark />
         <q-card-actions class="justify-around">
-          <q-btn flat @click="showReview">Leave a Review</q-btn>
+          <q-btn flat @click="showReview(pantry_item)">Leave a Review</q-btn>
         </q-card-actions>
       </q-card>
     </div>
@@ -123,8 +122,10 @@ export default defineComponent({
     const showAccountSettings = ref(false);
     const clickedReview = ref(false);
     const today = ref(new Date());
+    const selected_donation = ref([]);
     const ratingModel = ref(0);
     const numStars = ref([]);
+    const myRating = ref(0);
     
     const fetchDonations = async () => {
       try {
@@ -198,8 +199,9 @@ export default defineComponent({
       console.log('Show Settings button clicked.');
       showAccountSettings.value = !showAccountSettings.value;
     }
-    const showReview = () => {
+    const showReview = (donation) => {
       console.log('Add review button clicked.');
+      selected_donation.value = donation;
       clickedReview.value = true;
     }
     return {
@@ -217,17 +219,28 @@ export default defineComponent({
       clickedReview,
       ratingModel,
       numStars,
+      myRating,
 
       async onSubmit() {
         const { data: { user } } = await supabase.auth.getUser()
         console.log(user.id);
+        const userType = ref([]);
+        // User Type is a Donatee, set id of user_id to review to donator
+        if (user.donation_status == false) {
+            userType.value = selected_donation.value.donator_id;
+        }
+        // User Type is a Donator, set id of user_id to review to donatee
+        else {
+          userType.value = selected_donation.value.donatee_id;
+        }
 
         let { error1 } = await supabase.from('reviews').
         insert({
+
           // TODO: get donation id from card clicked for remaining data
-          //user_id:
+          user_id: userType.value,
           rating: numStars.value,
-          // donation_id:
+          donation_id: selected_donation.value.donation_id,
           reviewer_id: user.id
           })
 
