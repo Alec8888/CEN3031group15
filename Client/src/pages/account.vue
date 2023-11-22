@@ -101,7 +101,6 @@ export default defineComponent({
     const showAccountNotifications = ref(false);
     const today = ref(new Date());
     const messages = ref(null);
-    
     const fetchDonations = async () => {
       try {
         // get current user id
