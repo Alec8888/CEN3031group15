@@ -2,7 +2,7 @@ describe('Donate', () => {
 
     it('Can submit donation', () => {
 
-        // sign in to get JWT token
+        // sign in
         cy.visit('/signin')
         cy.dataCy('email-input').type('a@gmail.com');
         cy.dataCy('password-input').type('qwerasdf');

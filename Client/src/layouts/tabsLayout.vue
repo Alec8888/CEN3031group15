@@ -103,16 +103,19 @@ export default defineComponent({
         // recomended for faster results but it's not working
         // const { data: { user }} = await supabase.auth.getSession().session.user 
 
-        console.log("user from supa: " + user.email)
-
-        userEmail.value = user.email;
-        isLoggedIn.value = true;
-  
+        // if user is not null
+        if (user) {
+          console.log("user from supa: " + user.email)
+          userEmail.value = user.email;
+          isLoggedIn.value = true;
+        }
+        else {
+          console.log("user is null")
+          isLoggedIn.value = false;
+          userEmail.value = null;
+        }
       } catch (error) {
         console.error('Failed to fetch current user:', error.message);
-        
-        userEmail.value = null;
-        isLoggedIn.value = false;
       }
 
     }
@@ -130,7 +133,7 @@ export default defineComponent({
           userEmail.value = null;
           router.push('/signin')
 
-          q.notify({
+          $q.notify({
             color: 'green-4',
             textColor: 'white',
             icon: 'cloud_done',
@@ -140,7 +143,7 @@ export default defineComponent({
       else {
           console.error('Logout failed');
 
-          q.notify({
+          $q.notify({
             color: 'red-4',
             textColor: 'white',
             icon: 'cloud_done',
