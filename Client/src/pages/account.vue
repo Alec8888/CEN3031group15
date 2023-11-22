@@ -186,7 +186,7 @@ export default defineComponent({
 
         // get messages from supabase for current user
         const { data , error } = await supabase
-          .from('messages')
+          .from('Notifications')
           .select()
           .eq('donator_id', currentUser_id);
 
