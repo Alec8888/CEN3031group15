@@ -13,13 +13,13 @@
     <div v-if="showAccountNotifications" class="row q-gutter-md" style="margin-top: 5px;">
       <q-item class="bg-secondary text-white" v-for="(message,index) in messages" :key="index">
         <q-item-section>
-          <q-item-label>{{ message.title }}</q-item-label>
+          <q-item-label>{{ message.notification_type }}</q-item-label>
           <q-item-label >{{ message.time }}</q-item-label>
-          <q-item-label >{{ message.donatee }} {{message.message}}</q-item-label>
+          
         </q-item-section>
     
         <q-item-actions>
-          <q-btn flat @click="acknowledge">Acknowledge</q-btn>
+          <q-btn flat @click="dismiss(index)">Dismiss</q-btn>
           </q-item-actions>
       </q-item>
     </div>
@@ -108,7 +108,7 @@ export default defineComponent({
     const showAccountSettings = ref(false);
     const showAccountNotifications = ref(false);
     const today = ref(new Date());
-    const messages = ref([]);
+    const messages = ref(null);
     
     const fetchDonations = async () => {
       try {
@@ -160,47 +160,33 @@ export default defineComponent({
     };
 
     const fetchMessages = async () => {
-      messages.value.push({
-        title: 'New Reservation',
-        message: 'is on the way to pickup your donation.',
-        time: '11/21/2023',
-        donatee: 'donatee_id'
-      });
-      messages.value.push({
-        title: 'Reservation cancelled',
-        message: ' cancelled their pickup',
-        time: '11/21/2023',
-        donatee: 'donatee_id'
-      });
-      messages.value.push({
-        title: 'Pickup Complete',
-        message: 'has picked up your donation.',
-        time: '11/21/2023',
-        donatee: 'donatee_id'
-      });
+      console.log("fetching messages")
 
       try {
         // get current user id
-        const { data: { user } } = await supabase.auth.getUser()
-        const currentUser_id = user.id;
+        let { data: { user } } = await supabase.auth.getUser()
+        let currentUser_id = user.id;
+        console.log("current user id: " + currentUser_id);
 
         // get messages from supabase for current user
-        const { data , error } = await supabase
+        let { data , error } = await supabase
           .from('Notifications')
           .select()
-          .eq('donator_id', currentUser_id);
+          .filter('dismissed', 'eq', false)
 
         if (error) {
           throw new Error('Failed to fetch messages, error: ' + error.message);
         }
 
-        for (let i = 0; i < data.length; i++) {
-          messages.value.push(data[i]);
-        }
+        messages.value = data;
+        console.log("messages: " + messages.value);
+        console.log(data[0])
 
       } catch (error) {
         console.error('Failed to fetch messages:', error.message);
       }
+
+      console.log("done fetching messages")
 
     };
 
@@ -232,10 +218,34 @@ export default defineComponent({
       console.log('Show Notifications button clicked.');
       showAccountNotifications.value = !showAccountNotifications.value;
     }
-    const acknowledge = (index) => {
-      console.log('Acknowledge button clicked.');
-      messages.value.splice(index, 1);
-    }
+    const dismiss = async (index) => {
+      console.log('Dismiss button clicked.');
+
+      // Get the ID of the message to dismiss
+      const messageId = messages.value[index].id;
+
+      try {
+        // Update the 'dismissed' column to true in Supabase
+        let { data, error } = await supabase
+        .from('Notifications')
+        .update({ dismissed: true })
+        .eq('id', messageId);
+
+        if (error) {
+          throw new Error('Failed to dismiss message, error: ' + error.message);
+        }
+
+    console.log('Message dismissed:', data);
+
+     // Remove the dismissed message from the local messages array
+     messages.value.splice(index, 1);
+
+      } catch (error) {
+        console.error('Failed to dismiss message:', error.message);
+      }
+    };
+
+    
 
     
     return {
@@ -253,7 +263,7 @@ export default defineComponent({
       showNotifications,
       messages,
       fetchMessages,
-      acknowledge
+      dismiss
     }
   }
 })
