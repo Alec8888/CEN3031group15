@@ -24,7 +24,7 @@
           <q-item-label >{{ formatMessageTime(message.time) }}</q-item-label>
         </q-item-section>
         <q-item-actions>
-          <q-btn flat @click="dismiss(index)">Dismiss</q-btn>
+          <q-btn flat @click="dismiss(message.id)">Dismiss</q-btn>
           </q-item-actions>
       </q-item>
     </div>
@@ -176,6 +176,7 @@ export default defineComponent({
           .select(`
                     notification_type,
                     time,
+                    id,
                     donations ( food )
                   `)
           .filter('dismissed', 'eq', false)
@@ -233,7 +234,7 @@ export default defineComponent({
       console.log('Dismiss button clicked.');
 
       // Get the ID of the message to dismiss
-      const messageId = messages.value[index].id;
+      const messageId =index;
 
       try {
         // Update the 'dismissed' column to true in Supabase
@@ -249,7 +250,7 @@ export default defineComponent({
       console.log('Message dismissed:', data);
 
       // Remove the dismissed message from the local messages array
-      messages.value.splice(index, 1);
+      fetchMessages();
 
         } catch (error) {
           console.error('Failed to dismiss message:', error.message);
