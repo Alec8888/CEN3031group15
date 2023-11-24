@@ -267,8 +267,10 @@ export default {
       console.log(pantry_item)
       //get current user to make reservation
       const currentUserId = ref(null);
+      const currentUserEmail = ref(null);
       const { data: { user } } = await supabase.auth.getUser()
       currentUserId.value = user.id;
+      currentUserEmail.value = user.email;
       clickedReserve.value = true;
 
       // update donation in db to reserved
@@ -288,8 +290,9 @@ export default {
           .update({
             user_id: pantry_item.donator_id,
             donation_id: pantry_item.id,
-            notification_type: 'Reservation',
+            notification_type: 'New Reservation',
             food: pantry_item.food,
+            info: 'Your donation has been reserved by ' + currentUserEmail.value,
             time: new Date()
           })
           .eq('donation_id', pantry_item.id);
@@ -301,6 +304,7 @@ export default {
           console.log(pantry_item.donator_id);
           console.log(pantry_item.id);
           console.log(pantry_item.food);
+          console.log(currentUserEmail.value)
           console.log('Notification successfully added.');
         }
     };

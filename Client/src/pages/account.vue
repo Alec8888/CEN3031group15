@@ -13,6 +13,8 @@
       <q-item class="bg-secondary text-white" v-for="(message,index) in messages" :key="index">
         <q-item-section>
           <q-item-label>{{ message.notification_type }}</q-item-label>
+          <q-item-label>{{ message.info }}</q-item-label>
+          <q-item-label>{{ message.food }}</q-item-label>
           <q-item-label >{{ formatMessageTime(message.time) }}</q-item-label>
         </q-item-section>
         <q-item-actions>
