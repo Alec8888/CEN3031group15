@@ -267,10 +267,8 @@ export default {
       console.log(pantry_item)
       //get current user to make reservation
       const currentUserId = ref(null);
-      const currentUserEmail = ref(null);
       const { data: { user } } = await supabase.auth.getUser()
       currentUserId.value = user.id;
-      currentUserEmail.value = user.email;
       clickedReserve.value = true;
 
       // update donation in db to reserved
@@ -287,12 +285,10 @@ export default {
       // update notifications in db
         const { error: notificationError } = await supabase
           .from('Notifications')
-          .update({
+          .insert({
             user_id: pantry_item.donator_id,
             donation_id: pantry_item.id,
             notification_type: 'New Reservation',
-            food: pantry_item.food,
-            info: 'Your donation has been reserved by ' + currentUserEmail.value,
             time: new Date()
           })
           .eq('donation_id', pantry_item.id);

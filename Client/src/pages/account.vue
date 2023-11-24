@@ -20,8 +20,7 @@
       <q-item class="bg-secondary text-white" v-for="(message,index) in messages" :key="index">
         <q-item-section>
           <q-item-label>{{ message.notification_type }}</q-item-label>
-          <q-item-label>{{ message.info }}</q-item-label>
-          <q-item-label>{{ message.food }}</q-item-label>
+          <q-item-label>{{ message.donations.food }}</q-item-label>
           <q-item-label >{{ formatMessageTime(message.time) }}</q-item-label>
         </q-item-section>
         <q-item-actions>
@@ -174,7 +173,11 @@ export default defineComponent({
         // get messages from supabase for current user
         let { data , error } = await supabase
           .from('Notifications')
-          .select()
+          .select(`
+                    notification_type,
+                    time,
+                    donations ( food )
+                  `)
           .filter('dismissed', 'eq', false)
           .filter('user_id', 'eq', currentUser_id); // Add a filter for user_id
 
