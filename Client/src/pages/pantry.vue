@@ -281,6 +281,28 @@ export default {
         {
           console.log("Donation successfully reserved.")
         }
+
+      // update notifications in db
+        const { error: notificationError } = await supabase
+          .from('Notifications')
+          .update({
+            user_id: pantry_item.donator_id,
+            donation_id: pantry_item.id,
+            notification_type: 'Reservation',
+            food: pantry_item.food,
+            time: new Date()
+          })
+          .eq('donation_id', pantry_item.id);
+
+        if (notificationError) {
+          console.error('Error updating Notifications:', notificationError);
+          return;
+        } else {
+          console.log(pantry_item.donator_id);
+          console.log(pantry_item.id);
+          console.log(pantry_item.food);
+          console.log('Notification successfully added.');
+        }
     };
 
     const contact = async (pantry_item) => {
