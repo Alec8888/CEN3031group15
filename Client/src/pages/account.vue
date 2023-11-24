@@ -266,12 +266,6 @@ export default defineComponent({
 
       return formatter.format(dateObject);
     };
-    // if there are messages click showNotifications
-    watch(messages, (newMessages) => {
-      if (newMessages.length > 0) {
-        showAccountNotifications.value = true;
-      }
-    });
 
     return {
       pantryItems_active,
