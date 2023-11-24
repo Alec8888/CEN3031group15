@@ -2,10 +2,10 @@
   
   <q-page padding class="q-gutter-md">
 
-    <q-banner v-if="messages && messages.length > 0" inline-actions class="text-white bg-secondary">
-      You have new notifications!
+    <q-banner v-if="messages && messages.length > 0 && banner" inline-actions class="text-white bg-secondary">
+      {{ messages.length === 1 ? 'You have a new notification!' : 'You have new notifications!' }}
       <template v-slot:action>
-        <q-btn flat color="white" label="Dismiss" />
+        <q-btn flat color="white" label="Dismiss" @click="dismissBanner"/>
       </template>
     </q-banner>
 
@@ -111,6 +111,7 @@ export default defineComponent({
     const showAccountNotifications = ref(false);
     const today = ref(new Date());
     const messages = ref(null);
+    const banner = ref(true);
     const fetchDonations = async () => {
       try {
         // get current user id
@@ -221,6 +222,10 @@ export default defineComponent({
       console.log('Show Notifications button clicked.');
       showAccountNotifications.value = !showAccountNotifications.value;
     }
+    const dismissBanner = () => {
+      console.log('Dismiss Banner button clicked.');
+      banner.value = !banner.value;
+    }
     const dismiss = async (index) => {
       console.log('Dismiss button clicked.');
 
@@ -284,7 +289,9 @@ export default defineComponent({
       messages,
       fetchMessages,
       dismiss,
-      formatMessageTime
+      formatMessageTime,
+      dismissBanner,
+      banner
     }
   }
 })
