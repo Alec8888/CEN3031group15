@@ -301,10 +301,6 @@ export default {
           console.error('Error updating Notifications:', notificationError);
           return;
         } else {
-          console.log(pantry_item.donator_id);
-          console.log(pantry_item.id);
-          console.log(pantry_item.food);
-          console.log(currentUserEmail.value)
           console.log('Notification successfully added.');
         }
     };

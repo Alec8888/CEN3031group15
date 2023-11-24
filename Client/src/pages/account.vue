@@ -9,7 +9,7 @@
         </div>
     </q-card>
 
-    <div v-if="showAccountNotifications" class="row q-gutter-md" style="margin-top: 5px;">
+    <div v-if="showAccountNotifications"  class="row q-gutter-md" style="margin-top: 5px;">
       <q-item class="bg-secondary text-white" v-for="(message,index) in messages" :key="index">
         <q-item-section>
           <q-item-label>{{ message.notification_type }}</q-item-label>
@@ -90,6 +90,7 @@ import { useQuasar } from 'quasar'
 import { defineComponent } from 'vue'
 import { ref, onMounted } from 'vue';
 import { supabase } from '../lib/supabaseClient'
+import { watch} from 'vue'
 
 export default defineComponent({
   name: 'AccountPage',
@@ -252,6 +253,12 @@ export default defineComponent({
 
       return formatter.format(dateObject);
     };
+    // if there are messages click showNotifications
+    watch(messages, (newMessages) => {
+      if (newMessages.length > 0) {
+        showAccountNotifications.value = true;
+      }
+    });
 
     return {
       pantryItems_active,
