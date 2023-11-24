@@ -2,6 +2,13 @@
   
   <q-page padding class="q-gutter-md">
 
+    <q-banner v-if="messages && messages.length > 0" inline-actions class="text-white bg-secondary">
+      You have new notifications!
+      <template v-slot:action>
+        <q-btn flat color="white" label="Dismiss" />
+      </template>
+    </q-banner>
+
     <q-card>
         <div class="text-subtitle1">
           <q-btn flat color="secondary" :icon="showAccountNotifications ? 'expand_more' : 'chevron_right'" @click="showNotifications" />
@@ -168,6 +175,7 @@ export default defineComponent({
           .from('Notifications')
           .select()
           .filter('dismissed', 'eq', false)
+          .filter('user_id', 'eq', currentUser_id); // Add a filter for user_id
 
         if (error) {
           throw new Error('Failed to fetch messages, error: ' + error.message);
