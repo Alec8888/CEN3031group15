@@ -2,6 +2,13 @@
   
   <q-page padding class="q-gutter-md">
 
+    <q-banner v-if="messages && messages.length > 0 && banner" inline-actions class="text-white bg-secondary">
+      {{ messages.length === 1 ? 'You have a new notification!' : 'You have new notifications!' }}
+      <template v-slot:action>
+        <q-btn flat color="white" label="Dismiss" @click="dismissBanner"/>
+      </template>
+    </q-banner>
+
     <q-card>
         <div class="text-subtitle1">
           <q-btn flat color="secondary" :icon="showAccountNotifications ? 'expand_more' : 'chevron_right'" @click="showNotifications" />
@@ -9,14 +16,15 @@
         </div>
     </q-card>
 
-    <div v-if="showAccountNotifications" class="row q-gutter-md" style="margin-top: 5px;">
+    <div v-if="showAccountNotifications"  class="row q-gutter-md" style="margin-top: 5px;">
       <q-item class="bg-secondary text-white" v-for="(message,index) in messages" :key="index">
         <q-item-section>
           <q-item-label>{{ message.notification_type }}</q-item-label>
+          <q-item-label>{{ message.donations.food }}</q-item-label>
           <q-item-label >{{ formatMessageTime(message.time) }}</q-item-label>
         </q-item-section>
         <q-item-actions>
-          <q-btn flat @click="dismiss(index)">Dismiss</q-btn>
+          <q-btn flat @click="dismiss(message.id)">Dismiss</q-btn>
           </q-item-actions>
       </q-item>
     </div>
@@ -88,6 +96,7 @@ import { useQuasar } from 'quasar'
 import { defineComponent } from 'vue'
 import { ref, onMounted } from 'vue';
 import { supabase } from '../lib/supabaseClient'
+import { watch} from 'vue'
 
 export default defineComponent({
   name: 'AccountPage',
@@ -101,6 +110,7 @@ export default defineComponent({
     const showAccountNotifications = ref(false);
     const today = ref(new Date());
     const messages = ref(null);
+    const banner = ref(true);
     const fetchDonations = async () => {
       try {
         // get current user id
@@ -163,8 +173,14 @@ export default defineComponent({
         // get messages from supabase for current user
         let { data , error } = await supabase
           .from('Notifications')
-          .select()
+          .select(`
+                    notification_type,
+                    time,
+                    id,
+                    donations ( food )
+                  `)
           .filter('dismissed', 'eq', false)
+          .filter('user_id', 'eq', currentUser_id); // Add a filter for user_id
 
         if (error) {
           throw new Error('Failed to fetch messages, error: ' + error.message);
@@ -210,11 +226,15 @@ export default defineComponent({
       console.log('Show Notifications button clicked.');
       showAccountNotifications.value = !showAccountNotifications.value;
     }
+    const dismissBanner = () => {
+      console.log('Dismiss Banner button clicked.');
+      banner.value = !banner.value;
+    }
     const dismiss = async (index) => {
       console.log('Dismiss button clicked.');
 
       // Get the ID of the message to dismiss
-      const messageId = messages.value[index].id;
+      const messageId =index;
 
       try {
         // Update the 'dismissed' column to true in Supabase
@@ -230,7 +250,7 @@ export default defineComponent({
       console.log('Message dismissed:', data);
 
       // Remove the dismissed message from the local messages array
-      messages.value.splice(index, 1);
+      fetchMessages();
 
         } catch (error) {
           console.error('Failed to dismiss message:', error.message);
@@ -267,7 +287,9 @@ export default defineComponent({
       messages,
       fetchMessages,
       dismiss,
-      formatMessageTime
+      formatMessageTime,
+      dismissBanner,
+      banner
     }
   }
 })
