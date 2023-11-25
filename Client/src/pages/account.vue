@@ -2,11 +2,15 @@
   
   <q-page padding class="q-gutter-md">
 
-    <q-banner v-if="messages && messages.length > 0 && banner" inline-actions class="text-white bg-secondary">
+    <q-banner dense v-if="messages && messages.length > 0 && banner" inline-actions class="text-white bg-secondary">
+      <q-icon name="notifications_active" color="primary" size="sm" />
+
       {{ messages.length === 1 ? 'You have a new notification!' : 'You have new notifications!' }}
+
       <template v-slot:action>
-        <q-btn flat color="white" label="Dismiss" @click="dismissBanner"/>
+        <q-btn flat dense label="Dismiss" @click="dismissBanner"/>
       </template>
+
     </q-banner>
 
     <q-card>
@@ -16,18 +20,27 @@
         </div>
     </q-card>
 
-    <div v-if="showAccountNotifications"  class="row q-gutter-md" style="margin-top: 5px;">
-      <q-item class="bg-secondary text-white" v-for="(message,index) in messages" :key="index">
-        <q-item-section>
-          <q-item-label>{{ message.notification_type }}</q-item-label>
-          <q-item-label>{{ message.donations.food }}</q-item-label>
-          <q-item-label >{{ formatMessageTime(message.time) }}</q-item-label>
-        </q-item-section>
-        <q-item-actions>
-          <q-btn flat @click="dismiss(message.id)">Dismiss</q-btn>
-          </q-item-actions>
-      </q-item>
-    </div>
+        <q-list dark row v-if="showAccountNotifications" bordered dense separator class="rounded-borders">
+          <q-item class="bg-secondary text-white" v-for="(message,index) in messages" :key="index">
+
+            <q-item-section side>
+              <q-btn flat text-color="grey" size="sm" dense round icon="delete" @click="dismiss(message.id)"/>
+            </q-item-section>
+            
+            <q-item-section>
+              <q-item-label>{{ message.notification_type }}</q-item-label>
+              <q-item-label lines="1">{{ message.donations.food }}</q-item-label>
+            </q-item-section>
+
+            <q-item-section side>
+              <q-item-label>
+                {{ new Date(message.time).toLocaleDateString([], { month: 'short', day: '2-digit' }) }}
+                {{ new Date(message.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}
+              </q-item-label>
+            </q-item-section>
+
+          </q-item>
+        </q-list>
 
     <q-card>
         <div class="text-subtitle1">
