@@ -52,19 +52,20 @@
     <div v-if="showActiveItems" class="row q-gutter-md" style="margin-top: 5px;">
       <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems_active" :key="index">
         <q-card-section>
+          <div class="text-primary"> Expires: {{ pantry_item.date_expires }} </div>
           <div class="text-h6">{{ pantry_item.org }}</div>
-        </q-card-section>
-        <q-card-section>
           <div class="text-subtitle2">{{ pantry_item.food }}</div>
         </q-card-section>
         <q-card-section>
           <div class="text-subtitle2">{{ pantry_item.pickup_streetAddress }}</div>
           <div class="text-subtitle2">{{ pantry_item.pickup_city }} , {{ pantry_item.pickup_state.value }} {{ pantry_item.pickup_zip }}</div>
         </q-card-section>
-        <q-separator dark />
-        <q-card-actions class="justify-around">
-          <q-btn flat @click="cancel">Cancel</q-btn>
-        </q-card-actions>
+        <div class="absolute-bottom">
+          <q-separator dark />
+          <q-card-actions class="justify-around">
+            <q-btn flat @click="cancel">Cancel</q-btn>
+          </q-card-actions>
+        </div>
       </q-card>
     </div>
 
@@ -77,29 +78,23 @@
 
     <div v-if="showPastItems" class="row q-gutter-md" style="margin-top: 5px;">
       <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems_expired" :key="index">
-        <q-card-section>
+        <q-card-section >
+          <div class="text-primary"> Expired: {{ pantry_item.date_expires }} </div>
           <div class="text-h6">{{ pantry_item.org }}</div>
-        </q-card-section>
-        <q-card-section>
           <div class="text-subtitle2">{{ pantry_item.food }}</div>
-        </q-card-section>
-        <q-card-section>
+          <br/>
           <div class="text-subtitle2">{{ pantry_item.pickup_streetAddress }}</div>
           <div class="text-subtitle2">{{ pantry_item.pickup_city }} , {{ pantry_item.pickup_state.value }} {{ pantry_item.pickup_zip }}</div>
         </q-card-section>
-        <q-separator dark />
-        <q-card-actions class="justify-around">
-          <q-btn flat @click="cancel">Cancel</q-btn>
-        </q-card-actions>
+
+        <div class="absolute-bottom">
+          <q-separator dark />
+          <q-card-actions class="justify-around">
+            <q-btn flat @click="cancel">Cancel</q-btn>
+          </q-card-actions>
+        </div>
       </q-card>
     </div>
-
-    <!-- <q-card>
-        <div class="text-subtitle1">
-          <q-btn @click="showSettings" flat color="secondary" :icon="showAccountSettings ? 'expand_more' : 'chevron_right'" />
-          Account Settings
-        </div>
-    </q-card> -->
 
   </q-page>
 </template>
@@ -307,3 +302,13 @@ export default defineComponent({
   }
 })
 </script>
+
+<style >
+  .donationCards
+  {
+    width: 100%;
+    max-width: 250px;
+    height: 250px;
+  }
+
+</style>

@@ -80,23 +80,34 @@
     
     <div class="row q-gutter-md justify-center" style="margin-top: 5px;">
 
-      <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems" :key="index">
-        <q-card-section>
-          <div class="text-h6 hidden">{{ pantry_item.id }}</div>
-          <div class="text-h6">{{ pantry_item.org_displayname }}</div>
-        </q-card-section>
-        <q-card-section>
-          <div class="text-subtitle2">{{ pantry_item.food }}</div>
-        </q-card-section>
-        <q-card-section>
+      <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems" :key="index" >
+
+        <q-card-section >
+          <div class="text-h6">
+            {{ pantry_item.org_displayname }}
+            <q-rating
+                  v-model="ratingModel"
+                  size="xs"
+                  color="primary"
+                  icon="star_border"
+                  icon-selected="star"
+                />
+          </div>
+          <div class="text-subtitle2">{{ pantry_item.food }}</div> 
+          <br/>
           <div class="text-subtitle2">{{ pantry_item.pickup_streetaddress }}</div>
           <div class="text-subtitle2">{{ pantry_item.pickup_city }} , {{ pantry_item.pickup_state }} {{ pantry_item.pickup_zip }}</div>
+          
+          <div class="text-subtitle2 text-primary">Expires: {{ new Date(pantry_item.date_expires).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) }}</div>
         </q-card-section>
-        <q-separator dark />
-        <q-card-actions class="justify-around">
-          <q-btn flat @click="() => reserveDonation(pantry_item)">Reserve</q-btn>
-          <q-btn flat @click="() => contact(pantry_item)">Contact</q-btn>
-        </q-card-actions>
+        
+        <div class="absolute-bottom">
+          <q-separator dark />
+          <q-card-actions align="center" >
+            <q-btn flat @click="() => reserveDonation(pantry_item)">Reserve</q-btn>
+            <q-btn flat @click="() => contact(pantry_item)">Contact</q-btn>
+          </q-card-actions>
+        </div>
 
       </q-card>
 
@@ -433,7 +444,8 @@ export default {
       organizations_selected,
       updateOrganizations,
       clearFilters,
-      pantryItem
+      pantryItem,
+      ratingModel: ref(3)
 
     };
   }
@@ -444,6 +456,7 @@ export default {
   {
     width: 100%;
     max-width: 250px;
+    height: 250px;
   }
 
 </style>
