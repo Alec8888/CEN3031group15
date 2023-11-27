@@ -64,7 +64,7 @@
         </q-card-section>
         <q-separator dark />
         <q-card-actions class="justify-around">
-          <q-btn flat @click="showReview(pantry_item)">Leave a Review</q-btn>
+          <q-btn flat @click="showReview(pantry_item)" :disable="reviewExists">Leave a Review</q-btn>
         </q-card-actions>
       </q-card>
     </div>
@@ -112,6 +112,7 @@
 import { useQuasar } from 'quasar'
 import { defineComponent } from 'vue'
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router'
 import { supabase } from '../lib/supabaseClient'
 
 export default defineComponent({
@@ -128,7 +129,8 @@ export default defineComponent({
     const selected_donation = ref([]);
     const numStars = ref(0);
     const myRating = ref(0);
-    const submitResult = ref([])
+    const submitResult = ref([]);
+    const reviewExists = ref(false);
     
     const fetchDonations = async () => {
       try {
@@ -180,12 +182,15 @@ export default defineComponent({
 
     };
 
-    onMounted(() => {
+    onMounted(async () => {
       fetchDonations();
       let todayDate = new Date();
       today.value = todayDate.toISOString().split('T')[0];
       todayDate.setHours(0, 0, 0, 0);
       console.log("onMounted todays date: " + today.value);
+
+      // Check review status for the selected donation when the page is mounted
+      await checkReviewExists();
     });
 
     const cancel = () => {
@@ -203,10 +208,28 @@ export default defineComponent({
       console.log('Show Settings button clicked.');
       showAccountSettings.value = !showAccountSettings.value;
     }
-    const showReview = (donation) => {
+    const showReview = async (donation) => {
       console.log('Add review button clicked.');
       selected_donation.value = donation;
+      await checkReviewExists();
       clickedReview.value = true;
+    }
+    const checkReviewExists = async () => {
+
+      const { data: { user } } = await supabase.auth.getUser()
+      console.log(user.id);
+
+      const { data, error } = await supabase
+        .from('reviews')
+        .select()
+        .eq('donation_id', selected_donation.value.id)
+        .eq('reviewer_id', user.id);
+
+      reviewExists.value = data && data.length > 0;
+
+      if (error) {
+        console.error('Error checking for review:', error.message);
+      }
     }
     
     return {
@@ -225,6 +248,8 @@ export default defineComponent({
       numStars,
       myRating,
       submitResult,
+      reviewExists,
+      checkReviewExists,
 
       onSubmit (evt) {
         const formData = new FormData(evt.target)
