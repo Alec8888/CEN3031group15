@@ -10,24 +10,6 @@
           <div class="custom-hammersmith" style="margin-left: 10px;">PantryPal</div>
         </q-toolbar-title>
 
-
-        <div class="q-gutter-sm">
-          <q-btn
-            v-if="!isLoggedIn"
-            color="secondary"
-            label="Sign In"
-            to="signin"
-             >
-          </q-btn>
-          <q-btn
-            v-if="!isLoggedIn"
-            color="secondary"
-            label="Register"
-            to="register"
-             >
-          </q-btn>
-        </div>
-
         <div>
           <q-btn
           data-cy="user-btn"

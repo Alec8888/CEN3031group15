@@ -1,5 +1,47 @@
 <template>
+  
   <q-page padding class="q-gutter-md">
+
+    <q-banner dense v-if="messages && messages.length > 0 && banner" inline-actions class="text-white bg-secondary">
+      <q-icon name="notifications_active" color="primary" size="sm" />
+
+      {{ messages.length === 1 ? 'You have a new notification!' : 'You have new notifications!' }}
+
+      <template v-slot:action>
+        <q-btn flat dense label="Dismiss" @click="dismissBanner"/>
+      </template>
+
+    </q-banner>
+
+    <q-card>
+        <div class="text-subtitle1">
+          <q-btn flat color="secondary" :icon="showAccountNotifications ? 'expand_more' : 'chevron_right'" @click="showNotifications" />
+          Notifications
+        </div>
+    </q-card>
+
+        <q-list dark row v-if="showAccountNotifications" bordered dense separator class="rounded-borders">
+          <q-item class="bg-secondary text-white" v-for="(message,index) in messages" :key="index">
+
+            <q-item-section side>
+              <q-btn flat text-color="grey" size="sm" dense round icon="delete" @click="dismiss(message.id)"/>
+            </q-item-section>
+            
+            <q-item-section>
+              <q-item-label>{{ message.notification_type }}</q-item-label>
+              <q-item-label lines="1">{{ message.donations.food }}</q-item-label>
+            </q-item-section>
+
+            <q-item-section side>
+              <q-item-label>
+                {{ new Date(message.time).toLocaleDateString([], { month: 'short', day: '2-digit' }) }}
+                {{ new Date(message.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}
+              </q-item-label>
+            </q-item-section>
+
+          </q-item>
+        </q-list>
+
 
     <q-card style="height: 33vh;">
       <div class="q-pd-md" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
@@ -27,19 +69,20 @@
     <div v-if="showActiveItems" class="row q-gutter-md" style="margin-top: 5px;">
       <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems_active" :key="index">
         <q-card-section>
+          <div class="text-primary"> Expires: {{ pantry_item.date_expires }} </div>
           <div class="text-h6">{{ pantry_item.org }}</div>
-        </q-card-section>
-        <q-card-section>
           <div class="text-subtitle2">{{ pantry_item.food }}</div>
         </q-card-section>
         <q-card-section>
           <div class="text-subtitle2">{{ pantry_item.pickup_streetAddress }}</div>
           <div class="text-subtitle2">{{ pantry_item.pickup_city }} , {{ pantry_item.pickup_state.value }} {{ pantry_item.pickup_zip }}</div>
         </q-card-section>
-        <q-separator dark />
-        <q-card-actions class="justify-around">
-          <q-btn flat @click="cancel">Cancel</q-btn>
-        </q-card-actions>
+        <div class="absolute-bottom">
+          <q-separator dark />
+          <q-card-actions class="justify-around">
+            <q-btn flat @click="cancel">Cancel</q-btn>
+          </q-card-actions>
+        </div>
       </q-card>
     </div>
 
@@ -52,22 +95,23 @@
 
     <div v-if="showPastItems" class="row q-gutter-md" style="margin-top: 5px;">
       <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems_expired" :key="index">
-        <q-card-section>
+        <q-card-section >
+          <div class="text-primary"> Expired: {{ pantry_item.date_expires }} </div>
           <div class="text-h6">{{ pantry_item.org }}</div>
-        </q-card-section>
-        <q-card-section>
           <div class="text-subtitle2">{{ pantry_item.food }}</div>
-        </q-card-section>
-        <q-card-section>
+          <br/>
           <div class="text-subtitle2">{{ pantry_item.pickup_streetAddress }}</div>
           <div class="text-subtitle2">{{ pantry_item.pickup_city }} , {{ pantry_item.pickup_state.value }} {{ pantry_item.pickup_zip }}</div>
         </q-card-section>
-        <q-separator dark />
-        <q-card-actions class="justify-around">
-          <q-btn flat :disable="reviewedDonations.includes(pantry_item.id)" @click="showReview(pantry_item)">
+
+        <div class="absolute-bottom">
+          <q-separator dark />
+          <q-card-actions class="justify-around">
+            <q-btn flat :disable="reviewedDonations.includes(pantry_item.id)" @click="showReview(pantry_item)">
             {{ reviewedDonations.includes(pantry_item.id)  ? 'Review Completed' : 'Leave a Review' }}
           </q-btn>
-        </q-card-actions>
+          </q-card-actions>
+        </div>
       </q-card>
     </div>
 
@@ -100,13 +144,6 @@
       </q-card>
     </q-dialog>
     
-    <!-- <q-card>
-        <div class="text-subtitle1">
-          <q-btn @click="showSettings" flat color="secondary" :icon="showAccountSettings ? 'expand_more' : 'chevron_right'" />
-          Account Settings
-        </div>
-    </q-card> -->
-
   </q-page>
 </template>
 
@@ -115,6 +152,7 @@ import { useQuasar } from 'quasar'
 import { defineComponent } from 'vue'
 import { ref, onMounted } from 'vue'
 import { supabase } from '../lib/supabaseClient'
+import { watch} from 'vue'
 
 export default defineComponent({
   name: 'AccountPage',
@@ -125,9 +163,11 @@ export default defineComponent({
     const showActiveItems = ref(false);
     const showPastItems = ref(false);
     const showAccountSettings = ref(false);
+    const showAccountNotifications = ref(false);
     const clickedReview = ref(false);
     const today = ref(new Date());
-    const selected_donation = ref([]);
+    const messages = ref(null);
+    const banner = ref(true);    const selected_donation = ref([]);
     const numStars = ref(0);
     const nullRating = ref(0);
     const ratingResult = ref([]);
@@ -183,8 +223,46 @@ export default defineComponent({
 
     };
 
+    const fetchMessages = async () => {
+      console.log("fetching messages")
+
+      try {
+        // get current user id
+        let { data: { user } } = await supabase.auth.getUser()
+        let currentUser_id = user.id;
+        console.log("current user id: " + currentUser_id);
+
+        // get messages from supabase for current user
+        let { data , error } = await supabase
+          .from('Notifications')
+          .select(`
+                    notification_type,
+                    time,
+                    id,
+                    donations ( food )
+                  `)
+          .filter('dismissed', 'eq', false)
+          .filter('user_id', 'eq', currentUser_id); // Add a filter for user_id
+
+        if (error) {
+          throw new Error('Failed to fetch messages, error: ' + error.message);
+        }
+
+        messages.value = data;
+        console.log("messages: " + messages.value);
+        console.log(data[0])
+
+      } catch (error) {
+        console.error('Failed to fetch messages:', error.message);
+      }
+
+      console.log("done fetching messages")
+
+    };
+
     onMounted(async () => {
       fetchDonations();
+      fetchMessages();
       let todayDate = new Date();
       today.value = todayDate.toISOString().split('T')[0];
       todayDate.setHours(0, 0, 0, 0);
@@ -209,6 +287,55 @@ export default defineComponent({
       console.log('Show Settings button clicked.');
       showAccountSettings.value = !showAccountSettings.value;
     }
+    const showNotifications = () => {
+      console.log('Show Notifications button clicked.');
+      showAccountNotifications.value = !showAccountNotifications.value;
+    }
+    const dismissBanner = () => {
+      console.log('Dismiss Banner button clicked.');
+      banner.value = !banner.value;
+    }
+    const dismiss = async (index) => {
+      console.log('Dismiss button clicked.');
+
+      // Get the ID of the message to dismiss
+      const messageId =index;
+
+      try {
+        // Update the 'dismissed' column to true in Supabase
+        let { data, error } = await supabase
+        .from('Notifications')
+        .update({ dismissed: true })
+        .eq('id', messageId);
+
+        if (error) {
+          throw new Error('Failed to dismiss message, error: ' + error.message);
+        }
+
+      console.log('Message dismissed:', data);
+
+      // Remove the dismissed message from the local messages array
+      fetchMessages();
+
+        } catch (error) {
+          console.error('Failed to dismiss message:', error.message);
+        }
+    }
+    const formatMessageTime = (time) => {
+      const dateObject = new Date(time);
+      const formatter = new Intl.DateTimeFormat('default', {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        timeZoneName: 'short'
+      });
+
+      return formatter.format(dateObject);
+    };
+
     const showReview = async (donation) => {
       console.log('Add review button clicked.');
       selected_donation.value = donation;
@@ -245,6 +372,14 @@ export default defineComponent({
       showAccountSettings,
       showPast,
       showSettings,
+      showAccountNotifications,
+      showNotifications,
+      messages,
+      fetchMessages,
+      dismiss,
+      formatMessageTime,
+      dismissBanner,
+      banner,
       showReview,
       clickedReview,
       numStars,
@@ -326,3 +461,13 @@ export default defineComponent({
   }
   })
 </script>
+
+<style >
+  .donationCards
+  {
+    width: 100%;
+    max-width: 250px;
+    height: 250px;
+  }
+
+</style>
