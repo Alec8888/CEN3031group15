@@ -7,7 +7,7 @@
           <div style="display: flex; align-items: center; justify-content: center;">
             <div class="text-h6" style="margin-right: 10px;">My Community Rating</div>
             <q-rating
-              v-model="myRating"
+              v-model="nullRating"
               size="2em"
               color="secondary"
               readonly
@@ -113,8 +113,7 @@
 <script>
 import { useQuasar } from 'quasar'
 import { defineComponent } from 'vue'
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
 import { supabase } from '../lib/supabaseClient'
 
 export default defineComponent({
@@ -130,9 +129,8 @@ export default defineComponent({
     const today = ref(new Date());
     const selected_donation = ref([]);
     const numStars = ref(0);
-    const myRating = ref(0);
-    const submitResult = ref([]);
-    const reviewExists = ref(false);
+    const nullRating = ref(0);
+    const ratingResult = ref([]);
     const reviewedDonations = ref([]);
     
     const fetchDonations = async () => {
@@ -216,23 +214,6 @@ export default defineComponent({
       selected_donation.value = donation;
       clickedReview.value = true;
     }
-    const checkReviewExists = async () => {
-
-      const { data: { user } } = await supabase.auth.getUser()
-      console.log(user.id);
-
-      const { data, error } = await supabase
-        .from('reviews')
-        .select()
-        .eq('donation_id', selected_donation.value.id)
-        .eq('reviewer_id', user.id);
-
-      reviewExists.value = data && data.length > 0;
-
-      if (error) {
-        console.error('Error checking for review:', error.message);
-      }
-    }
 
     // function to fill reviewedDonations array with donations that have been reviewed
     const getReviewedDonations = async () => {
@@ -267,10 +248,8 @@ export default defineComponent({
       showReview,
       clickedReview,
       numStars,
-      myRating,
-      submitResult,
-      reviewExists,
-      checkReviewExists,
+      nullRating,
+      ratingResult,
       getReviewedDonations,
       reviewedDonations,
 
@@ -285,7 +264,7 @@ export default defineComponent({
           })
         }
 
-        submitResult.value = data
+        ratingResult.value = data
       },
 
       async submitReview() {
