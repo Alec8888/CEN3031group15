@@ -272,7 +272,42 @@ export default defineComponent({
 
         }
 
-        
+        // else if current user is the donator
+        else if (currentUser_id == pantry_item.donator_id)
+        {
+          console.log("donator_id matches current user id");
+          // Update the 'reserved' column to false in Supabase
+          const { error } = await supabase.from('donations').update([{reserved: false, donatee_id: null, date_expires:new Date().toISOString()}]).eq('id', pantry_item.id)
+            if (error) {
+              console.error('Error fetching donations:', error);
+              return;
+            }
+            else
+            {
+              console.log("Donation successfully cancelled.")
+              
+             }
+
+          // update notifications in db
+          const { error: notificationError } = await supabase
+            .from('Notifications')
+            .insert({
+              user_id: pantry_item.donatee_id,
+              donation_id: pantry_item.id,
+              notification_type: 'New Cancellation',
+              time: new Date()
+            })
+            .eq('donation_id', pantry_item.id);
+
+          if (notificationError) {
+            console.error('Error updating Notifications:', notificationError);
+            return;
+          } else {
+            console.log('Notification successfully added.');
+          }
+
+        }
+
         else
         {
           console.log("current user id does not match donator_id or donatee_id");
@@ -281,6 +316,7 @@ export default defineComponent({
      } catch (error) {
         console.error('Failed cancel donation:', error.message);
      }
+     
      
 
     }
