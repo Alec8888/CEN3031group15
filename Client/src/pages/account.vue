@@ -227,7 +227,6 @@ export default defineComponent({
 
     const cancel = async (pantry_item) => {
 
-
      console.log('Cancel button clicked.');
      console.log(pantry_item);
      try {
@@ -312,6 +311,9 @@ export default defineComponent({
         {
           console.log("current user id does not match donator_id or donatee_id");
         }
+
+        // Remove the cancelled donation from the active donations array
+        window.location.reload();
 
      } catch (error) {
         console.error('Failed cancel donation:', error.message);
