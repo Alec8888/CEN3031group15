@@ -64,7 +64,9 @@
         </q-card-section>
         <q-separator dark />
         <q-card-actions class="justify-around">
-          <q-btn flat @click="showReview(pantry_item)" :disable="reviewExists">Leave a Review</q-btn>
+          <q-btn flat :disable="reviewedDonations.includes(pantry_item.id)" @click="showReview(pantry_item)">
+            {{ reviewedDonations.includes(pantry_item.id)  ? 'Review Completed' : 'Leave a Review' }}
+          </q-btn>
         </q-card-actions>
       </q-card>
     </div>
@@ -131,6 +133,7 @@ export default defineComponent({
     const myRating = ref(0);
     const submitResult = ref([]);
     const reviewExists = ref(false);
+    const reviewedDonations = ref([]);
     
     const fetchDonations = async () => {
       try {
@@ -189,8 +192,8 @@ export default defineComponent({
       todayDate.setHours(0, 0, 0, 0);
       console.log("onMounted todays date: " + today.value);
 
-      // Check review status for the selected donation when the page is mounted
-      await checkReviewExists();
+      // Check review status for completed donnations when the page is mounted
+      await getReviewedDonations();
     });
 
     const cancel = () => {
@@ -211,7 +214,6 @@ export default defineComponent({
     const showReview = async (donation) => {
       console.log('Add review button clicked.');
       selected_donation.value = donation;
-      await checkReviewExists();
       clickedReview.value = true;
     }
     const checkReviewExists = async () => {
@@ -230,6 +232,25 @@ export default defineComponent({
       if (error) {
         console.error('Error checking for review:', error.message);
       }
+    }
+
+    // function to fill reviewedDonations array with donations that have been reviewed
+    const getReviewedDonations = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      console.log(user.id);
+      const { data, error } = await supabase
+        .from('reviews')
+        .select('donation_id')
+        .eq('reviewer_id', user.id);
+      if (error) {
+        console.error('Error checking for review:', error.message);
+      }
+      let uniqueDonations = new Set(reviewedDonations.value);
+      for (let i = 0; i < data.length; i++) {
+        uniqueDonations.add(data[i].donation_id);
+      }
+      reviewedDonations.value = Array.from(uniqueDonations);
+      console.log("Reviewed Donations: " + reviewedDonations.value);
     }
     
     return {
@@ -250,6 +271,8 @@ export default defineComponent({
       submitResult,
       reviewExists,
       checkReviewExists,
+      getReviewedDonations,
+      reviewedDonations,
 
       onSubmit (evt) {
         const formData = new FormData(evt.target)
@@ -318,6 +341,7 @@ export default defineComponent({
         }
         // Reset value of stars to 0 for future reviews
         numStars.value = 0;
+        await getReviewedDonations();
       }
     }
   }
