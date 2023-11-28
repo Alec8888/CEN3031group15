@@ -63,7 +63,7 @@
         <div class="absolute-bottom">
           <q-separator dark />
           <q-card-actions class="justify-around">
-            <q-btn flat @click="cancel">Cancel</q-btn>
+            <q-btn flat @click="() => cancel(pantry_item)">Cancel</q-btn>
           </q-card-actions>
         </div>
       </q-card>
@@ -126,12 +126,13 @@ export default defineComponent({
         const currentUser_id = user.id;
         console.log(currentUser_id);
 
-        // get donation from supabase for current user
+        // get donations from supabase for current user if donator
         const { data: donatorData, error: donatorError } = await supabase
           .from('donations')
           .select()
           .eq('donator_id', currentUser_id);
 
+        //get active donations from supabase for current user if donatee  
         const { data: donateeData, error: donateeError } = await supabase
           .from('donations')
           .select()
@@ -224,8 +225,64 @@ export default defineComponent({
       console.log("onMounted todays date: " + today.value);
     });
 
-    const cancel = () => {
+    const cancel = async (pantry_item) => {
+
+
      console.log('Cancel button clicked.');
+     console.log(pantry_item);
+     try {
+        // get current user id
+        const { data: { user } } = await supabase.auth.getUser()
+        const currentUser_id = user.id;
+        console.log(currentUser_id);
+
+        //check if current user is the donatee
+        if (currentUser_id == pantry_item.donatee_id)
+        {
+          console.log("donatee_id matches current user id");
+          // Update the 'reserved' column to false in Supabase
+          const { error } = await supabase.from('donations').update([{reserved: false, donatee_id: null}]).eq('id', pantry_item.id)
+            if (error) {
+              console.error('Error fetching donations:', error);
+              return;
+            }
+            else
+            {
+              console.log("Donation successfully cancelled.")
+              
+             }
+
+          // update notifications in db
+          const { error: notificationError } = await supabase
+            .from('Notifications')
+            .insert({
+              user_id: pantry_item.donator_id,
+              donation_id: pantry_item.id,
+              notification_type: 'New Cancellation',
+              time: new Date()
+            })
+            .eq('donation_id', pantry_item.id);
+
+          if (notificationError) {
+            console.error('Error updating Notifications:', notificationError);
+            return;
+          } else {
+            console.log('Notification successfully added.');
+          }
+
+        }
+
+        
+        else
+        {
+          console.log("current user id does not match donator_id or donatee_id");
+        }
+
+     } catch (error) {
+        console.error('Failed cancel donation:', error.message);
+     }
+     
+
     }
     const showActive = () => {
       console.log('Show Active button clicked.');
