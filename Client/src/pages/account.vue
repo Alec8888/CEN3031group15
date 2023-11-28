@@ -49,9 +49,12 @@
           <div style="display: flex; align-items: center; justify-content: center;">
             <div class="text-h6" style="margin-right: 10px;">My Community Rating</div>
             <q-rating
-              v-model="nullRating"
+              v-model="myRatingTotal"
               size="2em"
               color="secondary"
+              icon="star_border"
+              icon-half="star_half"
+              icon-selected="star"
               readonly
             />
           </div>
@@ -172,6 +175,7 @@ export default defineComponent({
     const nullRating = ref(0);
     const ratingResult = ref([]);
     const reviewedDonations = ref([]);
+    const myRatingTotal = ref(0);
     
     const fetchDonations = async () => {
       try {
@@ -270,6 +274,7 @@ export default defineComponent({
 
       // Check review status for completed donnations when the page is mounted
       await getReviewedDonations();
+      await getMyRatingTotal();
     });
 
     const cancel = () => {
@@ -340,7 +345,7 @@ export default defineComponent({
       console.log('Add review button clicked.');
       selected_donation.value = donation;
       clickedReview.value = true;
-    }
+    };
 
     // function to fill reviewedDonations array with donations that have been reviewed
     const getReviewedDonations = async () => {
@@ -359,7 +364,28 @@ export default defineComponent({
       }
       reviewedDonations.value = Array.from(uniqueDonations);
       console.log("Reviewed Donations: " + reviewedDonations.value);
-    }
+    };
+
+    const getMyRatingTotal = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      const { data, error } = await supabase
+        .from('reviews')
+        .select('rating')
+        .eq('user_id', user.id);
+      if (error) {
+        console.error('Error checking for rating values:', error.message);
+      }
+      console.log("This user's star ratings: " + data[0]);
+      for (let i = 0; i < data.length; i++) {
+        myRatingTotal.value += data[i].rating;
+        console.log("Current value: " + myRatingTotal.value);
+      }
+      // Divide total star rating count by number of reviews
+      myRatingTotal.value = myRatingTotal.value / data.length;
+      // Round to the nearest half star
+      myRatingTotal.value = Math.round(myRatingTotal.value * 2) / 2
+      console.log("Final value: " + myRatingTotal.value);
+    };
     
     return {
       pantryItems_active,
@@ -387,6 +413,8 @@ export default defineComponent({
       ratingResult,
       getReviewedDonations,
       reviewedDonations,
+      getMyRatingTotal,
+      myRatingTotal,
 
       onSubmit (evt) {
         const formData = new FormData(evt.target)
