@@ -127,10 +127,19 @@ export default defineComponent({
         console.log(currentUser_id);
 
         // get donation from supabase for current user
-        const { data , error } = await supabase
+        const { data: donatorData, error: donatorError } = await supabase
           .from('donations')
           .select()
           .eq('donator_id', currentUser_id);
+
+        const { data: donateeData, error: donateeError } = await supabase
+          .from('donations')
+          .select()
+          .eq('donatee_id', currentUser_id);
+
+        const data = donatorData.concat(donateeData);
+        const error = donatorError || donateeError;
+          
 
         if (error) {
           throw new Error('Failed to fetch donations, error: ' + error.message);
