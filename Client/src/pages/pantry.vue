@@ -59,7 +59,7 @@
           />
         </div>
       </q-btn-dropdown>
-    
+
 
       <q-btn-dropdown
         class="glossy"
@@ -77,7 +77,7 @@
         </div>
       </q-btn-dropdown>
   </div>
-    
+
     <div class="row q-gutter-md justify-center" style="margin-top: 5px;">
 
       <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems" :key="index" >
@@ -96,14 +96,14 @@
               readonly
             />
           </div>
-          <div class="text-subtitle2">{{ pantry_item.food }}</div> 
+          <div class="text-subtitle2">{{ pantry_item.food }}</div>
           <br/>
           <div class="text-subtitle2">{{ pantry_item.pickup_streetaddress }}</div>
           <div class="text-subtitle2">{{ pantry_item.pickup_city }} , {{ pantry_item.pickup_state }} {{ pantry_item.pickup_zip }}</div>
-          
+
           <div class="text-subtitle2 text-primary">Expires: {{ new Date(pantry_item.date_expires).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) }}</div>
         </q-card-section>
-        
+
         <div class="absolute-bottom">
           <q-separator dark />
           <q-card-actions align="center" >
@@ -192,7 +192,7 @@ export default {
         currentDate = currentDate.toISOString().slice(0, 10);
         console.log(currentDate);
 
-        const { data, error } = await supabase.from('donations').select().neq('reserved', true)
+        const { data, error } = await supabase.from('donations').select().neq('reserved', true).gt('date_expires', currentDate);
 
         if (error) {
           console.error('Error fetching donations:', error.message);
@@ -259,7 +259,7 @@ export default {
       organizations_selected.value = [];
       fetchDonations();
     }
-    
+
     onMounted(async () => {
       await fetchDonations();
       //await setRatingsMap();
@@ -403,7 +403,7 @@ export default {
         fetchDonations();
         return;
       }
-      
+
       // Fetch donations again before filtering
       await fetchDonations();
       pantryItems.value = pantryItems.value.filter((donation) => {
@@ -422,7 +422,7 @@ export default {
         fetchDonations();
         return;
       }
-      
+
       // Fetch donations again before filtering
       await fetchDonations();
       pantryItems.value = pantryItems.value.filter((donation) => {
@@ -441,7 +441,7 @@ export default {
         fetchDonations();
         return;
       }
-      
+
       // Fetch donations again before filtering
       await fetchDonations();
       pantryItems.value = pantryItems.value.filter((donation) => {
@@ -460,7 +460,7 @@ export default {
         fetchDonations();
         return;
       }
-      
+
       // Fetch donations again before filtering
       await fetchDonations();
       pantryItems.value = pantryItems.value.filter((donation) => {
