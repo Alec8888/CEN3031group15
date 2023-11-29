@@ -120,6 +120,7 @@ export default defineComponent({
     const messages = ref(null);
     const banner = ref(true);
     const fetchedDonations = ref(null);
+    const isUserDonator = ref(null);
     const fetchDonations = async () => {
       try {
         // get current user id
@@ -129,14 +130,20 @@ export default defineComponent({
         
         const { data, error } = await supabase.from('Accounts').select().eq('user_id', currentUser_id);
         console.log("userType: " + data[0].Donation_Status);
+        isUserDonator.value = data[0].Donation_Status;
+        console.log("isUserDonator: " + isUserDonator.value);
 
-        if (data[0].Donation_Status) {
+        if (isUserDonator.value) {
           const { data, error } = await supabase
             .from('donations')
             .select()
             .eq('donator_id', currentUser_id);
-          
+            
+          console.log("dontation data: " + data)
+          console.log("dontation error: " + error)
+
           fetchDonations.value = data;
+          console.log("fecthedDonations donator: " + fetchDonations.value)
         }
         else {
           const { data, error } = await supabase
@@ -145,7 +152,9 @@ export default defineComponent({
             .eq('donatee_id', currentUser_id);
 
           fetchDonations.value = data;
+          console.log("fecthedDonations donatee: " + fetchDonations.value)
         }
+        console.log("fecthedDonations: " + JSON.stringify(fetchDonations.value))
           
         if (error) {
           throw new Error('Failed to fetch donations, error: ' + error.message);
@@ -211,7 +220,6 @@ export default defineComponent({
 
         messages.value = data;
         console.log("messages: " + messages.value);
-        console.log(data[0])
 
       } catch (error) {
         console.error('Failed to fetch messages:', error.message);
@@ -224,10 +232,6 @@ export default defineComponent({
     onMounted(() => {
       fetchDonations();
       fetchMessages();
-      let todayDate = new Date();
-      today.value = todayDate.toISOString().split('T')[0];
-      todayDate.setHours(0, 0, 0, 0);
-      console.log("onMounted todays date: " + today.value);
     });
 
     const cancel = async (pantry_item) => {
