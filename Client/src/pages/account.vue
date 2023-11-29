@@ -115,6 +115,7 @@
           <q-separator dark />
           <q-card-actions class="justify-around">
             <q-btn flat @click="() => cancel(pantry_item)">Cancel</q-btn>
+            <q-btn v-if="pantry_item.reserved" flat @click="() => completeOrder(pantry_item)">Complete</q-btn>
           </q-card-actions>
         </div>
       </q-card>
@@ -595,6 +596,29 @@ export default defineComponent({
       }
     };
 
+    const completeOrder = async (pantry_item) => {
+      console.log('Complete button clicked.');
+
+      //update pickup time in the database and set date expires to today
+      const currentDate = new Date().toISOString();
+
+      try{
+      const { error } = await supabase
+        .from('donations')
+        .update([
+          { 
+            date_expires: currentDate,
+            pickup_time: currentDate
+          }
+        ])
+        .eq('id', pantry_item.id);
+      }
+      catch (error) {
+        console.error('Failed to complete order:', error.message);
+      }
+
+    };
+
     return {
       pantryItems_active,
       pantryItems_expired,
@@ -625,6 +649,7 @@ export default defineComponent({
       myRatingTotal,
       userInfo,
       fetchUserInfo,
+      completeOrder,
 
       onSubmit (evt) {
         const formData = new FormData(evt.target)
