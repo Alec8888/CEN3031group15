@@ -237,30 +237,20 @@ export default defineComponent({
     const cancel = async (pantry_item) => {
 
      console.log('Cancel button clicked.');
-     console.log(pantry_item);
+     console.log('pantry item: ' + pantry_item);
      try {
         // get current user id
         const { data: { user } } = await supabase.auth.getUser()
         const currentUser_id = user.id;
-        console.log(currentUser_id);
+        console.log('current user: ' + currentUser_id);
 
         // If current user is the donatee then set reserved to false and donatee_id to null
         // Else, user is donator so cancel by setting expiration date to today
         if (currentUser_id == pantry_item.donatee_id)
         {
-          console.log("donatee_id matches current user id");
+          console.log("donatee_id matches current user id so un reserve donation");
 
           const { error } = await supabase.from('donations').update([{reserved: false, donatee_id: null}]).eq('id', pantry_item.id)
-
-          if (error) {
-            console.error('Error fetching donations:', error);
-            return;
-          }
-          else
-          {
-            console.log("Donation successfully cancelled.")
-            
-            }
 
           // update notifications in db
           const { error: notificationError } = await supabase
@@ -284,12 +274,14 @@ export default defineComponent({
         else if (currentUser_id == pantry_item.donator_id)
         {
           console.log("donator_id matches current user id");
+
           // Update the 'reserved' column to false in Supabase
           const { error } = await supabase
                 .from('donations')
-                .update([{reserved: false, donatee_id: null, date_expires:new Date()
+                .update([{ date_expires:new Date()
                   .toISOString()}])
                   .eq('id', pantry_item.id)
+
             if (error) {
               console.error('Error fetching donations:', error);
               return;
@@ -300,11 +292,13 @@ export default defineComponent({
               
              }
 
+          console.log('about to insert notification. pantry_item.donatee_id: ' + pantry_item.donator_id);
+
           // update notifications in db
           const { error: notificationError } = await supabase
             .from('Notifications')
             .insert({
-              user_id: pantry_item.donatee_id,
+              user_id: pantry_item.donator_id,
               donation_id: pantry_item.id,
               notification_type: 'New Cancellation',
               time: new Date()
