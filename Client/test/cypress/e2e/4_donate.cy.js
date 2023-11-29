@@ -25,7 +25,7 @@ describe('Donate', () => {
         cy.dataCy('input-pickupZip').type('33572')
         cy.dataCy('submit-donation').click()
 
-        // routed home on success
+        // routed to profile on success
         cy.testRoute('/profile')
     })
 

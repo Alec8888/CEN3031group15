@@ -3,11 +3,11 @@
 
     <q-header elevated class="bg-primary text-accent" height-hint="98">
       <q-toolbar>
-        <q-toolbar-title style="width: 100%; display: flex; align-items: center; margin-left: 10px;">
+        <q-toolbar-title style="width: 100%; display: flex; align-items: center; margin-top: 10px;">
           <q-avatar style="transform: scale(1.2); margin-left: 10px;">
-            <img src="https://preudbpdnhcigtnuiuit.supabase.co/storage/v1/object/public/images/PantryPal-Logo.png?t=2023-11-19T00%3A56%3A02.143Z">
+            <img src="https://preudbpdnhcigtnuiuit.supabase.co/storage/v1/object/public/images/pear.png?t=2023-11-29T20%3A24%3A30.885Z">
           </q-avatar>
-          <div class="custom-hammersmith" style="margin-left: 10px;">PantryPal</div>
+          <div class="custom-hammersmith text-secondary" style="margin-left: 10px;">PantryPal</div>
         </q-toolbar-title>
 
         <div>
