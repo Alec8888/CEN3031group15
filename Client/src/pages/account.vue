@@ -162,7 +162,7 @@ export default defineComponent({
 
         // filter the items into active and expired
         // this should be moved into a seperate function
-        for (let i = 0; i < data.length; i++) {
+        for (let i = 0; i < fetchDonations.value.length; i++) {
           let date_today = new Date();
           date_today.setHours(0, 0, 0, 0);
           let date_active = new Date(fetchDonations.value[i].date_active);
