@@ -43,24 +43,56 @@
         </q-list>
 
 
-    <q-card style="height: 33vh;">
-      <div class="q-pd-md" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-        <div class="q-gutter-y-md column" style="text-align: center;">
-          <div style="display: flex; align-items: center; justify-content: center;">
-            <div class="text-h6" style="margin-right: 10px;">My Community Rating</div>
-            <q-rating
-              v-model="myRatingTotal"
-              size="2em"
-              color="secondary"
-              icon="star_border"
-              icon-half="star_half"
-              icon-selected="star"
-              readonly
-            />
+        <q-card style="display: flex; height: 225px;">
+
+          <!-- My Community Rating Section -->
+          <q-card style="flex: 3; display: flex; align-items: center; justify-content: center;">
+          <!-- My Community Rating Section -->
+          <div class="q-pa-md">
+            <div class="q-gutter-y-md" style="text-align: center; margin-block: 8px; margin-left: 12px;">
+              <div style="display: flex; align-items: center; justify-content: center;">
+                <div class="text-h6">My Community Rating</div>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: center;">
+                <q-rating
+                  v-model="myRatingTotal"
+                  size="2em"
+                  color="secondary"
+                  icon="star_border"
+                  icon-half="star_half"
+                  icon-selected="star"
+                  readonly
+                />
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    </q-card>
+        </q-card>
+
+
+        <!-- Account Info Section -->
+        <q-card style="flex: 12; max-height: 10px;">
+          <div class="q-pa-xs">
+            <q-card-section>
+              <div class="text-h6">Account Info</div>
+
+              <!-- User Info -->
+              <q-separator light />
+
+              <q-card-section class="text-fit">
+                <div class="text-body1">Organization Name: {{ userInfo.organization }}</div>
+                <div class="text-body1">Account Owner: {{ userInfo.name }}</div>
+                <div class="text-body1">Email: {{ userInfo.email }}</div>
+                <div class="text-body1">Phone Number: {{ userInfo.phone }}</div>
+                <div class="text-body1">Current Address: {{ userInfo.address }}, {{ userInfo.city }} {{ userInfo.state }} {{ userInfo.zip }}</div>
+              </q-card-section>
+
+              <!-- Other UserInfo Sections... -->
+
+            </q-card-section>
+          </div>
+        </q-card>
+
+      </q-card>
 
     <q-card>
         <div class="text-subtitle1">
@@ -176,6 +208,7 @@ export default defineComponent({
     const ratingResult = ref([]);
     const reviewedDonations = ref([]);
     const myRatingTotal = ref(0);
+    const userInfo = ref({});
     
     const fetchDonations = async () => {
       try {
@@ -267,6 +300,7 @@ export default defineComponent({
     onMounted(async () => {
       fetchDonations();
       fetchMessages();
+      fetchUserInfo();
       let todayDate = new Date();
       today.value = todayDate.toISOString().split('T')[0];
       todayDate.setHours(0, 0, 0, 0);
@@ -386,6 +420,33 @@ export default defineComponent({
       myRatingTotal.value = Math.round(myRatingTotal.value * 2) / 2
       console.log("Final value: " + myRatingTotal.value);
     };
+
+    const fetchUserInfo = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+
+        const { data, error } = await supabase
+        .from('Accounts')
+        .select('Name, Phone, Donation_Status, Address, City, State, Zip, Organization')
+        .eq('user_id', user.id);
+
+        console.log("data from account query: " + data);
+
+        // Assuming your user data has 'name' and 'email' fields
+        userInfo.value = {
+          name: data[0].Name,
+          phone: data[0].Phone,
+          email: user.email,
+          address: data[0].Address,
+          city: data[0].City,
+          state: data[0].State,
+          zip: data[0].Zip,
+          organization: data[0].Organization
+        };
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
+    };
     
     return {
       pantryItems_active,
@@ -415,6 +476,8 @@ export default defineComponent({
       reviewedDonations,
       getMyRatingTotal,
       myRatingTotal,
+      userInfo,
+      fetchUserInfo,
 
       onSubmit (evt) {
         const formData = new FormData(evt.target)
