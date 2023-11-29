@@ -86,12 +86,15 @@
           <div class="text-h6">
             {{ pantry_item.org_displayname }}
             <q-rating
-                  v-model="ratingModel"
-                  size="xs"
-                  color="primary"
-                  icon="star_border"
-                  icon-selected="star"
-                />
+              :model-value="getRatingForDonator(pantry_item.donator_id)"
+              @update:modelValue="updateRating($event, pantry_item.donator_id)"
+              :key="ratingsMapWatcher"
+              size="xs"
+              color="primary"
+              icon="star_border"
+              icon-selected="star"
+              readonly
+            />
           </div>
           <div class="text-subtitle2">{{ pantry_item.food }}</div> 
           <br/>
@@ -149,12 +152,12 @@
           </q-card-section>
 
           <q-card-section>
-            You can now see this reservation in your Home tab.
+            You can now see this reservation in your Profile tab.
           </q-card-section>
 
         </div>
         <q-card-actions align="right" class="bg-white text-teal">
-        <q-btn to="/home" flat label="OK" v-close-popup />
+        <q-btn to="/profile" flat label="OK" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -180,6 +183,8 @@ export default {
     const cities_selected = ref([]);
     const organizations = ref([]);
     const organizations_selected = ref([]);
+    const ratingsMap = ref(new Map());
+    const ratingsMapWatcher = ref(0);
 
     const fetchDonations = async () => {
       try {
@@ -194,11 +199,56 @@ export default {
           return;
         }
         pantryItems.value = data;
+
         // console.log("pantryItems: ", pantryItems.value);
         // console.log("pantryItems (stringified): " + JSON.stringify(pantryItems.value, null, 2));
       } catch (error) {
         console.error('Error fetching donations:', error);
       }
+    };
+
+    const setRatingsMap = async () => {
+      // swap back to for each loop
+      for (let i = 0; i < pantryItems.value.length; i++) {
+
+        const { data, error } = await supabase
+          .from('reviews')
+          .select('rating')
+          .eq('user_id', pantryItems.value[i].donator_id);
+
+        if (error) {
+          console.error('Error checking for rating values:', error.message);
+          return;
+        }
+
+        let totalRating = 0;
+
+        // Check if there is matching data in the reviews table
+        if (Array.isArray(data) && data.length > 0) {
+          for (let i = 0; i < data.length; i++) {
+            totalRating += data[i].rating;
+          }
+
+          totalRating = totalRating / data.length;
+          totalRating = Math.round(totalRating * 2) / 2;
+        } else {
+          // Handle the case when there is no matching data
+          totalRating = 0; // Or set to a default value
+        }
+
+        ratingsMap.value.set(pantryItems.value[i].donator_id, totalRating);
+      }
+
+      //console.log(`Added to ratingsMap: Donator ID: ${currItem.donator_id}, Rating: ${totalRating}`);
+      console.log('ratingsMap:', JSON.stringify(Object.fromEntries(ratingsMap.value), null, 2));
+    };
+
+    const getRatingForDonator = (donatorId) => {
+      return ratingsMap.value.get(donatorId) || 0;
+    };
+
+    const updateRating = (value, donatorId) => {
+      ratingsMap.value.set(donatorId, value);
     };
 
     const clearFilters = () => {
@@ -212,6 +262,7 @@ export default {
     
     onMounted(async () => {
       await fetchDonations();
+      //await setRatingsMap();
       updateZipCodes();
       updateStates();
       updateCities();
@@ -420,6 +471,13 @@ export default {
       });
     });
 
+    watch(pantryItems, async () => {
+
+      await setRatingsMap();
+
+      ratingsMapWatcher.value += 1;
+    });
+
     return {
       pantryItems,
       clickedCall,
@@ -445,7 +503,11 @@ export default {
       updateOrganizations,
       clearFilters,
       pantryItem,
-      ratingModel: ref(3)
+      setRatingsMap,
+      ratingsMap,
+      ratingsMapWatcher,
+      getRatingForDonator,
+      updateRating
 
     };
   }

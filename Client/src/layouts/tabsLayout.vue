@@ -3,11 +3,11 @@
 
     <q-header elevated class="bg-primary text-accent" height-hint="98">
       <q-toolbar>
-        <q-toolbar-title>
-          <q-avatar>
+        <q-toolbar-title style="width: 100%; display: flex; align-items: center; margin-left: 10px;">
+          <q-avatar style="transform: scale(1.2); margin-left: 10px;">
             <img src="https://preudbpdnhcigtnuiuit.supabase.co/storage/v1/object/public/images/PantryPal-Logo.png?t=2023-11-19T00%3A56%3A02.143Z">
           </q-avatar>
-          PantryPal
+          <div class="custom-hammersmith" style="margin-left: 10px;">PantryPal</div>
         </q-toolbar-title>
 
         <div>
@@ -22,7 +22,7 @@
             transition-hide="flip-left"
           >
             <q-list style="min-width: 100px">
-              <q-item clickable to="/home">
+              <q-item clickable to="/profile">
                 <q-item-section>{{ userEmail }}</q-item-section>
               </q-item>
               <q-separator />
@@ -40,7 +40,7 @@
         <q-route-tab v-if="!isLoggedIn" to="/" label="Welcome" />
         <q-route-tab v-if="!isLoggedIn" to="/signin" label="Sign In" />
         <q-route-tab v-if="!isLoggedIn" to="/register" label="Register" data-cy="register-tab" />
-        <q-route-tab v-if="isLoggedIn" to="/home" label="Home" />
+        <q-route-tab v-if="isLoggedIn" to="/profile" label="Profile" />
         <q-route-tab v-if="isLoggedIn" to="/pantry" label="Pantry" />
         <q-route-tab v-if="isLoggedIn" to="/donate" label="Donate" />
       </q-tabs>
@@ -158,5 +158,4 @@ export default defineComponent({
     background-image: url("https://preudbpdnhcigtnuiuit.supabase.co/storage/v1/object/public/images/bg.png?t=2023-11-19T00%3A53%3A40.968Z");
     background-size: cover;
   }
-
 </style>

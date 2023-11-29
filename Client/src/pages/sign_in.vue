@@ -2,7 +2,8 @@
   <q-page class="column items-center">
     <!-- <q-btn label="test route" @click="testRoutes" /> -->
 
-    <q-card style="width: 300px; margin-top: 25px;" >
+    <div class="self-center">
+      <q-card style="width: 300px; margin-top: 25px;" >
 
       <q-card-section>
         <div class="text-h6">
@@ -67,10 +68,22 @@
 
       </q-card-section>
 
-    </q-card>
-
+      </q-card>
+    </div>
   </q-page>
 </template>
+
+<style>
+
+.self-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+</style>
+
+
 
 <script lang="ts">
 import { useQuasar } from 'quasar'
@@ -104,7 +117,7 @@ export default defineComponent({
               icon: 'cloud_done',
               message: 'Log in successful'
             });
-            router.push('/home');
+            router.push('/profile');
 
           } else {
             // Handle login failure...

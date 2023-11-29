@@ -19,6 +19,6 @@ describe('Sign In Page', () => {
         cy.dataCy('email-input').type('a@gmail.com');
         cy.dataCy('password-input').type('qwerasdf');
         cy.get('button[type="submit"]').click()
-        cy.testRoute('/home')
+        cy.testRoute('/profile')
     })
 })
