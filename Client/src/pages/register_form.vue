@@ -306,7 +306,7 @@ export default {
  
                     const { data: { user } } = await supabase.auth.getUser()
                     console.log(user.id);
- 
+
                     // Store user data that is not part of the auth table
                       let { error1 } = await supabase.from('Accounts').
                       insert({
@@ -322,7 +322,7 @@ export default {
                         Email: email.value,
                         },
                         )
- 
+                        
                     // error notifications for user
                     if (error) {
                         $q.notify({
@@ -340,8 +340,7 @@ export default {
                             icon: 'warning',
                             message: 'Form submission failed database'
                         });
-                    }
- 
+
                     // success notification for user
                     else {
                         $q.notify({
