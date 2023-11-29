@@ -1,5 +1,5 @@
 <template>
-  <q-page class="self-center">
+  <q-page class="column items-center">
     <!-- <q-btn label="test route" @click="testRoutes" /> -->
 
     <div class="self-center">
