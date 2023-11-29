@@ -13,8 +13,8 @@
 
           </div>
           <div class="text-subtitle2">
-            Then track your donation status on your home page.
-           </div>
+            Then track your donation status on your profile page.
+           </div> 
         </q-card-section>
         <q-card-section>
             <q-form
@@ -315,7 +315,7 @@ export default defineComponent({
                 icon: 'cloud_done',
                 message: 'Donation added to panry'
             });
-            router.push('/home')
+            router.push('/profile')
           }
         } catch (error) {
           console.error('Error inserting donation:', error);

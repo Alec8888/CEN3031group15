@@ -42,6 +42,57 @@
           </q-item>
         </q-list>
 
+
+        <q-card style="display: flex; height: 235px;">
+
+          <!-- My Community Rating Section -->
+          <q-card style="flex: 3; display: flex; align-items: center; justify-content: center;">
+          <!-- My Community Rating Section -->
+          <div class="q-pa-md">
+            <div class="q-gutter-y-md" style="text-align: center; margin-block: 8px; margin-left: 12px;">
+              <div style="display: flex; align-items: center; justify-content: center;">
+                <div class="text-h6">My Community Rating</div>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: center;">
+                <q-rating
+                  v-model="myRatingTotal"
+                  size="2em"
+                  color="secondary"
+                  icon="star_border"
+                  icon-half="star_half"
+                  icon-selected="star"
+                  readonly
+                />
+              </div>
+            </div>
+          </div>
+        </q-card>
+
+
+        <!-- Account Info Section -->
+        <q-card style="flex: 12; max-height: 10px;">
+          <div class="q-pa-xs">
+            <q-card-section>
+              <div class="text-h6">Account Info</div>
+
+              <!-- User Info -->
+              <q-separator light />
+
+              <q-card-section class="text-fit">
+                <div class="text-body1">Account Role: {{ userInfo.role }}</div>
+                <div class="text-body1">Organization Name: {{ userInfo.organization }}</div>
+                <div class="text-body1">Account Owner: {{ userInfo.name }}</div>
+                <div class="text-body1">Email: {{ userInfo.email }}</div>
+                <div class="text-body1">Phone Number: {{ userInfo.phone }}</div>
+                <div class="text-body1">Current Address: {{ userInfo.address }}, {{ userInfo.city }} {{ userInfo.state }} {{ userInfo.zip }}</div>
+              </q-card-section>
+
+            </q-card-section>
+          </div>
+        </q-card>
+
+      </q-card>
+
     <q-card>
         <div class="text-subtitle1">
           <q-btn flat color="secondary" :icon="showActiveItems ? 'expand_more' : 'chevron_right'" @click="showActive" />
@@ -90,19 +141,50 @@
         <div class="absolute-bottom">
           <q-separator dark />
           <q-card-actions class="justify-around">
-            <q-btn flat @click="cancel">Cancel</q-btn>
+            <q-btn flat :disable="reviewedDonations.includes(pantry_item.id)" @click="showReview(pantry_item)">
+            {{ reviewedDonations.includes(pantry_item.id)  ? 'Review Completed' : 'Leave a Review' }}
+          </q-btn>
           </q-card-actions>
         </div>
       </q-card>
     </div>
 
+    <q-dialog
+      v-model="clickedReview"
+    >
+      <q-card style="width: 300px">
+        <div class="q-pd-md" style="display: flex; flex-direction: column; align-items: center;">
+          <q-card-section>
+            Please leave a star rating for your donation!
+          </q-card-section>
+          <q-card-section>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <q-form @submit="onSubmit" class="q-gutter-md">
+                <q-rating
+                  name="numStars"
+                  v-model="numStars"
+                  size="3.5em"
+                  color="primary"
+                  icon="star_border"
+                  icon-selected="star"
+                />
+              </q-form>
+            </div>
+          </q-card-section>
+        </div>
+        <q-card-actions align="right" class="bg-white text-teal">
+          <q-btn flat @click="submitReview" label="COMPLETE REVIEW" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    
   </q-page>
 </template>
 
 <script>
 import { useQuasar } from 'quasar'
 import { defineComponent } from 'vue'
-import { ref, onMounted } from 'vue';
+import { ref, onMounted } from 'vue'
 import { supabase } from '../lib/supabaseClient'
 import { watch} from 'vue'
 
@@ -116,11 +198,20 @@ export default defineComponent({
     const showPastItems = ref(false);
     const showAccountSettings = ref(false);
     const showAccountNotifications = ref(false);
+    const clickedReview = ref(false);
     const today = ref(new Date());
     const messages = ref(null);
-    const banner = ref(true);
     const fetchedDonations = ref(null);
     const isUserDonator = ref(null);
+    const banner = ref(true);
+    const selected_donation = ref([]);
+    const numStars = ref(0);
+    const nullRating = ref(0);
+    const ratingResult = ref([]);
+    const reviewedDonations = ref([]);
+    const myRatingTotal = ref(0);
+    const userInfo = ref({});
+    
     const fetchDonations = async () => {
       try {
         // get current user id
@@ -229,9 +320,19 @@ export default defineComponent({
 
     };
 
-    onMounted(() => {
+    onMounted(async () => {
       fetchDonations();
       fetchMessages();
+
+      fetchUserInfo();
+      let todayDate = new Date();
+      today.value = todayDate.toISOString().split('T')[0];
+      todayDate.setHours(0, 0, 0, 0);
+      console.log("onMounted todays date: " + today.value);
+
+      // Check review status for completed donnations when the page is mounted
+      await getReviewedDonations();
+      await getMyRatingTotal();
     });
 
     const cancel = async (pantry_item) => {
@@ -389,6 +490,111 @@ export default defineComponent({
       return formatter.format(dateObject);
     };
 
+    const showReview = async (donation) => {
+      console.log('Add review button clicked.');
+      selected_donation.value = donation;
+      clickedReview.value = true;
+    };
+
+    // function to fill reviewedDonations array with donations that have been reviewed
+    const getReviewedDonations = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      console.log(user.id);
+      const { data, error } = await supabase
+        .from('reviews')
+        .select('donation_id')
+        .eq('reviewer_id', user.id);
+      if (error) {
+        console.error('Error checking for review:', error.message);
+      }
+      let uniqueDonations = new Set(reviewedDonations.value);
+      for (let i = 0; i < data.length; i++) {
+        uniqueDonations.add(data[i].donation_id);
+      }
+      reviewedDonations.value = Array.from(uniqueDonations);
+      console.log("Reviewed Donations: " + reviewedDonations.value);
+    };
+
+    const getMyRatingTotal = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user || !user.id) {
+          console.error("User or user ID is null or undefined.");
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from('reviews')
+          .select('rating')
+          .eq('user_id', user.id);
+
+        if (error) {
+          console.error('Error checking for rating values:', error.message);
+          return;
+        }
+
+        if (!data || data.length === 0) {
+          console.warn("No rating data found for the user.");
+          return;
+        }
+
+        console.log("This user's star ratings:", data);
+
+        let totalRating = 0;
+
+        for (let i = 0; i < data.length; i++) {
+          if (data[i].rating) {
+            totalRating += data[i].rating;
+            console.log("Current value:", totalRating);
+          }
+        }
+
+        if (data.length > 0) {
+          // Divide total star rating count by the number of reviews
+          myRatingTotal.value = totalRating / data.length;
+          // Round to the nearest half star
+          myRatingTotal.value = Math.round(myRatingTotal.value * 2) / 2;
+          console.log("Final value:", myRatingTotal.value);
+        }
+      } catch (e) {
+        console.error('An unexpected error occurred:', e.message);
+      }
+    };
+    
+    const fetchUserInfo = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        const { data, error } = await supabase
+        .from('Accounts')
+        .select('Name, Phone, Donation_Status, Address, City, State, Zip, Organization')
+        .eq('user_id', user.id);
+        console.log("donation status: " + data[0].Donation_Status);
+
+        const role = ref();
+
+        if (data[0].Donation_Status) {
+          role.value = "Donator";
+        } else {
+          role.value = "Donatee";
+        }
+
+        userInfo.value = {
+          role: role.value,
+          name: data[0].Name,
+          phone: data[0].Phone,
+          email: user.email,
+          address: data[0].Address,
+          city: data[0].City,
+          state: data[0].State,
+          zip: data[0].Zip,
+          organization: data[0].Organization
+        };
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
+    };
+
     return {
       pantryItems_active,
       pantryItems_expired,
@@ -407,10 +613,91 @@ export default defineComponent({
       dismiss,
       formatMessageTime,
       dismissBanner,
-      banner
+      banner,
+      showReview,
+      clickedReview,
+      numStars,
+      nullRating,
+      ratingResult,
+      getReviewedDonations,
+      reviewedDonations,
+      getMyRatingTotal,
+      myRatingTotal,
+      userInfo,
+      fetchUserInfo,
+
+      onSubmit (evt) {
+        const formData = new FormData(evt.target)
+        const data = []
+
+        for (const [ name, value ] of formData.entries()) {
+          data.push({
+            name,
+            value
+          })
+        }
+
+        ratingResult.value = data
+      },
+
+      async submitReview() {
+        console.log("submitReview function entered.");
+
+        const { data: { user } } = await supabase.auth.getUser()
+        console.log(user.id);
+
+        const userType = ref([]);
+
+        // User Type is a Donatee, set id of user_id to review to donator
+        if (user.donation_status == false) {
+            console.log("selected donation id: " + selected_donation.value.donator_id);
+            userType.value = selected_donation.value.donator_id;
+        }
+        // User Type is a Donator, set id of user_id to review to donatee
+        else {
+          console.log("selected donation id: " + selected_donation.value.donatee_id);
+          userType.value = selected_donation.value.donatee_id;
+        }
+
+        console.log("user_id: " + userType.value);
+        console.log("rating: " + numStars.value);
+        console.log("donation_id: " + selected_donation.value.id);
+        console.log("reviewer_id: " + user.id);
+
+        // Send review data to SupaBase
+        let { error1 } = await supabase.from('reviews').
+        insert({
+          user_id: userType.value,
+          rating: numStars.value,
+          donation_id: selected_donation.value.id,
+          reviewer_id: user.id
+          })
+
+        // If review form fails, display error message
+        if (error1) {
+            $q.notify({
+                color: 'red-5',
+                textColor: 'white',
+                icon: 'warning',
+                message: 'Review submission failed!'
+            });
+        }
+        // If review succeeds, display success message
+        else {
+            $q.notify({
+                color: 'green-4',
+                textColor: 'white',
+                icon: 'cloud_done',
+                message: 'Review submitted!'
+            });
+        }
+        // Reset value of stars to 0 for future reviews
+        numStars.value = 0;
+        await getReviewedDonations();
+      }
     }
   }
-})
+  })
 </script>
 
 <style >

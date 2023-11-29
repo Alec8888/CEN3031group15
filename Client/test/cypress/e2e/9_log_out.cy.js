@@ -6,10 +6,10 @@ describe('Sign In Page', () => {
         cy.dataCy('email-input').type('a@gmail.com');
         cy.dataCy('password-input').type('qwerasdf');
         cy.get('button[type="submit"]').click()
-        cy.testRoute('/home')
+        cy.testRoute('/profile')
 
         // log out
-        cy.visit('/home')
+        cy.visit('/profile')
         cy.dataCy('user-btn').click()
         cy.dataCy('logout-btn').click()
         cy.testRoute('/signin')

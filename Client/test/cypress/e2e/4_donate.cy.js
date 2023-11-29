@@ -7,7 +7,7 @@ describe('Donate', () => {
         cy.dataCy('email-input').type('a@gmail.com');
         cy.dataCy('password-input').type('qwerasdf');
         cy.get('button[type="submit"]').click()
-        cy.testRoute('/home')
+        cy.testRoute('/profile')
 
         // submit donation
         cy.visit('/donate')
@@ -25,8 +25,8 @@ describe('Donate', () => {
         cy.dataCy('input-pickupZip').type('33572')
         cy.dataCy('submit-donation').click()
 
-        // routed home on success
-        cy.testRoute('/home')
+        // routed to profile on success
+        cy.testRoute('/profile')
     })
 
 });
