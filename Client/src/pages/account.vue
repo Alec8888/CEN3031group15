@@ -401,25 +401,52 @@ export default defineComponent({
     };
 
     const getMyRatingTotal = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      const { data, error } = await supabase
-        .from('reviews')
-        .select('rating')
-        .eq('user_id', user.id);
-      if (error) {
-        console.error('Error checking for rating values:', error.message);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user || !user.id) {
+          console.error("User or user ID is null or undefined.");
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from('reviews')
+          .select('rating')
+          .eq('user_id', user.id);
+
+        if (error) {
+          console.error('Error checking for rating values:', error.message);
+          return;
+        }
+
+        if (!data || data.length === 0) {
+          console.warn("No rating data found for the user.");
+          return;
+        }
+
+        console.log("This user's star ratings:", data);
+
+        let totalRating = 0;
+
+        for (let i = 0; i < data.length; i++) {
+          if (data[i].rating) {
+            totalRating += data[i].rating;
+            console.log("Current value:", totalRating);
+          }
+        }
+
+        if (data.length > 0) {
+          // Divide total star rating count by the number of reviews
+          myRatingTotal.value = totalRating / data.length;
+          // Round to the nearest half star
+          myRatingTotal.value = Math.round(myRatingTotal.value * 2) / 2;
+          console.log("Final value:", myRatingTotal.value);
+        }
+      } catch (e) {
+        console.error('An unexpected error occurred:', e.message);
       }
-      console.log("This user's star ratings: " + data[0]);
-      for (let i = 0; i < data.length; i++) {
-        myRatingTotal.value += data[i].rating;
-        console.log("Current value: " + myRatingTotal.value);
-      }
-      // Divide total star rating count by number of reviews
-      myRatingTotal.value = myRatingTotal.value / data.length;
-      // Round to the nearest half star
-      myRatingTotal.value = Math.round(myRatingTotal.value * 2) / 2
-      console.log("Final value: " + myRatingTotal.value);
     };
+
 
     const fetchUserInfo = async () => {
       try {
