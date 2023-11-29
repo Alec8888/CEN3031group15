@@ -157,7 +157,7 @@
 
         </div>
         <q-card-actions align="right" class="bg-white text-teal">
-        <q-btn to="/home" flat label="OK" v-close-popup />
+        <q-btn to="/profile" flat label="OK" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
