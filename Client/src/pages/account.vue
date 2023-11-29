@@ -551,6 +551,30 @@ export default defineComponent({
       }
     };
     
+    const fetchUserInfo = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        const { data, error } = await supabase
+        .from('Accounts')
+        .select('Name, Phone, Donation_Status, Address, City, State, Zip, Organization')
+        .eq('user_id', user.id);
+        console.log("data from account query: " + data);
+        // Assuming your user data has 'name' and 'email' fields
+        userInfo.value = {
+          name: data[0].Name,
+          phone: data[0].Phone,
+          email: user.email,
+          address: data[0].Address,
+          city: data[0].City,
+          state: data[0].State,
+          zip: data[0].Zip,
+          organization: data[0].Organization
+        };
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
+    };
+
     return {
       pantryItems_active,
       pantryItems_expired,
