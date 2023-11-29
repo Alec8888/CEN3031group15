@@ -332,9 +332,12 @@ export default {
       const { data: { user } } = await supabase.auth.getUser()
       currentUserId.value = user.id;
       clickedReserve.value = true;
-
-      // update donation in db to reserved
-      const { error } = await supabase.from('donations').update([{reserved: true, donatee_id: currentUserId.value}]).eq('id', pantry_item.id)
+      const { data } = await supabase.from('Accounts').select('Donation_Status').eq('user_id', currentUserId.value);
+      var donationStatus = data;
+      console.log(donationStatus[0].Donation_Status);
+      if(donationStatus[0].Donation_Status == false) {
+        // update donation in db to reserved
+        const { error } = await supabase.from('donations').update([{reserved: true, donatee_id: currentUserId.value}]).eq('id', pantry_item.id)
         if (error) {
           console.error('Error fetching donations:', error);
           return;
@@ -343,6 +346,7 @@ export default {
         {
           console.log("Donation successfully reserved.")
         }
+      }
 
       // update notifications in db
         const { error: notificationError } = await supabase
