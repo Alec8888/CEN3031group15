@@ -43,7 +43,7 @@
         </q-list>
 
 
-        <q-card style="display: flex; height: 225px;">
+        <q-card style="display: flex; height: 235px;">
 
           <!-- My Community Rating Section -->
           <q-card style="flex: 3; display: flex; align-items: center; justify-content: center;">
@@ -79,14 +79,13 @@
               <q-separator light />
 
               <q-card-section class="text-fit">
+                <div class="text-body1">Account Role: {{ userInfo.role }}</div>
                 <div class="text-body1">Organization Name: {{ userInfo.organization }}</div>
                 <div class="text-body1">Account Owner: {{ userInfo.name }}</div>
                 <div class="text-body1">Email: {{ userInfo.email }}</div>
                 <div class="text-body1">Phone Number: {{ userInfo.phone }}</div>
                 <div class="text-body1">Current Address: {{ userInfo.address }}, {{ userInfo.city }} {{ userInfo.state }} {{ userInfo.zip }}</div>
               </q-card-section>
-
-              <!-- Other UserInfo Sections... -->
 
             </q-card-section>
           </div>
@@ -558,9 +557,18 @@ export default defineComponent({
         .from('Accounts')
         .select('Name, Phone, Donation_Status, Address, City, State, Zip, Organization')
         .eq('user_id', user.id);
-        console.log("data from account query: " + data);
-        // Assuming your user data has 'name' and 'email' fields
+        console.log("donation status: " + data[0].Donation_Status);
+
+        const role = ref();
+
+        if (data[0].Donation_Status) {
+          role.value = "Donator";
+        } else {
+          role.value = "Donatee";
+        }
+
         userInfo.value = {
+          role: role.value,
           name: data[0].Name,
           phone: data[0].Phone,
           email: user.email,

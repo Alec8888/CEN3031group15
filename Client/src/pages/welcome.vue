@@ -18,7 +18,7 @@
                   Welcome to PantryPal! Connect with donators or food charities to make a difference in your community.
                 </div>
                 <div class="row justify-center"><div class="q-px-lg q-py-md text-body1 text-center">
-                  Created by four students at the University of Florida, PantryPal seeks to diminish food waste.  
+                  Created by four students at the University of Florida, PantryPal seeks to impact communites across the US.  
                   For restaurants, fast food chains, hotels, grocery stores, and more who have excess food or food waste, 
                   PantryPal is an app that allows for businesses to easily donate their leftovers to local shelters and community 
                   organizations. Unlike complicated, larger scale food donation operations PantryPal will have a local and 
