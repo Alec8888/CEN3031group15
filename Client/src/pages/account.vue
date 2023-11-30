@@ -355,7 +355,7 @@ export default defineComponent({
 
           const { error } = await supabase.from('donations').update([{reserved: false, donatee_id: null}]).eq('id', pantry_item.id)
 
-          // update notifications in db
+          // update notifications in db for donator since donatee cancelled
           const { error: notificationError } = await supabase
             .from('Notifications')
             .insert({
@@ -378,7 +378,7 @@ export default defineComponent({
         {
           console.log("donator_id matches current user id");
 
-          // Update the 'reserved' column to false in Supabase
+          // Update the 'reserved' column to false in Supabase and expires to today
           const { error } = await supabase
                 .from('donations')
                 .update([{ date_expires:new Date()
@@ -397,11 +397,11 @@ export default defineComponent({
 
           console.log('about to insert notification. pantry_item.donatee_id: ' + pantry_item.donator_id);
 
-          // update notifications in db
+          // update notifications in db for the donatee since donator cancelled
           const { error: notificationError } = await supabase
             .from('Notifications')
             .insert({
-              user_id: pantry_item.donator_id,
+              user_id: pantry_item.donatee_id,
               donation_id: pantry_item.id,
               notification_type: 'New Cancellation',
               time: new Date()
