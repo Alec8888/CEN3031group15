@@ -628,7 +628,7 @@ export default defineComponent({
       {
         console.log("donator_id matches current user id so update notification for donatee");
 
-        // update notifications in db
+        // update notifications in db for the donatee
         const { error: notificationError } = await supabase
           .from('Notifications')
           .insert({
@@ -652,7 +652,7 @@ export default defineComponent({
       {
         console.log("donatee_id matches current user id so update notification for donator");
 
-        // update notifications in db
+        // update notifications in db for the donator
         const { error: notificationError } = await supabase
           .from('Notifications')
           .insert({
