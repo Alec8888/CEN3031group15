@@ -115,6 +115,7 @@
           <q-separator dark />
           <q-card-actions class="justify-around">
             <q-btn flat @click="() => cancel(pantry_item)">Cancel</q-btn>
+            <q-btn v-if="pantry_item.reserved" flat @click="() => completeOrder(pantry_item)">Complete</q-btn>
           </q-card-actions>
         </div>
       </q-card>
@@ -130,7 +131,8 @@
     <div v-if="showPastItems" class="row q-gutter-md" style="margin-top: 5px;">
       <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems_expired" :key="index">
         <q-card-section >
-          <div class="text-primary"> Expired: {{ pantry_item.date_expires }} </div>
+          <div v-if="pantry_item.pickup_time === null" class="text-primary"> Expired: {{ pantry_item.date_expires }} </div>
+          <div v-if="pantry_item.pickup_time !== null" class="text-primary"> Picked Up: {{ pantry_item.date_expires }} </div>
           <div class="text-h6">{{ pantry_item.org }}</div>
           <div class="text-subtitle2">{{ pantry_item.food }}</div>
           <br/>
@@ -595,6 +597,92 @@ export default defineComponent({
       }
     };
 
+    const completeOrder = async (pantry_item) => {
+      console.log('Complete button clicked.');
+
+      //update pickup time in the database and set date expires to today
+      const currentTime = new Date().toISOString();
+      const currentDate = new Date().toLocaleDateString('en-US');
+
+      try{
+      const { error } = await supabase
+        .from('donations')
+        .update([
+          { 
+            date_expires: currentDate,
+            pickup_time: currentTime,
+          }
+        ])
+        .eq('id', pantry_item.id);
+      }
+      catch (error) {
+        console.error('Failed to complete order:', error.message);
+      }
+
+      // get current user id
+      const { data: { user } } = await supabase.auth.getUser()
+      const currentUser_id = user.id;
+
+      // if current user is the donator, update the notification table for donatee
+      if (currentUser_id == pantry_item.donator_id)
+      {
+        console.log("donator_id matches current user id so update notification for donatee");
+
+        // update notifications in db for the donatee
+        const { error: notificationError } = await supabase
+          .from('Notifications')
+          .insert({
+            user_id: pantry_item.donatee_id,
+            donation_id: pantry_item.id,
+            notification_type: 'Pickup Completed',
+            time: new Date()
+          })
+          .eq('donation_id', pantry_item.id);
+
+        if (notificationError) {
+          console.error('Error updating Notifications:', notificationError);
+          return;
+        } else {
+          console.log('Notification successfully added.');
+        }
+
+      }
+      // Else if current user is the donatee, update the notification table for the donator
+      else if (currentUser_id == pantry_item.donatee_id)
+      {
+        console.log("donatee_id matches current user id so update notification for donator");
+
+        // update notifications in db for the donator
+        const { error: notificationError } = await supabase
+          .from('Notifications')
+          .insert({
+            user_id: pantry_item.donator_id,
+            donation_id: pantry_item.id,
+            notification_type: 'Pickup Completed',
+            time: new Date()
+          })
+          .eq('donation_id', pantry_item.id);
+
+        if (notificationError) {
+          console.error('Error updating Notifications:', notificationError);
+          return;
+        } else {
+          console.log('Notification successfully added.');
+        }
+
+      }
+      else
+      {
+        console.log("current user id does not match donator_id or donatee_id");
+      }
+
+      //Reload the window to move the donation to the past donations section
+      window.location.reload();
+      
+
+
+    };
+
     return {
       pantryItems_active,
       pantryItems_expired,
@@ -625,6 +713,7 @@ export default defineComponent({
       myRatingTotal,
       userInfo,
       fetchUserInfo,
+      completeOrder,
 
       onSubmit (evt) {
         const formData = new FormData(evt.target)
