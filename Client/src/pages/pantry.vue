@@ -107,7 +107,7 @@
         <div class="absolute-bottom">
           <q-separator dark />
           <q-card-actions align="center" >
-            <q-btn flat @click="() => reserveDonation(pantry_item)">Reserve</q-btn>
+            <q-btn  flat @click="() => reserveDonation(pantry_item)" v-if="donationStatus[0] == false" inline-actions> Reserve</q-btn>
             <q-btn flat @click="() => contact(pantry_item)">Contact</q-btn>
           </q-card-actions>
         </div>
@@ -147,12 +147,33 @@
           <q-card-section>
             Your reservation has been sucessfully saved.
           </q-card-section>
+
           <q-card-section>
             You will have 24 hours to pick up the food.
           </q-card-section>
 
           <q-card-section>
             You can now see this reservation in your Profile tab.
+          </q-card-section>
+
+        </div>
+        <q-card-actions align="right" class="bg-white text-teal">
+        <q-btn to="/profile" flat label="OK" v-close-popup />
+        </q-card-actions>
+      </q-card>
+
+      <q-card style="width: 300px">
+        <div class="q-pd-md">
+          <q-card-section>
+            We're sorry, but you are unable to reserve donations.
+          </q-card-section>
+
+          <q-card-section>
+            If you would like to reserve donations in the future,
+          </q-card-section>
+
+          <q-card-section>
+            please register a new donatee account on the registration page.
           </q-card-section>
 
         </div>
@@ -174,6 +195,7 @@ export default {
   setup() {
 
     const pantryItem = ref(null);
+    const donationStatus = ref([]);
     const pantryItems = ref([]);
     const zipCodes = ref([]);
     const zipCodes_selected = ref([]);
@@ -192,7 +214,7 @@ export default {
         currentDate = currentDate.toISOString().slice(0, 10);
         console.log(currentDate);
 
-        const { data, error } = await supabase.from('donations').select().neq('reserved', true).gt('date_expires', currentDate);
+        const { data, error } = await supabase.from('donations').select().neq('reserved', true)
 
         if (error) {
           console.error('Error fetching donations:', error.message);
@@ -205,7 +227,19 @@ export default {
       } catch (error) {
         console.error('Error fetching donations:', error);
       }
+
     };
+
+    const getUserStatus = async () =>
+    {
+      //get current user to make reservation
+      const currentUserId = ref(null);
+      const { data: { user } } = await supabase.auth.getUser()
+      currentUserId.value = user.id;
+      const { data } = await supabase.from('Accounts').select('Donation_Status').eq('user_id', currentUserId.value);
+      donationStatus.value = data;
+      console.log(donationStatus.value[0].Donation_Status)
+    }
 
     const setRatingsMap = async () => {
       // swap back to for each loop
@@ -262,6 +296,7 @@ export default {
 
     onMounted(async () => {
       await fetchDonations();
+      await getUserStatus();
       //await setRatingsMap();
       updateZipCodes();
       updateStates();
@@ -333,9 +368,10 @@ export default {
       currentUserId.value = user.id;
       clickedReserve.value = true;
       const { data } = await supabase.from('Accounts').select('Donation_Status').eq('user_id', currentUserId.value);
-      var donationStatus = data;
-      console.log(donationStatus[0].Donation_Status);
-      if(donationStatus[0].Donation_Status == false) {
+      console.log(data);
+      donationStatus.value = data;
+      console.log(donationStatus.value[0].Donation_Status);
+      if(donationStatus.value[0].Donation_Status == false) {
         // update donation in db to reserved
         const { error } = await supabase.from('donations').update([{reserved: true, donatee_id: currentUserId.value}]).eq('id', pantry_item.id)
         if (error) {
@@ -344,27 +380,26 @@ export default {
         }
         else
         {
-          console.log("Donation successfully reserved.")
-        }
+            console.log("Donation successfully reserved.")      // update notifications in db
+            const { error: notificationError } = await supabase
+            .from('Notifications')
+            .insert({
+              user_id: pantry_item.donator_id,
+              donation_id: pantry_item.id,
+              notification_type: 'New Reservation',
+              time: new Date()
+            })
+            .eq('donation_id', pantry_item.id);
+
+          if (notificationError) {
+            console.error('Error updating Notifications:', notificationError);
+            return;
+          } else {
+            console.log('Notification successfully added.');
+          }
+          }
       }
 
-      // update notifications in db
-        const { error: notificationError } = await supabase
-          .from('Notifications')
-          .insert({
-            user_id: pantry_item.donator_id,
-            donation_id: pantry_item.id,
-            notification_type: 'New Reservation',
-            time: new Date()
-          })
-          .eq('donation_id', pantry_item.id);
-
-        if (notificationError) {
-          console.error('Error updating Notifications:', notificationError);
-          return;
-        } else {
-          console.log('Notification successfully added.');
-        }
     };
 
     const contact = async (pantry_item) => {
@@ -484,6 +519,7 @@ export default {
 
     return {
       pantryItems,
+      donationStatus,
       clickedCall,
       contact,
       clickedReserve,
@@ -511,7 +547,8 @@ export default {
       ratingsMap,
       ratingsMapWatcher,
       getRatingForDonator,
-      updateRating
+      updateRating,
+      getUserStatus
 
     };
   }
