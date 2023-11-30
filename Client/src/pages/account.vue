@@ -43,24 +43,55 @@
         </q-list>
 
 
-    <q-card style="height: 33vh;">
-      <div class="q-pd-md" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-        <div class="q-gutter-y-md column" style="text-align: center;">
-          <div style="display: flex; align-items: center; justify-content: center;">
-            <div class="text-h6" style="margin-right: 10px;">My Community Rating</div>
-            <q-rating
-              v-model="myRatingTotal"
-              size="2em"
-              color="secondary"
-              icon="star_border"
-              icon-half="star_half"
-              icon-selected="star"
-              readonly
-            />
+        <q-card style="display: flex; height: 235px;">
+
+          <!-- My Community Rating Section -->
+          <q-card style="flex: 3; display: flex; align-items: center; justify-content: center;">
+          <!-- My Community Rating Section -->
+          <div class="q-pa-md">
+            <div class="q-gutter-y-md" style="text-align: center; margin-block: 8px; margin-left: 12px;">
+              <div style="display: flex; align-items: center; justify-content: center;">
+                <div class="text-h6">My Community Rating</div>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: center;">
+                <q-rating
+                  v-model="myRatingTotal"
+                  size="2em"
+                  color="secondary"
+                  icon="star_border"
+                  icon-half="star_half"
+                  icon-selected="star"
+                  readonly
+                />
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    </q-card>
+        </q-card>
+
+
+        <!-- Account Info Section -->
+        <q-card style="flex: 12; max-height: 10px;">
+          <div class="q-pa-xs">
+            <q-card-section>
+              <div class="text-h6">Account Info</div>
+
+              <!-- User Info -->
+              <q-separator light />
+
+              <q-card-section class="text-fit">
+                <div class="text-body1">Account Role: {{ userInfo.role }}</div>
+                <div class="text-body1">Organization Name: {{ userInfo.organization }}</div>
+                <div class="text-body1">Account Owner: {{ userInfo.name }}</div>
+                <div class="text-body1">Email: {{ userInfo.email }}</div>
+                <div class="text-body1">Phone Number: {{ userInfo.phone }}</div>
+                <div class="text-body1">Current Address: {{ userInfo.address }}, {{ userInfo.city }} {{ userInfo.state }} {{ userInfo.zip }}</div>
+              </q-card-section>
+
+            </q-card-section>
+          </div>
+        </q-card>
+
+      </q-card>
 
     <q-card>
         <div class="text-subtitle1">
@@ -84,6 +115,7 @@
           <q-separator dark />
           <q-card-actions class="justify-around">
             <q-btn flat @click="() => cancel(pantry_item)">Cancel</q-btn>
+            <q-btn v-if="pantry_item.reserved" flat @click="() => completeOrder(pantry_item)">Complete</q-btn>
           </q-card-actions>
         </div>
       </q-card>
@@ -99,7 +131,8 @@
     <div v-if="showPastItems" class="row q-gutter-md" style="margin-top: 5px;">
       <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems_expired" :key="index">
         <q-card-section >
-          <div class="text-primary"> Expired: {{ pantry_item.date_expires }} </div>
+          <div v-if="pantry_item.pickup_time === null" class="text-primary"> Expired: {{ pantry_item.date_expires }} </div>
+          <div v-if="pantry_item.pickup_time !== null" class="text-primary"> Picked Up: {{ pantry_item.date_expires }} </div>
           <div class="text-h6">{{ pantry_item.org }}</div>
           <div class="text-subtitle2">{{ pantry_item.food }}</div>
           <br/>
@@ -170,48 +203,64 @@ export default defineComponent({
     const clickedReview = ref(false);
     const today = ref(new Date());
     const messages = ref(null);
-    const banner = ref(true);    const selected_donation = ref([]);
+    const fetchedDonations = ref(null);
+    const isUserDonator = ref(null);
+    const banner = ref(true);
+    const selected_donation = ref([]);
     const numStars = ref(0);
     const nullRating = ref(0);
     const ratingResult = ref([]);
     const reviewedDonations = ref([]);
     const myRatingTotal = ref(0);
+    const userInfo = ref({});
     
     const fetchDonations = async () => {
       try {
         // get current user id
         const { data: { user } } = await supabase.auth.getUser()
         const currentUser_id = user.id;
-        console.log(currentUser_id);
+        console.log("userid:" + currentUser_id);
+        
+        const { data, error } = await supabase.from('Accounts').select().eq('user_id', currentUser_id);
+        console.log("userType: " + data[0].Donation_Status);
+        isUserDonator.value = data[0].Donation_Status;
+        console.log("isUserDonator: " + isUserDonator.value);
 
-        // get donations from supabase for current user if donator
-        const { data: donatorData, error: donatorError } = await supabase
-          .from('donations')
-          .select()
-          .eq('donator_id', currentUser_id);
+        if (isUserDonator.value) {
+          const { data, error } = await supabase
+            .from('donations')
+            .select()
+            .eq('donator_id', currentUser_id);
+            
+          console.log("dontation data: " + data)
+          console.log("dontation error: " + error)
 
-        //get active donations from supabase for current user if donatee  
-        const { data: donateeData, error: donateeError } = await supabase
-          .from('donations')
-          .select()
-          .eq('donatee_id', currentUser_id);
+          fetchDonations.value = data;
+          console.log("fecthedDonations donator: " + fetchDonations.value)
+        }
+        else {
+          const { data, error } = await supabase
+            .from('donations')
+            .select()
+            .eq('donatee_id', currentUser_id);
 
-        const data = donatorData.concat(donateeData);
-        const error = donatorError || donateeError;
+          fetchDonations.value = data;
+          console.log("fecthedDonations donatee: " + fetchDonations.value)
+        }
+        console.log("fecthedDonations: " + JSON.stringify(fetchDonations.value))
           
-
         if (error) {
           throw new Error('Failed to fetch donations, error: ' + error.message);
         }
 
         // filter the items into active and expired
         // this should be moved into a seperate function
-        for (let i = 0; i < data.length; i++) {
+        for (let i = 0; i < fetchDonations.value.length; i++) {
           let date_today = new Date();
           date_today.setHours(0, 0, 0, 0);
-          let date_active = new Date(data[i].date_active);
+          let date_active = new Date(fetchDonations.value[i].date_active);
           date_active.setHours(0, 0, 0, 0);
-          let date_expires = new Date(data[i].date_expires);
+          let date_expires = new Date(fetchDonations.value[i].date_expires);
           date_expires.setHours(0, 0, 0, 0);
 
           console.log("today: " + date_today);
@@ -219,12 +268,12 @@ export default defineComponent({
           console.log("expirationDate: " + date_expires);
 
           if (date_active <= date_today && date_today <= date_expires) {
-            pantryItems_active.value.push(data[i]);
-            console.log("found active item: " + data[i].food);
+            pantryItems_active.value.push(fetchDonations.value[i]);
+            console.log("found active item: " + fetchDonations.value[i].food);
           }
           else {
-            pantryItems_expired.value.push(data[i]);
-            console.log("found expired item: " + data[i].food);
+            pantryItems_expired.value.push(fetchDonations.value[i]);
+            console.log("found expired item: " + fetchDonations.value[i].food);
             console.log("today: " + today.value);
           }
         }
@@ -264,7 +313,6 @@ export default defineComponent({
 
         messages.value = data;
         console.log("messages: " + messages.value);
-        console.log(data[0])
 
       } catch (error) {
         console.error('Failed to fetch messages:', error.message);
@@ -277,6 +325,8 @@ export default defineComponent({
     onMounted(async () => {
       fetchDonations();
       fetchMessages();
+
+      fetchUserInfo();
       let todayDate = new Date();
       today.value = todayDate.toISOString().split('T')[0];
       todayDate.setHours(0, 0, 0, 0);
@@ -290,28 +340,20 @@ export default defineComponent({
     const cancel = async (pantry_item) => {
 
      console.log('Cancel button clicked.');
-     console.log(pantry_item);
+     console.log('pantry item: ' + pantry_item);
      try {
         // get current user id
         const { data: { user } } = await supabase.auth.getUser()
         const currentUser_id = user.id;
-        console.log(currentUser_id);
+        console.log('current user: ' + currentUser_id);
 
-        //check if current user is the donatee
+        // If current user is the donatee then set reserved to false and donatee_id to null
+        // Else, user is donator so cancel by setting expiration date to today
         if (currentUser_id == pantry_item.donatee_id)
         {
-          console.log("donatee_id matches current user id");
-          // Update the 'reserved' column to false in Supabase
+          console.log("donatee_id matches current user id so un reserve donation");
+
           const { error } = await supabase.from('donations').update([{reserved: false, donatee_id: null}]).eq('id', pantry_item.id)
-            if (error) {
-              console.error('Error fetching donations:', error);
-              return;
-            }
-            else
-            {
-              console.log("Donation successfully cancelled.")
-              
-             }
 
           // update notifications in db
           const { error: notificationError } = await supabase
@@ -332,13 +374,17 @@ export default defineComponent({
           }
 
         }
-
-        // else if current user is the donator
         else if (currentUser_id == pantry_item.donator_id)
         {
           console.log("donator_id matches current user id");
+
           // Update the 'reserved' column to false in Supabase
-          const { error } = await supabase.from('donations').update([{reserved: false, donatee_id: null, date_expires:new Date().toISOString()}]).eq('id', pantry_item.id)
+          const { error } = await supabase
+                .from('donations')
+                .update([{ date_expires:new Date()
+                  .toISOString()}])
+                  .eq('id', pantry_item.id)
+
             if (error) {
               console.error('Error fetching donations:', error);
               return;
@@ -349,11 +395,13 @@ export default defineComponent({
               
              }
 
+          console.log('about to insert notification. pantry_item.donatee_id: ' + pantry_item.donator_id);
+
           // update notifications in db
           const { error: notificationError } = await supabase
             .from('Notifications')
             .insert({
-              user_id: pantry_item.donatee_id,
+              user_id: pantry_item.donator_id,
               donation_id: pantry_item.id,
               notification_type: 'New Cancellation',
               time: new Date()
@@ -368,7 +416,6 @@ export default defineComponent({
           }
 
         }
-
         else
         {
           console.log("current user id does not match donator_id or donatee_id");
@@ -517,6 +564,125 @@ export default defineComponent({
       }
     };
     
+    const fetchUserInfo = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        const { data, error } = await supabase
+        .from('Accounts')
+        .select('Name, Phone, Donation_Status, Address, City, State, Zip, Organization')
+        .eq('user_id', user.id);
+        console.log("donation status: " + data[0].Donation_Status);
+
+        const role = ref();
+
+        if (data[0].Donation_Status) {
+          role.value = "Donator";
+        } else {
+          role.value = "Donatee";
+        }
+
+        userInfo.value = {
+          role: role.value,
+          name: data[0].Name,
+          phone: data[0].Phone,
+          email: user.email,
+          address: data[0].Address,
+          city: data[0].City,
+          state: data[0].State,
+          zip: data[0].Zip,
+          organization: data[0].Organization
+        };
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
+    };
+
+    const completeOrder = async (pantry_item) => {
+      console.log('Complete button clicked.');
+
+      //update pickup time in the database and set date expires to today
+      const currentTime = new Date().toISOString();
+      const currentDate = new Date().toLocaleDateString('en-US');
+
+      try{
+      const { error } = await supabase
+        .from('donations')
+        .update([
+          { 
+            date_expires: currentDate,
+            pickup_time: currentTime,
+          }
+        ])
+        .eq('id', pantry_item.id);
+      }
+      catch (error) {
+        console.error('Failed to complete order:', error.message);
+      }
+
+      // get current user id
+      const { data: { user } } = await supabase.auth.getUser()
+      const currentUser_id = user.id;
+
+      // if current user is the donator, update the notification table for donatee
+      if (currentUser_id == pantry_item.donator_id)
+      {
+        console.log("donator_id matches current user id so update notification for donatee");
+
+        // update notifications in db for the donatee
+        const { error: notificationError } = await supabase
+          .from('Notifications')
+          .insert({
+            user_id: pantry_item.donatee_id,
+            donation_id: pantry_item.id,
+            notification_type: 'Pickup Completed',
+            time: new Date()
+          })
+          .eq('donation_id', pantry_item.id);
+
+        if (notificationError) {
+          console.error('Error updating Notifications:', notificationError);
+          return;
+        } else {
+          console.log('Notification successfully added.');
+        }
+
+      }
+      // Else if current user is the donatee, update the notification table for the donator
+      else if (currentUser_id == pantry_item.donatee_id)
+      {
+        console.log("donatee_id matches current user id so update notification for donator");
+
+        // update notifications in db for the donator
+        const { error: notificationError } = await supabase
+          .from('Notifications')
+          .insert({
+            user_id: pantry_item.donator_id,
+            donation_id: pantry_item.id,
+            notification_type: 'Pickup Completed',
+            time: new Date()
+          })
+          .eq('donation_id', pantry_item.id);
+
+        if (notificationError) {
+          console.error('Error updating Notifications:', notificationError);
+          return;
+        } else {
+          console.log('Notification successfully added.');
+        }
+
+      }
+      else
+      {
+        console.log("current user id does not match donator_id or donatee_id");
+      }
+
+      //Reload the window to move the donation to the past donations section
+      window.location.reload();
+      
+
+
+    };
+
     return {
       pantryItems_active,
       pantryItems_expired,
@@ -545,6 +711,9 @@ export default defineComponent({
       reviewedDonations,
       getMyRatingTotal,
       myRatingTotal,
+      userInfo,
+      fetchUserInfo,
+      completeOrder,
 
       onSubmit (evt) {
         const formData = new FormData(evt.target)

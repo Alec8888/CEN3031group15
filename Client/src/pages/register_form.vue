@@ -288,35 +288,42 @@ export default {
                         message: 'You need to accept the license and terms first'
                     });
                 }
+                // else if donate is null then error
+                else if (donate.value === null) {
+                    $q.notify({
+                        color: 'red-5',
+                        textColor: 'white',
+                        icon: 'warning',
+                        message: 'You need to select an option'
+                    });
+                }
                 else {
                     // Register user with Supabase
                     let { data, error } = await supabase.auth.signUp({
                         email: email.value,
                         password: password.value,
                     })
-
+ 
                     const { data: { user } } = await supabase.auth.getUser()
                     console.log(user.id);
 
-                    // TODO:
-                    // If registration successful, add user/org to user_profiles table
-                        let { error1 } = await supabase.from('Accounts').
-                        insert({
-                          Name: name.value,
-                          Phone: phone.value,
-                          Donation_Status: donate.value,
-                          Address: streetAddress.value,
-                          City: city.value,
-                          State: state.value,
-                          Zip: zip.value,
-                          Organization: organization.value,
-                          user_id: user.id,
-                          Email: email.value,
-
-                          },
-                          )
-
-                    // If registration fails, display error message
+                    // Store user data that is not part of the auth table
+                      let { error1 } = await supabase.from('Accounts').
+                      insert({
+                        Name: name.value,
+                        Phone: phone.value,
+                        Donation_Status: donate.value,
+                        Address: streetAddress.value,
+                        City: city.value,
+                        State: state.value.value,
+                        Zip: zip.value,
+                        Organization: organization.value,
+                        user_id: user.id,
+                        Email: email.value,
+                        },
+                        )
+                        
+                    // error notifications for user
                     if (error) {
                         $q.notify({
                             color: 'red-5',
@@ -333,9 +340,8 @@ export default {
                             icon: 'warning',
                             message: 'Form submission failed database'
                         });
-                    }
-                    // If registration successful,
-                    // display success message and redirect to login page
+
+                    // success notification for user
                     else {
                         $q.notify({
                             color: 'green-4',
@@ -345,7 +351,7 @@ export default {
                         });
                         router.push('/signin')
                     }
-
+ 
                 }
             },
             onReset() {
