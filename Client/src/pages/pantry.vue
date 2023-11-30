@@ -358,11 +358,7 @@ export default {
       const { data: { user } } = await supabase.auth.getUser()
       currentUserId.value = user.id;
       clickedReserve.value = true;
-      const { data } = await supabase.from('Accounts').select('Donation_Status').eq('user_id', currentUserId.value);
-      console.log(data);
-      donationStatus.value = data;
-      console.log(donationStatus.value[0].Donation_Status);
-      if(donationStatus.value[0].Donation_Status == false) {
+
         // update donation in db to reserved
         const { error } = await supabase.from('donations').update([{reserved: true, donatee_id: currentUserId.value}]).eq('id', pantry_item.id)
         if (error) {
@@ -371,8 +367,11 @@ export default {
         }
         else
         {
-            console.log("Donation successfully reserved.")      // update notifications in db
-            const { error: notificationError } = await supabase
+          console.log("Donation successfully reserved.")
+        }
+
+          // update notifications in db
+          const { error: notificationError } = await supabase
             .from('Notifications')
             .insert({
               user_id: pantry_item.donator_id,
@@ -388,8 +387,6 @@ export default {
           } else {
             console.log('Notification successfully added.');
           }
-          }
-      }
 
     };
 
