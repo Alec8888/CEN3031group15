@@ -42,7 +42,7 @@
         <q-route-tab v-if="!isLoggedIn" to="/register" label="Register" data-cy="register-tab" style="color: black;"/>
         <q-route-tab v-if="isLoggedIn" to="/profile" label="Profile" style="color: black;"/>
         <q-route-tab v-if="isLoggedIn" to="/pantry" label="Pantry" style="color: black;"/>
-        <q-route-tab v-if="isLoggedIn" to="/donate" label="Donate" style="color: black;"/>
+        <q-route-tab v-if="isLoggedIn && userRole" to="/donate" label="Donate" style="color: black;"/>
       </q-tabs>
     </q-header>
 
@@ -68,8 +68,9 @@ export default defineComponent({
   setup () {
     const $q = useQuasar()
     const router = useRouter();
-    const isLoggedIn = ref(false)
-    const userEmail = ref(null)
+    const isLoggedIn = ref(false);
+    const userEmail = ref(null);
+    const userRole = ref(false);
     const setLogInStatus = async () => {
         
       try {
@@ -87,9 +88,20 @@ export default defineComponent({
 
         // if user is not null
         if (user) {
-          console.log("user from supa: " + user.email)
+
+          const { data, error } = await supabase
+          .from('Accounts')
+          .select('Donation_Status')
+          .eq('user_id', user.id);
+
           userEmail.value = user.email;
           isLoggedIn.value = true;
+
+          if (data[0].Donation_Status) {
+            userRole.value = true;
+          } else {
+            userRole.value = false;
+          }
         }
         else {
           console.log("user is null")
@@ -145,6 +157,7 @@ export default defineComponent({
       isLoggedIn,
       setLogInStatus,
       userEmail,
+      userRole,
       logOut,
     }
     
