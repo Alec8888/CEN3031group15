@@ -288,7 +288,6 @@ export default {
     onMounted(async () => {
       await fetchDonations();
       await getUserStatus();
-      //await setRatingsMap();
       updateZipCodes();
       updateStates();
       updateCities();

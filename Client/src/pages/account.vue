@@ -111,6 +111,9 @@
           <div class="text-subtitle2">{{ pantry_item.pickup_streetAddress }}</div>
           <div class="text-subtitle2">{{ pantry_item.pickup_city }} , {{ pantry_item.pickup_state.value }} {{ pantry_item.pickup_zip }}</div>
         </q-card-section>
+        <q-card-section>
+          <div class="text-primary"> Reserved By: {{ getInfoForDonator(pantry_item.donatee_id) }} </div>
+        </q-card-section>
         <div class="absolute-bottom">
           <q-separator dark />
           <q-card-actions class="justify-around">
@@ -138,6 +141,10 @@
           <br/>
           <div class="text-subtitle2">{{ pantry_item.pickup_streetAddress }}</div>
           <div class="text-subtitle2">{{ pantry_item.pickup_city }} , {{ pantry_item.pickup_state.value }} {{ pantry_item.pickup_zip }}</div>
+        </q-card-section>
+
+        <q-card-section>
+          <div class="text-primary"> Reserved By: {{ getInfoForDonator(pantry_item.donatee_id) }} </div>
         </q-card-section>
 
         <div class="absolute-bottom">
@@ -203,7 +210,6 @@ export default defineComponent({
     const clickedReview = ref(false);
     const today = ref(new Date());
     const messages = ref(null);
-    const fetchedDonations = ref(null);
     const isUserDonator = ref(null);
     const banner = ref(true);
     const selected_donation = ref([]);
@@ -213,30 +219,24 @@ export default defineComponent({
     const reviewedDonations = ref([]);
     const myRatingTotal = ref(0);
     const userInfo = ref({});
+    const reservedInfoMap = ref(new Map());
     
     const fetchDonations = async () => {
       try {
         // get current user id
         const { data: { user } } = await supabase.auth.getUser()
         const currentUser_id = user.id;
-        console.log("userid:" + currentUser_id);
         
         const { data, error } = await supabase.from('Accounts').select().eq('user_id', currentUser_id);
-        console.log("userType: " + data[0].Donation_Status);
         isUserDonator.value = data[0].Donation_Status;
-        console.log("isUserDonator: " + isUserDonator.value);
 
         if (isUserDonator.value) {
           const { data, error } = await supabase
             .from('donations')
             .select()
             .eq('donator_id', currentUser_id);
-            
-          console.log("dontation data: " + data)
-          console.log("dontation error: " + error)
-
+          
           fetchDonations.value = data;
-          console.log("fecthedDonations donator: " + fetchDonations.value)
         }
         else {
           const { data, error } = await supabase
@@ -245,9 +245,7 @@ export default defineComponent({
             .eq('donatee_id', currentUser_id);
 
           fetchDonations.value = data;
-          console.log("fecthedDonations donatee: " + fetchDonations.value)
         }
-        console.log("fecthedDonations: " + JSON.stringify(fetchDonations.value))
           
         if (error) {
           throw new Error('Failed to fetch donations, error: ' + error.message);
@@ -256,6 +254,10 @@ export default defineComponent({
         // filter the items into active and expired
         // this should be moved into a seperate function
         for (let i = 0; i < fetchDonations.value.length; i++) {
+
+          // set donatee reserved info for each donation
+          fetchDonateeInfo(fetchDonations.value[i].donatee_id);
+
           let date_today = new Date();
           date_today.setHours(0, 0, 0, 0);
           let date_active = new Date(fetchDonations.value[i].date_active);
@@ -263,18 +265,11 @@ export default defineComponent({
           let date_expires = new Date(fetchDonations.value[i].date_expires);
           date_expires.setHours(0, 0, 0, 0);
 
-          console.log("today: " + date_today);
-          console.log("activeDate: " + date_active);
-          console.log("expirationDate: " + date_expires);
-
           if (date_active <= date_today && date_today <= date_expires) {
             pantryItems_active.value.push(fetchDonations.value[i]);
-            console.log("found active item: " + fetchDonations.value[i].food);
           }
           else {
             pantryItems_expired.value.push(fetchDonations.value[i]);
-            console.log("found expired item: " + fetchDonations.value[i].food);
-            console.log("today: " + today.value);
           }
         }
         if (pantryItems_active.value.length > 0) {
@@ -293,7 +288,6 @@ export default defineComponent({
         // get current user id
         let { data: { user } } = await supabase.auth.getUser()
         let currentUser_id = user.id;
-        console.log("current user id: " + currentUser_id);
 
         // get messages from supabase for current user
         let { data , error } = await supabase
@@ -312,7 +306,6 @@ export default defineComponent({
         }
 
         messages.value = data;
-        console.log("messages: " + messages.value);
 
       } catch (error) {
         console.error('Failed to fetch messages:', error.message);
@@ -325,12 +318,11 @@ export default defineComponent({
     onMounted(async () => {
       fetchDonations();
       fetchMessages();
-
       fetchUserInfo();
+      fetchDonateeInfo();
       let todayDate = new Date();
       today.value = todayDate.toISOString().split('T')[0];
       todayDate.setHours(0, 0, 0, 0);
-      console.log("onMounted todays date: " + today.value);
 
       // Check review status for completed donnations when the page is mounted
       await getReviewedDonations();
@@ -340,18 +332,15 @@ export default defineComponent({
     const cancel = async (pantry_item) => {
 
      console.log('Cancel button clicked.');
-     console.log('pantry item: ' + pantry_item);
      try {
         // get current user id
         const { data: { user } } = await supabase.auth.getUser()
         const currentUser_id = user.id;
-        console.log('current user: ' + currentUser_id);
 
         // If current user is the donatee then set reserved to false and donatee_id to null
         // Else, user is donator so cancel by setting expiration date to today
         if (currentUser_id == pantry_item.donatee_id)
         {
-          console.log("donatee_id matches current user id so un reserve donation");
 
           const { error } = await supabase.from('donations').update([{reserved: false, donatee_id: null}]).eq('id', pantry_item.id)
 
@@ -376,7 +365,6 @@ export default defineComponent({
         }
         else if (currentUser_id == pantry_item.donator_id)
         {
-          console.log("donator_id matches current user id");
 
           // Update the 'reserved' column to false in Supabase
           const { error } = await supabase
@@ -394,8 +382,6 @@ export default defineComponent({
               console.log("Donation successfully cancelled.")
               
              }
-
-          console.log('about to insert notification. pantry_item.donatee_id: ' + pantry_item.donator_id);
 
           // update notifications in db
           const { error: notificationError } = await supabase
@@ -501,7 +487,7 @@ export default defineComponent({
     // function to fill reviewedDonations array with donations that have been reviewed
     const getReviewedDonations = async () => {
       const { data: { user } } = await supabase.auth.getUser()
-      console.log(user.id);
+      
       const { data, error } = await supabase
         .from('reviews')
         .select('donation_id')
@@ -514,7 +500,6 @@ export default defineComponent({
         uniqueDonations.add(data[i].donation_id);
       }
       reviewedDonations.value = Array.from(uniqueDonations);
-      console.log("Reviewed Donations: " + reviewedDonations.value);
     };
 
     const getMyRatingTotal = async () => {
@@ -541,14 +526,11 @@ export default defineComponent({
           return;
         }
 
-        console.log("This user's star ratings:", data);
-
         let totalRating = 0;
 
         for (let i = 0; i < data.length; i++) {
           if (data[i].rating) {
             totalRating += data[i].rating;
-            console.log("Current value:", totalRating);
           }
         }
 
@@ -557,7 +539,6 @@ export default defineComponent({
           myRatingTotal.value = totalRating / data.length;
           // Round to the nearest half star
           myRatingTotal.value = Math.round(myRatingTotal.value * 2) / 2;
-          console.log("Final value:", myRatingTotal.value);
         }
       } catch (e) {
         console.error('An unexpected error occurred:', e.message);
@@ -571,7 +552,6 @@ export default defineComponent({
         .from('Accounts')
         .select('Name, Phone, Donation_Status, Address, City, State, Zip, Organization')
         .eq('user_id', user.id);
-        console.log("donation status: " + data[0].Donation_Status);
 
         const role = ref();
 
@@ -598,7 +578,6 @@ export default defineComponent({
     };
 
     const completeOrder = async (pantry_item) => {
-      console.log('Complete button clicked.');
 
       //update pickup time in the database and set date expires to today
       const currentTime = new Date().toISOString();
@@ -626,7 +605,6 @@ export default defineComponent({
       // if current user is the donator, update the notification table for donatee
       if (currentUser_id == pantry_item.donator_id)
       {
-        console.log("donator_id matches current user id so update notification for donatee");
 
         // update notifications in db for the donatee
         const { error: notificationError } = await supabase
@@ -650,7 +628,6 @@ export default defineComponent({
       // Else if current user is the donatee, update the notification table for the donator
       else if (currentUser_id == pantry_item.donatee_id)
       {
-        console.log("donatee_id matches current user id so update notification for donator");
 
         // update notifications in db for the donator
         const { error: notificationError } = await supabase
@@ -683,6 +660,36 @@ export default defineComponent({
 
     };
 
+    const fetchDonateeInfo = async (donatee_id) => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        const { data, error } = await supabase
+          .from('Accounts')
+          .select('Name, Organization')
+          .eq('user_id', donatee_id);
+
+        if (error) {
+          console.error('Error fetching user info:', error);
+          return ''; // or return some default value
+        }
+
+        if (donatee_id == user.id && userInfo.value.role == "Donatee") {
+          reservedInfoMap.value.set(donatee_id, "Me");
+        } else {
+          reservedInfoMap.value.set(donatee_id, data[0].Name + " at " + data[0].Organization);
+        }
+
+      } catch (error) {
+        console.error('Unexpected error:', error);
+        return ''; // or return some default value
+      }
+    };
+
+    const getInfoForDonator = (donatee_id) => {
+      return reservedInfoMap.value.get(donatee_id) || "Not Reserved";
+    };
+
+
     return {
       pantryItems_active,
       pantryItems_expired,
@@ -714,6 +721,9 @@ export default defineComponent({
       userInfo,
       fetchUserInfo,
       completeOrder,
+      reservedInfoMap,
+      fetchDonateeInfo,
+      getInfoForDonator,
 
       onSubmit (evt) {
         const formData = new FormData(evt.target)
@@ -733,25 +743,18 @@ export default defineComponent({
         console.log("submitReview function entered.");
 
         const { data: { user } } = await supabase.auth.getUser()
-        console.log(user.id);
+        
 
         const userType = ref([]);
 
         // User Type is a Donatee, set id of user_id to review to donator
         if (user.donation_status == false) {
-            console.log("selected donation id: " + selected_donation.value.donator_id);
             userType.value = selected_donation.value.donator_id;
         }
         // User Type is a Donator, set id of user_id to review to donatee
         else {
-          console.log("selected donation id: " + selected_donation.value.donatee_id);
           userType.value = selected_donation.value.donatee_id;
         }
-
-        console.log("user_id: " + userType.value);
-        console.log("rating: " + numStars.value);
-        console.log("donation_id: " + selected_donation.value.id);
-        console.log("reviewer_id: " + user.id);
 
         // Send review data to SupaBase
         let { error1 } = await supabase.from('reviews').
