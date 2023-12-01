@@ -155,6 +155,7 @@ export default defineComponent({
   name: 'PantryPage',
   setup () {
     const $q = useQuasar()
+    const donatees = ref([])
     const currentUserEmail = ref(null)
     const currentUserId = ref(null)
     const date_active = ref(null)
@@ -170,6 +171,7 @@ export default defineComponent({
     const pickup_city = ref(null)
     const pickup_zip = ref(null)
     const pickup_state = ref(null)
+    const donationID = ref(0)
     const states = ref([
           { label: 'Alabama', value: 'AL' },
           { label: 'Alaska', value: 'AK' },
@@ -236,8 +238,80 @@ export default defineComponent({
         }
       };
 
+      // Get array of donatees from Supabase
+      const getDonatees = async () => {
+        try{
+          const {data, error} = await supabase
+            .from('Accounts')
+            .select('user_id')
+            .filter('Donation_Status', 'eq', false)
+          if (error){
+            throw error;
+          }
+
+        return donatees.value = data;
+        
+        } catch (error) {
+          console.error('Failed to fetch donatees', error);
+          return [];
+        }
+      }
+      // Get most recent donation ID from Supabase
+      const getDonationID = async () => {
+        try{
+          const {data, error} = await supabase
+            .from('donations')
+            .select('id')
+            .order('id', { ascending: false })
+            .limit(1)
+          if (error){
+            throw error;
+          }
+          
+          return donationID.value = data[0].id;
+          
+        } catch (error) {
+          console.error('Failed to fetch donation ID', error);
+          return [];
+        }
+      }
+      // Notify all donatees of new donation
+      const notifyDonatees = async () => {
+        // Get donatees from Supabase and store in donatees array and recent donationID
+        // To prevent duplicate notifications, use Set to remove duplicates
+        donatees.value = Array.from(new Set(await getDonatees()));
+        donationID.value = await getDonationID();
+        donationID.value = parseInt(donationID.value);
+        // Send notification to each donatee
+        for (let i = 0; i < donatees.value.length; i++) {
+          try {
+            let { error } = await supabase
+              .from('Notifications')
+              .insert(
+                {
+                  user_id: donatees.value[i].user_id,
+                  notification_type: 'A new donation has been posted!',
+                  dismissed: false,
+                  donation_id: donationID.value,
+                  time: new Date(),
+                },
+              )
+            if (error) {
+              console.error('Error inserting notification:', error);
+            } 
+          } catch (error) {
+            console.error('Error inserting notification:', error);
+          }
+         
+        }
+
+          console.log('Notified donatees of new donation');
+      }
+
     onMounted(() => {
       console.log('Donate page mounted!')
+      
+      
     });
 
     return {
@@ -257,6 +331,12 @@ export default defineComponent({
       currentUserId,
       currentUserEmail,
       getCurrentUser,
+      donatees,
+      getDonatees,
+      getDonationID,
+      donationID,
+      notifyDonatees,
+ 
 
 
       async onSubmit () {
@@ -298,28 +378,33 @@ export default defineComponent({
               },
             )
 
+
+
           if (error) {
             console.error('Error inserting donation:', error);
             $q.notify({
               color: 'red-5',
               textColor: 'white',
               icon: 'warning',
-              message: 'Doneation submission failed'
+              message: 'Donation submission failed'
             });
 
           } else {
             console.log('Donation added to pantry');
+            await notifyDonatees();
             $q.notify({
                 color: 'green-4',
                 textColor: 'white',
                 icon: 'cloud_done',
-                message: 'Donation added to panry'
+                message: 'Donation added to pantry'
             });
+            
             router.push('/profile')
           }
         } catch (error) {
           console.error('Error inserting donation:', error);
         }
+       
 
       },
       onReset () {
