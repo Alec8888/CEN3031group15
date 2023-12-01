@@ -1,6 +1,6 @@
 <template>
   
-  <q-page padding class="q-gutter-md">
+  <q-page padding class="q-gutter-md" style="background-image: url(https://preudbpdnhcigtnuiuit.supabase.co/storage/v1/object/public/images/bg.png);  background-size: cover;">
 
     <q-banner dense v-if="messages && messages.length > 0 && banner" inline-actions class="text-white bg-secondary">
       <q-icon name="notifications_active" color="primary" size="sm" />
@@ -156,8 +156,8 @@
     >
       <q-card style="width: 300px">
         <div class="q-pd-md" style="display: flex; flex-direction: column; align-items: center;">
-          <q-card-section>
-            Please leave a star rating for your donation!
+          <q-card-section class="text-h6 text-center">
+            Please leave a review for your donation!
           </q-card-section>
           <q-card-section>
             <div style="display: flex; flex-direction: column; align-items: center;">

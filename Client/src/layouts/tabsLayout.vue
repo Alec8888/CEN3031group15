@@ -37,12 +37,12 @@
       </q-toolbar>
 
       <q-tabs align="center">
-        <q-route-tab v-if="!isLoggedIn" to="/" label="Welcome" />
-        <q-route-tab v-if="!isLoggedIn" to="/signin" label="Sign In" />
-        <q-route-tab v-if="!isLoggedIn" to="/register" label="Register" data-cy="register-tab" />
-        <q-route-tab v-if="isLoggedIn" to="/profile" label="Profile" />
-        <q-route-tab v-if="isLoggedIn" to="/pantry" label="Pantry" />
-        <q-route-tab v-if="isLoggedIn" to="/donate" label="Donate" />
+        <q-route-tab v-if="!isLoggedIn" to="/" label="Welcome" style="color: black;"/>
+        <q-route-tab v-if="!isLoggedIn" to="/signin" label="Sign In" style="color: black;"/>
+        <q-route-tab v-if="!isLoggedIn" to="/register" label="Register" data-cy="register-tab" style="color: black;"/>
+        <q-route-tab v-if="isLoggedIn" to="/profile" label="Profile" style="color: black;"/>
+        <q-route-tab v-if="isLoggedIn" to="/pantry" label="Pantry" style="color: black;"/>
+        <q-route-tab v-if="isLoggedIn" to="/donate" label="Donate" style="color: black;"/>
       </q-tabs>
     </q-header>
 
@@ -155,7 +155,7 @@ export default defineComponent({
 
 <style>
   .bg-image {
-    background-image: url("https://preudbpdnhcigtnuiuit.supabase.co/storage/v1/object/public/images/bg.png?t=2023-11-19T00%3A53%3A40.968Z");
+    background-image: url("https://preudbpdnhcigtnuiuit.supabase.co/storage/v1/object/public/images/Gradient2.png?t=2023-12-01T19%3A31%3A08.969Z");
     background-size: cover;
   }
 </style>

@@ -1,8 +1,8 @@
 <template>
-  <q-page padding>
+  <q-page padding style="background-image: url(https://preudbpdnhcigtnuiuit.supabase.co/storage/v1/object/public/images/bg.png); background-size: cover;">
 
     <!-- <q-input rounded outlined v-model="searchText" label="Search..." /> -->
-    <div class="q-gutter-md row justify-center" >
+    <div class="q-gutter-md row justify-center">
 
       <q-btn
         class="glossy"
