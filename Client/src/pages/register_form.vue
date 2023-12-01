@@ -303,7 +303,7 @@ export default {
                         email: email.value,
                         password: password.value,
                     })
- 
+
                     const { data: { user } } = await supabase.auth.getUser()
                     console.log(user.id);
 
@@ -322,7 +322,7 @@ export default {
                         Email: email.value,
                         },
                         )
-                        
+
                     // error notifications for user
                     if (error) {
                         $q.notify({

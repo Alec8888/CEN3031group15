@@ -59,7 +59,7 @@
           />
         </div>
       </q-btn-dropdown>
-    
+
 
       <q-btn-dropdown
         class="glossy"
@@ -77,7 +77,7 @@
         </div>
       </q-btn-dropdown>
   </div>
-    
+
     <div class="row q-gutter-md justify-center" style="margin-top: 5px;">
 
       <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems" :key="index" >
@@ -96,18 +96,18 @@
               readonly
             />
           </div>
-          <div class="text-subtitle2">{{ pantry_item.food }}</div> 
+          <div class="text-subtitle2">{{ pantry_item.food }}</div>
           <br/>
           <div class="text-subtitle2">{{ pantry_item.pickup_streetaddress }}</div>
           <div class="text-subtitle2">{{ pantry_item.pickup_city }} , {{ pantry_item.pickup_state }} {{ pantry_item.pickup_zip }}</div>
-          
+
           <div class="text-subtitle2 text-primary">Expires: {{ new Date(pantry_item.date_expires).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) }}</div>
         </q-card-section>
-        
+
         <div class="absolute-bottom">
           <q-separator dark />
           <q-card-actions align="center" >
-            <q-btn flat @click="() => reserveDonation(pantry_item)">Reserve</q-btn>
+            <q-btn  flat @click="() => reserveDonation(pantry_item)" v-if="donationStatus == false" inline-actions> Reserve</q-btn>
             <q-btn flat @click="() => contact(pantry_item)">Contact</q-btn>
           </q-card-actions>
         </div>
@@ -147,6 +147,7 @@
           <q-card-section>
             Your reservation has been sucessfully saved.
           </q-card-section>
+
           <q-card-section>
             You will have 24 hours to pick up the food.
           </q-card-section>
@@ -174,6 +175,7 @@ export default {
   setup() {
 
     const pantryItem = ref(null);
+    const donationStatus = ref(0);
     const pantryItems = ref([]);
     const zipCodes = ref([]);
     const zipCodes_selected = ref([]);
@@ -192,7 +194,7 @@ export default {
         currentDate = currentDate.toISOString().slice(0, 10);
         console.log(currentDate);
 
-        const { data, error } = await supabase.from('donations').select().neq('reserved', true)
+        const { data, error } = await supabase.from('donations').select().neq('reserved', true).gt('date_expires', currentDate);
 
         if (error) {
           console.error('Error fetching donations:', error.message);
@@ -205,7 +207,30 @@ export default {
       } catch (error) {
         console.error('Error fetching donations:', error);
       }
+
     };
+
+    const getUserStatus = async () =>
+    {
+      try{
+      //get current user to make reservation
+      const currentUserId = ref(null);
+      const { data: { user } } = await supabase.auth.getUser()
+      currentUserId.value = user.id;
+      const { data, error } = await supabase.from('Accounts').select('Donation_Status').eq('user_id', currentUserId.value);
+
+      if (error) {
+          console.error('Error fetching donations:', error.message);
+          return;
+        }
+
+      donationStatus.value = data[0].Donation_Status;
+      } catch(error)
+      {
+        console.error('Error fetching user donation status', error);
+      }
+
+    }
 
     const setRatingsMap = async () => {
       // swap back to for each loop
@@ -259,9 +284,10 @@ export default {
       organizations_selected.value = [];
       fetchDonations();
     }
-    
+
     onMounted(async () => {
       await fetchDonations();
+      await getUserStatus();
       //await setRatingsMap();
       updateZipCodes();
       updateStates();
@@ -333,8 +359,8 @@ export default {
       currentUserId.value = user.id;
       clickedReserve.value = true;
 
-      // update donation in db to reserved
-      const { error } = await supabase.from('donations').update([{reserved: true, donatee_id: currentUserId.value}]).eq('id', pantry_item.id)
+        // update donation in db to reserved
+        const { error } = await supabase.from('donations').update([{reserved: true, donatee_id: currentUserId.value}]).eq('id', pantry_item.id)
         if (error) {
           console.error('Error fetching donations:', error);
           return;
@@ -344,23 +370,24 @@ export default {
           console.log("Donation successfully reserved.")
         }
 
-      // update notifications in db
-        const { error: notificationError } = await supabase
-          .from('Notifications')
-          .insert({
-            user_id: pantry_item.donator_id,
-            donation_id: pantry_item.id,
-            notification_type: 'New Reservation',
-            time: new Date()
-          })
-          .eq('donation_id', pantry_item.id);
+          // update notifications in db
+          const { error: notificationError } = await supabase
+            .from('Notifications')
+            .insert({
+              user_id: pantry_item.donator_id,
+              donation_id: pantry_item.id,
+              notification_type: 'New Reservation',
+              time: new Date()
+            })
+            .eq('donation_id', pantry_item.id);
 
-        if (notificationError) {
-          console.error('Error updating Notifications:', notificationError);
-          return;
-        } else {
-          console.log('Notification successfully added.');
-        }
+          if (notificationError) {
+            console.error('Error updating Notifications:', notificationError);
+            return;
+          } else {
+            console.log('Notification successfully added.');
+          }
+
     };
 
     const contact = async (pantry_item) => {
@@ -403,7 +430,7 @@ export default {
         fetchDonations();
         return;
       }
-      
+
       // Fetch donations again before filtering
       await fetchDonations();
       pantryItems.value = pantryItems.value.filter((donation) => {
@@ -422,7 +449,7 @@ export default {
         fetchDonations();
         return;
       }
-      
+
       // Fetch donations again before filtering
       await fetchDonations();
       pantryItems.value = pantryItems.value.filter((donation) => {
@@ -441,7 +468,7 @@ export default {
         fetchDonations();
         return;
       }
-      
+
       // Fetch donations again before filtering
       await fetchDonations();
       pantryItems.value = pantryItems.value.filter((donation) => {
@@ -460,7 +487,7 @@ export default {
         fetchDonations();
         return;
       }
-      
+
       // Fetch donations again before filtering
       await fetchDonations();
       pantryItems.value = pantryItems.value.filter((donation) => {
@@ -480,6 +507,7 @@ export default {
 
     return {
       pantryItems,
+      donationStatus,
       clickedCall,
       contact,
       clickedReserve,
@@ -507,7 +535,8 @@ export default {
       ratingsMap,
       ratingsMapWatcher,
       getRatingForDonator,
-      updateRating
+      updateRating,
+      getUserStatus
 
     };
   }
