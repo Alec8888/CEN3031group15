@@ -155,6 +155,7 @@ export default defineComponent({
   name: 'PantryPage',
   setup () {
     const $q = useQuasar()
+    const donatees = ref([])
     const currentUserEmail = ref(null)
     const currentUserId = ref(null)
     const date_active = ref(null)
@@ -236,8 +237,27 @@ export default defineComponent({
         }
       };
 
+      // Get array of donatees from Supabase
+      const getDonatees = async () => {
+        try{
+          const {data, error} = await supabase
+            .from('Accounts')
+            .select('user_id')
+            .filter('Donation_Status', 'eq', false)
+          if (error){
+            throw error;
+          }
+
+        donatees.value = data;
+        console.log('Donatees: ' , donatees.value);
+        } catch (error) {
+          console.error('Failed to fetch donatees', error);
+        }
+      }
+
     onMounted(() => {
       console.log('Donate page mounted!')
+      getDonatees();
     });
 
     return {
@@ -257,6 +277,9 @@ export default defineComponent({
       currentUserId,
       currentUserEmail,
       getCurrentUser,
+      donatees,
+      getDonatees,
+ 
 
 
       async onSubmit () {
