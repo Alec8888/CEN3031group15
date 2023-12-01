@@ -171,6 +171,7 @@ export default defineComponent({
     const pickup_city = ref(null)
     const pickup_zip = ref(null)
     const pickup_state = ref(null)
+    const donationID = ref(0)
     const states = ref([
           { label: 'Alabama', value: 'AL' },
           { label: 'Alaska', value: 'AK' },
@@ -248,16 +249,69 @@ export default defineComponent({
             throw error;
           }
 
-        donatees.value = data;
-        console.log('Donatees: ' , donatees.value);
+        return donatees.value = data;
+        
         } catch (error) {
           console.error('Failed to fetch donatees', error);
+          return [];
         }
+      }
+      // Get most recent donation ID from Supabase
+      const getDonationID = async () => {
+        try{
+          const {data, error} = await supabase
+            .from('donations')
+            .select('id')
+            .order('id', { ascending: false })
+            .limit(1)
+          if (error){
+            throw error;
+          }
+          
+          return donationID.value = data[0].id;
+          
+        } catch (error) {
+          console.error('Failed to fetch donation ID', error);
+          return [];
+        }
+      }
+      // Notify all donatees of new donation
+      const notifyDonatees = async () => {
+        // Get donatees from Supabase and store in donatees array and recent donationID
+        // To prevent duplicate notifications, use Set to remove duplicates
+        donatees.value = Array.from(new Set(await getDonatees()));
+        donationID.value = await getDonationID();
+        donationID.value = parseInt(donationID.value);
+        // Send notification to each donatee
+        for (let i = 0; i < donatees.value.length; i++) {
+          try {
+            let { error } = await supabase
+              .from('Notifications')
+              .insert(
+                {
+                  user_id: donatees.value[i].user_id,
+                  notification_type: 'A new donation has been posted!',
+                  dismissed: false,
+                  donation_id: donationID.value,
+                  time: new Date(),
+                },
+              )
+            if (error) {
+              console.error('Error inserting notification:', error);
+            } 
+          } catch (error) {
+            console.error('Error inserting notification:', error);
+          }
+         
+        }
+
+          console.log('Notified donatees of new donation');
       }
 
     onMounted(() => {
       console.log('Donate page mounted!')
-      getDonatees();
+      
+      
     });
 
     return {
@@ -279,6 +333,9 @@ export default defineComponent({
       getCurrentUser,
       donatees,
       getDonatees,
+      getDonationID,
+      donationID,
+      notifyDonatees,
  
 
 
@@ -321,6 +378,8 @@ export default defineComponent({
               },
             )
 
+
+
           if (error) {
             console.error('Error inserting donation:', error);
             $q.notify({
@@ -332,17 +391,20 @@ export default defineComponent({
 
           } else {
             console.log('Donation added to pantry');
+            await notifyDonatees();
             $q.notify({
                 color: 'green-4',
                 textColor: 'white',
                 icon: 'cloud_done',
-                message: 'Donation added to panry'
+                message: 'Donation added to pantry'
             });
+            
             router.push('/profile')
           }
         } catch (error) {
           console.error('Error inserting donation:', error);
         }
+       
 
       },
       onReset () {
