@@ -21,7 +21,7 @@
                   Created by four students at the University of Florida, PantryPal seeks to impact communites across the US.  
                   For restaurants, fast food chains, hotels, grocery stores, and more who have excess food or food waste, 
                   PantryPal is an app that allows for businesses to easily donate their leftovers to local shelters and community 
-                  organizations. Unlike complicated, larger scale food donation operations PantryPal will have a local and 
+                  organizations. Unlike complicated, larger scale food donation operations PantryPal has a local and 
                   community-centric focus, making food donation a simple and seamless experience between community organizations and establishments. 
                 </div>
               </div>
@@ -75,7 +75,7 @@
                 icon="handshake"
               >
                 <div>
-                  Once reserved, you'll recieve a notification that a pick up party is on their way to grab your donation!
+                  Once reserved, you'll receive a notification that a pick up party is on their way to grab your donation!
                 </div>
               </q-timeline-entry>
           </q-timeline>
@@ -95,7 +95,7 @@
                 icon="app_registration"
               >
                 <div>
-                  Click on the register tab to set up your buisness and start recieving donations today!
+                  Click on the register tab to set up your buisness and start receiving donations today!
                 </div>
               </q-timeline-entry>
       
