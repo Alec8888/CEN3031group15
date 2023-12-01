@@ -341,18 +341,18 @@ export default {
                             message: 'Form submission failed database'
                         });
 
-                    // success notification for user
-                    else {
-                        $q.notify({
-                            color: 'green-4',
-                            textColor: 'white',
-                            icon: 'cloud_done',
-                            message: 'Registration successful!'
-                        });
-                        router.push('/signin')
-                    }
-
-                }
+                      }
+                      // success notification for user
+                      else {
+                          $q.notify({
+                              color: 'green-4',
+                              textColor: 'white',
+                              icon: 'cloud_done',
+                              message: 'Registration successful!'
+                          });
+                          router.push('/signin')
+                      }
+              }
             },
             onReset() {
                 name.value = null;
