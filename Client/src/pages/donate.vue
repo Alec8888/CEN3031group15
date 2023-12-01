@@ -386,7 +386,7 @@ export default defineComponent({
               color: 'red-5',
               textColor: 'white',
               icon: 'warning',
-              message: 'Doneation submission failed'
+              message: 'Donation submission failed'
             });
 
           } else {
