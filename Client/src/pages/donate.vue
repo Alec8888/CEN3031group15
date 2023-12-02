@@ -236,8 +236,6 @@ export default defineComponent({
         const { data: { user } } = await supabase.auth.getUser()
         currentUserEmail.value  = user.email;
         currentUserId.value = user.id;
-        console.log('Current user email and id from getCurrentUser: ' + currentUserEmail.value, currentUserId.value);
-
         } catch (error) {
           console.error('Failed to fetch user id and email from supa session', error);
         }
