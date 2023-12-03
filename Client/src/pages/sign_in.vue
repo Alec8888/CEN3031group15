@@ -101,7 +101,6 @@ export default defineComponent({
 
         // when the user clicks the login button
         const onSubmit = async () => {
-          console.log('log in clicked: ' + email.value + ' ' + password.value)
 
           // sign in with Supabase
           let { data, error } = await supabase.auth.signInWithPassword({
