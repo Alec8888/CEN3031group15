@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column items-center">
+  <q-page class="column items-center" style="background-image: url(https://preudbpdnhcigtnuiuit.supabase.co/storage/v1/object/public/images/bg.png); background-size: cover;">
     <!-- <q-btn label="test route" @click="testRoutes" /> -->
 
     <div class="self-center">

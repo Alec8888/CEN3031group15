@@ -1,8 +1,8 @@
 <template>
-  <q-page padding>
+  <q-page padding style="background-color: black;">
 
     <!-- <q-input rounded outlined v-model="searchText" label="Search..." /> -->
-    <div class="q-gutter-md row justify-center" >
+    <div class="q-gutter-md row justify-center">
 
       <q-btn
         class="glossy"
@@ -288,7 +288,6 @@ export default {
     onMounted(async () => {
       await fetchDonations();
       await getUserStatus();
-      //await setRatingsMap();
       updateZipCodes();
       updateStates();
       updateCities();
@@ -547,7 +546,7 @@ export default {
   {
     width: 100%;
     max-width: 250px;
-    height: 250px;
+    height: 350px;
   }
 
 </style>
