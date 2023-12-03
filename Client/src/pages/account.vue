@@ -803,7 +803,7 @@ export default defineComponent({
   {
     width: 100%;
     max-width: 250px;
-    height: 250px;
+    height: 350px;
   }
 
 </style>
