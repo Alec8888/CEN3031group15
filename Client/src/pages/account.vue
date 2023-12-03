@@ -754,8 +754,6 @@ export default defineComponent({
         const reviewedUserID = ref(null);
         const reviewerUserID = ref(null);
 
-        console.log("User Role: " + userInfo.value.role);
-
         // User Type is a Donatee, set id of user_id to review to donator
         if (userInfo.value.role == "Donatee") {
           reviewedUserID.value = selected_donation.value.donator_id;
