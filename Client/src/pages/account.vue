@@ -1,5 +1,5 @@
 <template>
-  
+
   <q-page padding class="q-gutter-md">
 
     <q-banner dense v-if="messages && messages.length > 0 && banner" inline-actions class="text-white bg-secondary">
@@ -26,7 +26,7 @@
             <q-item-section side>
               <q-btn flat text-color="grey" size="sm" dense round icon="delete" @click="dismiss(message.id)"/>
             </q-item-section>
-            
+
             <q-item-section>
               <q-item-label>{{ message.notification_type }}</q-item-label>
               <q-item-label lines="1">{{ message.donations.food }}</q-item-label>
@@ -108,8 +108,11 @@
           <div class="text-subtitle2">{{ pantry_item.food }}</div>
         </q-card-section>
         <q-card-section>
-          <div class="text-subtitle2">{{ pantry_item.pickup_streetAddress }}</div>
+          <div class="text-subtitle2">{{ pantry_item.pickup_streetaddress }}</div>
           <div class="text-subtitle2">{{ pantry_item.pickup_city }} , {{ pantry_item.pickup_state.value }} {{ pantry_item.pickup_zip }}</div>
+          <div class="text-subtitle2" v-if="userInfo.email != pantry_item.contact_email && pantry_item.user_email != userInfo.email">{{ pantry_item.contact_name }}</div>
+          <div class="text-subtitle2" v-if="userInfo.email != pantry_item.contact_email && pantry_item.user_email != userInfo.email">{{ pantry_item.contact_email }}</div>
+          <div class="text-subtitle2" v-if="userInfo.email != pantry_item.contact_email && pantry_item.user_email != userInfo.email">{{ pantry_item.contact_phone }}</div>
         </q-card-section>
         <div class="absolute-bottom">
           <q-separator dark />
@@ -136,8 +139,11 @@
           <div class="text-h6">{{ pantry_item.org }}</div>
           <div class="text-subtitle2">{{ pantry_item.food }}</div>
           <br/>
-          <div class="text-subtitle2">{{ pantry_item.pickup_streetAddress }}</div>
+          <div class="text-subtitle2">{{ pantry_item.pickup_streetaddress }}</div>
           <div class="text-subtitle2">{{ pantry_item.pickup_city }} , {{ pantry_item.pickup_state.value }} {{ pantry_item.pickup_zip }}</div>
+          <div class="text-subtitle2" v-if="userInfo.email != pantry_item.contact_email && pantry_item.user_email != userInfo.email">{{ pantry_item.contact_name }}</div>
+          <div class="text-subtitle2" v-if="userInfo.email != pantry_item.contact_email && pantry_item.user_email != userInfo.email">{{ pantry_item.contact_email }}</div>
+          <div class="text-subtitle2" v-if="userInfo.email != pantry_item.contact_email && pantry_item.user_email != userInfo.email">{{ pantry_item.contact_phone }}</div>
         </q-card-section>
 
         <div class="absolute-bottom">
@@ -179,7 +185,7 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    
+
   </q-page>
 </template>
 
@@ -213,14 +219,14 @@ export default defineComponent({
     const reviewedDonations = ref([]);
     const myRatingTotal = ref(0);
     const userInfo = ref({});
-    
+
     const fetchDonations = async () => {
       try {
         // get current user id
         const { data: { user } } = await supabase.auth.getUser()
         const currentUser_id = user.id;
         console.log("userid:" + currentUser_id);
-        
+
         const { data, error } = await supabase.from('Accounts').select().eq('user_id', currentUser_id);
         console.log("userType: " + data[0].Donation_Status);
         isUserDonator.value = data[0].Donation_Status;
@@ -231,7 +237,7 @@ export default defineComponent({
             .from('donations')
             .select()
             .eq('donator_id', currentUser_id);
-            
+
           console.log("dontation data: " + data)
           console.log("dontation error: " + error)
 
@@ -248,7 +254,7 @@ export default defineComponent({
           console.log("fecthedDonations donatee: " + fetchDonations.value)
         }
         console.log("fecthedDonations: " + JSON.stringify(fetchDonations.value))
-          
+
         if (error) {
           throw new Error('Failed to fetch donations, error: ' + error.message);
         }
@@ -392,7 +398,7 @@ export default defineComponent({
             else
             {
               console.log("Donation successfully cancelled.")
-              
+
              }
 
           console.log('about to insert notification. pantry_item.donatee_id: ' + pantry_item.donator_id);
@@ -427,8 +433,8 @@ export default defineComponent({
      } catch (error) {
         console.error('Failed cancel donation:', error.message);
      }
-     
-     
+
+
 
     }
     const showActive = () => {
@@ -563,7 +569,7 @@ export default defineComponent({
         console.error('An unexpected error occurred:', e.message);
       }
     };
-    
+
     const fetchUserInfo = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
@@ -608,7 +614,7 @@ export default defineComponent({
       const { error } = await supabase
         .from('donations')
         .update([
-          { 
+          {
             date_expires: currentDate,
             pickup_time: currentTime,
           }
@@ -678,7 +684,7 @@ export default defineComponent({
 
       //Reload the window to move the donation to the past donations section
       window.location.reload();
-      
+
 
 
     };
