@@ -1,6 +1,9 @@
+<!-- This file is the parent to the vue page files.
+This file contains the navigation bar and the router view. -->
 <template>
   <q-layout view="hHh lpR fFf">
 
+    <!-- In the q-header, the q-toolbar is the top bar with the logo and the user dropdown menu. -->
     <q-header elevated class="bg-primary text-accent" height-hint="98">
       <q-toolbar>
         <q-toolbar-title style="width: 100%; display: flex; align-items: center; margin-top: 10px;">
@@ -10,6 +13,7 @@
           <div class="custom-hammersmith text-secondary" style="margin-left: 10px;">PantryPal</div>
         </q-toolbar-title>
 
+        <!-- User profile button for logging out -->
         <div>
           <q-btn
           data-cy="user-btn"
@@ -36,6 +40,7 @@
 
       </q-toolbar>
 
+      <!-- The q-tabs are the navigation tabs at the top of the page. -->
       <q-tabs align="center">
         <q-route-tab v-if="!isLoggedIn" to="/" label="Welcome" style="color: black;"/>
         <q-route-tab v-if="!isLoggedIn" to="/signin" label="Sign In" style="color: black;"/>
@@ -46,6 +51,7 @@
       </q-tabs>
     </q-header>
 
+    <!-- The vue pages are rendered here -->
     <q-page-container class="bg-image">
       <router-view />
     </q-page-container>
@@ -54,39 +60,28 @@
 </template>
 
 <script>
-import { defineComponent, onUpdated, ref } from 'vue'
-import { onMounted} from 'vue'
+import { defineComponent, onUpdated, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { supabase } from 'src/lib/supabaseClient'
-import { compileScript } from 'vue/compiler-sfc'
-
 
 export default defineComponent({
   name: 'TabledLayout',
 
   setup () {
-    const $q = useQuasar()
-    const router = useRouter();
-    const isLoggedIn = ref(false);
-    const userEmail = ref(null);
-    const userRole = ref(false);
-    const setLogInStatus = async () => {
-        
-      try {
-        // Get current user from Supabase session
-        console.log("attempting to get user from supa session")
+    const $q = useQuasar() // used for notifications
+    const router = useRouter(); // used to redirect to other pages
+    const isLoggedIn = ref(false) // used for conditional rendering
+    const userEmail = ref(null) // used to display the user's email in the dropdown menu
+    const userRole = ref(false); // used to store current user role
 
+    // Checks for logged in user and sets the isLoggedIn variable that is used for conditional rendering
+    const setLogInStatus = async () => {
+      try {
         // get the logged in user with the current existing session
         const { data: { user } } = await supabase.auth.getUser()
-        
-        // get the logged in user with JWT, not working
-        // const { data: { user } } = await supabase.auth.getUser(jwt)
-        
-        // recomended for faster results but it's not working
-        // const { data: { user }} = await supabase.auth.getSession().session.user 
 
-        // if user is not null
+        // if user is not null then isLoggedIn is true
         if (user) {
 
           const { data, error } = await supabase
@@ -104,25 +99,23 @@ export default defineComponent({
           }
         }
         else {
-          console.log("user is null")
           isLoggedIn.value = false;
           userEmail.value = null;
         }
       } catch (error) {
         console.error('Failed to fetch current user:', error.message);
       }
+    };
 
-    }
-
+    // Logs out the user and redirects to the sign in page
+    // called when user clicks the log out button
     const logOut = async () => {
-      console.log('Log out clicked.');
 
       // Sign out from Supabase Auth
       let { error } = await supabase.auth.signOut()
       
+      // no error so successful logout, notify user and redirect to sign in page
       if (!error) {
-          console.log('Logout successful');
-
           isLoggedIn.value = false;
           userEmail.value = null;
           router.push('/signin')
@@ -132,20 +125,20 @@ export default defineComponent({
             textColor: 'white',
             icon: 'cloud_done',
             message: 'Log out successful'
-          });
+          })
         } 
-      else {
-          console.error('Logout failed');
+      else { // error so notify user logout failed
 
           $q.notify({
             color: 'red-4',
             textColor: 'white',
             icon: 'cloud_done',
             message: 'Log out failed'
-          });
+          })
       }
-    }
+    };
 
+    // when the component is updated or mounted, check if the user is logged in
     onUpdated( () => {
       setLogInStatus();
     }),
@@ -159,7 +152,7 @@ export default defineComponent({
       userEmail,
       userRole,
       logOut,
-    }
+    };
     
   },
   

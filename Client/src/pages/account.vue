@@ -26,7 +26,7 @@
             <q-item-section side>
               <q-btn flat text-color="grey" size="sm" dense round icon="delete" @click="dismiss(message.id)"/>
             </q-item-section>
-            
+
             <q-item-section>
               <q-item-label>{{ message.notification_type }}</q-item-label>
               <q-item-label lines="1">{{ message.donations.food }}</q-item-label>
@@ -108,8 +108,11 @@
           <div class="text-subtitle2">{{ pantry_item.food }}</div>
         </q-card-section>
         <q-card-section>
-          <div class="text-subtitle2">{{ pantry_item.pickup_streetAddress }}</div>
+          <div class="text-subtitle2">{{ pantry_item.pickup_streetaddress }}</div>
           <div class="text-subtitle2">{{ pantry_item.pickup_city }} , {{ pantry_item.pickup_state.value }} {{ pantry_item.pickup_zip }}</div>
+          <div class="text-subtitle2" v-if="userInfo.email != pantry_item.contact_email && pantry_item.user_email != userInfo.email">{{ pantry_item.contact_name }}</div>
+          <div class="text-subtitle2" v-if="userInfo.email != pantry_item.contact_email && pantry_item.user_email != userInfo.email">{{ pantry_item.contact_email }}</div>
+          <div class="text-subtitle2" v-if="userInfo.email != pantry_item.contact_email && pantry_item.user_email != userInfo.email">{{ pantry_item.contact_phone }}</div>
         </q-card-section>
         <q-card-section>
           <div class="text-primary"> Reserved By: {{ getInfoForDonator(pantry_item.donatee_id) }} </div>
@@ -139,8 +142,11 @@
           <div class="text-h6">{{ pantry_item.org }}</div>
           <div class="text-subtitle2">{{ pantry_item.food }}</div>
           <br/>
-          <div class="text-subtitle2">{{ pantry_item.pickup_streetAddress }}</div>
+          <div class="text-subtitle2">{{ pantry_item.pickup_streetaddress }}</div>
           <div class="text-subtitle2">{{ pantry_item.pickup_city }} , {{ pantry_item.pickup_state.value }} {{ pantry_item.pickup_zip }}</div>
+          <div class="text-subtitle2" v-if="userInfo.email != pantry_item.contact_email && pantry_item.user_email != userInfo.email">{{ pantry_item.contact_name }}</div>
+          <div class="text-subtitle2" v-if="userInfo.email != pantry_item.contact_email && pantry_item.user_email != userInfo.email">{{ pantry_item.contact_email }}</div>
+          <div class="text-subtitle2" v-if="userInfo.email != pantry_item.contact_email && pantry_item.user_email != userInfo.email">{{ pantry_item.contact_phone }}</div>
         </q-card-section>
 
         <q-card-section>
@@ -186,7 +192,7 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    
+
   </q-page>
 </template>
 
@@ -344,7 +350,7 @@ export default defineComponent({
 
           const { error } = await supabase.from('donations').update([{reserved: false, donatee_id: null}]).eq('id', pantry_item.id)
 
-          // update notifications in db
+          // update notifications in db for donator since donatee cancelled
           const { error: notificationError } = await supabase
             .from('Notifications')
             .insert({
@@ -366,7 +372,7 @@ export default defineComponent({
         else if (currentUser_id == pantry_item.donator_id)
         {
 
-          // Update the 'reserved' column to false in Supabase
+          // Update the 'reserved' column to false in Supabase and expires to today
           const { error } = await supabase
                 .from('donations')
                 .update([{ date_expires:new Date()
@@ -380,14 +386,14 @@ export default defineComponent({
             else
             {
               console.log("Donation successfully cancelled.")
-              
+
              }
 
-          // update notifications in db
+          // update notifications in db for the donatee since donator cancelled
           const { error: notificationError } = await supabase
             .from('Notifications')
             .insert({
-              user_id: pantry_item.donator_id,
+              user_id: pantry_item.donatee_id,
               donation_id: pantry_item.id,
               notification_type: 'New Cancellation',
               time: new Date()
@@ -413,8 +419,8 @@ export default defineComponent({
      } catch (error) {
         console.error('Failed cancel donation:', error.message);
      }
-     
-     
+
+
 
     }
     const showActive = () => {
@@ -544,7 +550,7 @@ export default defineComponent({
         console.error('An unexpected error occurred:', e.message);
       }
     };
-    
+
     const fetchUserInfo = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
@@ -587,7 +593,7 @@ export default defineComponent({
       const { error } = await supabase
         .from('donations')
         .update([
-          { 
+          {
             date_expires: currentDate,
             pickup_time: currentTime,
           }
@@ -655,7 +661,7 @@ export default defineComponent({
 
       //Reload the window to move the donation to the past donations section
       window.location.reload();
-      
+
 
 
     };
