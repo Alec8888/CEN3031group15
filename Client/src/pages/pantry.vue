@@ -1,12 +1,10 @@
 <!--This file contains the pantry page that lists all active donations that can be reserved. It displays the overall review of the donator
 and it also notifies the donator when items are reserved-->
 <template>
-  <q-page padding>
+  <q-page padding style="background-color: black;">
 
     <!-- <q-input rounded outlined v-model="searchText" label="Search..." /> -->
     <div class="q-gutter-md row justify-center" >
-    
-      <!-- Clear Filters button -->
       <q-btn
         class="glossy"
         color="accent"
@@ -291,8 +289,7 @@ export default {
       //Fetch donations from supabase and user status
       await fetchDonations();
       await getUserStatus();
-      //await setRatingsMap();
-      // update zipCodes, states, cities, and organizations from donations
+      
       updateZipCodes();
       updateStates();
       updateCities();
@@ -519,7 +516,7 @@ export default {
   {
     width: 100%;
     max-width: 250px;
-    height: 250px;
+    height: 350px;
   }
 
 </style>
