@@ -141,6 +141,9 @@
           <br/>
           <div class="text-subtitle2">{{ pantry_item.pickup_streetaddress }}</div>
           <div class="text-subtitle2">{{ pantry_item.pickup_city }} , {{ pantry_item.pickup_state.value }} {{ pantry_item.pickup_zip }}</div>
+          <div class="text-subtitle2" v-if="userInfo.email != pantry_item.contact_email && pantry_item.user_email != userInfo.email">{{ pantry_item.contact_name }}</div>
+          <div class="text-subtitle2" v-if="userInfo.email != pantry_item.contact_email && pantry_item.user_email != userInfo.email">{{ pantry_item.contact_email }}</div>
+          <div class="text-subtitle2" v-if="userInfo.email != pantry_item.contact_email && pantry_item.user_email != userInfo.email">{{ pantry_item.contact_phone }}</div>
         </q-card-section>
 
         <div class="absolute-bottom">
