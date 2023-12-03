@@ -749,29 +749,29 @@ export default defineComponent({
       },
 
       async submitReview() {
-        console.log("submitReview function entered.");
+        console.log("submitReview function entered.");        
 
-        const { data: { user } } = await supabase.auth.getUser()
-        
-
-        const userType = ref([]);
+        const reviewedUserID = ref(null);
+        const reviewerUserID = ref(null);
 
         // User Type is a Donatee, set id of user_id to review to donator
-        if (user.donation_status == false) {
-            userType.value = selected_donation.value.donator_id;
+        if (userInfo.value.role == "Donatee") {
+          reviewedUserID.value = selected_donation.value.donator_id;
+          reviewerUserID.value = selected_donation.value.donatee_id;
         }
         // User Type is a Donator, set id of user_id to review to donatee
         else {
-          userType.value = selected_donation.value.donatee_id;
+          reviewedUserID.value = selected_donation.value.donatee_id;
+          reviewerUserID.value = selected_donation.value.donator_id;
         }
 
         // Send review data to SupaBase
         let { error1 } = await supabase.from('reviews').
         insert({
-          user_id: userType.value,
+          user_id: reviewedUserID.value,
           rating: numStars.value,
           donation_id: selected_donation.value.id,
-          reviewer_id: user.id
+          reviewer_id: reviewerUserID.value
           })
 
         // If review form fails, display error message
