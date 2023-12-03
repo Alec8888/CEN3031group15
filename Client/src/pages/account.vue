@@ -1,6 +1,6 @@
 <template>
   
-  <q-page padding class="q-gutter-md" style="background-image: url(https://preudbpdnhcigtnuiuit.supabase.co/storage/v1/object/public/images/bg.png);  background-size: cover;">
+  <q-page padding class="q-gutter-md" style="background-color: black;">
 
     <q-banner dense v-if="messages && messages.length > 0 && banner" inline-actions class="text-white bg-secondary">
       <q-icon name="notifications_active" color="primary" size="sm" />

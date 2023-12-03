@@ -3,7 +3,7 @@
 
       <div class="row justify-center">
         <!-- Welcome Card -->
-        <q-card class="bg-white" style="margin-bottom: 20px;">
+        <q-card class="bg-white" style="margin-bottom: 20px; max-width: 1220px;">
           <div class="q-pa-md q-gutter-md text-h6 q-items-center">
             <div class="row justify-center">
               <q-img
