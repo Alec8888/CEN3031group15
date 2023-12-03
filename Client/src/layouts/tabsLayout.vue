@@ -42,12 +42,12 @@ This file contains the navigation bar and the router view. -->
 
       <!-- The q-tabs are the navigation tabs at the top of the page. -->
       <q-tabs align="center">
-        <q-route-tab v-if="!isLoggedIn" to="/" label="Welcome" />
-        <q-route-tab v-if="!isLoggedIn" to="/signin" label="Sign In" />
-        <q-route-tab v-if="!isLoggedIn" to="/register" label="Register" data-cy="register-tab" />
-        <q-route-tab v-if="isLoggedIn" to="/profile" label="Profile" />
-        <q-route-tab v-if="isLoggedIn" to="/pantry" label="Pantry" />
-        <q-route-tab v-if="isLoggedIn" to="/donate" label="Donate" />
+        <q-route-tab v-if="!isLoggedIn" to="/" label="Welcome" style="color: black;"/>
+        <q-route-tab v-if="!isLoggedIn" to="/signin" label="Sign In" style="color: black;"/>
+        <q-route-tab v-if="!isLoggedIn" to="/register" label="Register" data-cy="register-tab" style="color: black;"/>
+        <q-route-tab v-if="isLoggedIn" to="/profile" label="Profile" style="color: black;"/>
+        <q-route-tab v-if="isLoggedIn" to="/pantry" label="Pantry" style="color: black;"/>
+        <q-route-tab v-if="isLoggedIn && userRole" to="/donate" label="Donate" style="color: black;"/>
       </q-tabs>
     </q-header>
 
@@ -73,6 +73,7 @@ export default defineComponent({
     const router = useRouter(); // used to redirect to other pages
     const isLoggedIn = ref(false) // used for conditional rendering
     const userEmail = ref(null) // used to display the user's email in the dropdown menu
+    const userRole = ref(false); // used to store current user role
 
     // Checks for logged in user and sets the isLoggedIn variable that is used for conditional rendering
     const setLogInStatus = async () => {
@@ -82,8 +83,20 @@ export default defineComponent({
 
         // if user is not null then isLoggedIn is true
         if (user) {
+
+          const { data, error } = await supabase
+          .from('Accounts')
+          .select('Donation_Status')
+          .eq('user_id', user.id);
+
           userEmail.value = user.email;
           isLoggedIn.value = true;
+
+          if (data[0].Donation_Status) {
+            userRole.value = true;
+          } else {
+            userRole.value = false;
+          }
         }
         else {
           isLoggedIn.value = false;
@@ -137,6 +150,7 @@ export default defineComponent({
       isLoggedIn,
       setLogInStatus,
       userEmail,
+      userRole,
       logOut,
     };
     
@@ -147,7 +161,7 @@ export default defineComponent({
 
 <style>
   .bg-image {
-    background-image: url("https://preudbpdnhcigtnuiuit.supabase.co/storage/v1/object/public/images/bg.png?t=2023-11-19T00%3A53%3A40.968Z");
+    background-image: url("https://preudbpdnhcigtnuiuit.supabase.co/storage/v1/object/public/images/Gradient2.png?t=2023-12-01T19%3A31%3A08.969Z");
     background-size: cover;
   }
 </style>
