@@ -667,6 +667,9 @@ export default defineComponent({
     };
 
     const fetchDonateeInfo = async (donatee_id) => {
+      if (donatee_id == null) {
+        return;
+      }
       try {
         const { data: { user } } = await supabase.auth.getUser();
         const { data, error } = await supabase
