@@ -1,3 +1,5 @@
+<!-- This file contains the form to donate food and updates notifications for all donatees
+when a donation is processed. -->
 <template>
   <q-page class="q-pa-md">
     <div class="row justify-center">
@@ -154,15 +156,17 @@ import { supabase } from '../lib/supabaseClient'
 export default defineComponent({
   name: 'PantryPage',
   setup () {
-    const $q = useQuasar()
-    const donatees = ref([])
-    const currentUserEmail = ref(null)
-    const currentUserId = ref(null)
-    const date_active = ref(null)
+    const $q = useQuasar() // used for notifications
+    const donatees = ref([]) // array of donatees to notify
+    const currentUserEmail = ref(null) 
+    const currentUserId = ref(null) // used to store current user's email and id
+    // used to store donation dates for active, expiration, and pickup
+    const date_active = ref(null) 
     const date_expires = ref(null)
     const date_pickup = ref(null)
-    const router = useRouter();
-    const food = ref(null)
+    const router = useRouter(); // used to redirect to other pages
+    // used to store donation food description, organization name, contact name, email, phone, and pickup location
+    const food = ref(null) 
     const orgDisplayName = ref(null)
     const contactName = ref(null)
     const contactEmail = ref(null)
@@ -171,7 +175,8 @@ export default defineComponent({
     const pickup_city = ref(null)
     const pickup_zip = ref(null)
     const pickup_state = ref(null)
-    const donationID = ref(0)
+    const donationID = ref(0) // used to store most recent donation ID as an int for the supabase table
+    // Array of states for q-select
     const states = ref([
           { label: 'Alabama', value: 'AL' },
           { label: 'Alaska', value: 'AK' },
@@ -231,8 +236,6 @@ export default defineComponent({
         const { data: { user } } = await supabase.auth.getUser()
         currentUserEmail.value  = user.email;
         currentUserId.value = user.id;
-        console.log('Current user email and id from getCurrentUser: ' + currentUserEmail.value, currentUserId.value);
-
         } catch (error) {
           console.error('Failed to fetch user id and email from supa session', error);
         }
@@ -304,13 +307,9 @@ export default defineComponent({
           }
          
         }
-
-          console.log('Notified donatees of new donation');
       }
 
     onMounted(() => {
-      console.log('Donate page mounted!')
-      
       
     });
 
@@ -340,21 +339,9 @@ export default defineComponent({
 
 
       async onSubmit () {
-        console.log('Submitted!')
-        console.log('Current user email and id: ' + currentUserEmail.value, currentUserId.value);
-        console.log(food.value)
-        console.log(orgDisplayName.value)
-        console.log(contactName.value)
-        console.log(contactEmail.value)
-        console.log(contactPhone.value)
-        console.log(pickup_streetAddress.value)
-        console.log(pickup_city.value)
-        console.log(pickup_zip.value)
-        console.log(pickup_state.value.value)
-
+        // Get current user email and id
         await getCurrentUser();
-
-        console.log('Current user email and id: ' + currentUserEmail.value, currentUserId.value);
+        // Access donations table and insert new donation
         try {
           let { error } = await supabase
             .from('donations')
@@ -390,7 +377,7 @@ export default defineComponent({
             });
 
           } else {
-            console.log('Donation added to pantry');
+            // Notify all donatees of new donation
             await notifyDonatees();
             $q.notify({
                 color: 'green-4',
@@ -398,7 +385,7 @@ export default defineComponent({
                 icon: 'cloud_done',
                 message: 'Donation added to pantry'
             });
-            
+            // Redirect to profile page to see active donations
             router.push('/profile')
           }
         } catch (error) {
@@ -408,7 +395,7 @@ export default defineComponent({
 
       },
       onReset () {
-        console.log('Resetted!')
+        // Reset all form fields
         orgDisplayName.value = null
         contactName.value = null
         contactEmail.value = null
