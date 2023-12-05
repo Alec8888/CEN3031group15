@@ -1,9 +1,10 @@
+<!--This file contains the pantry page that lists all active donations that can be reserved. It displays the overall review of the donator
+and it also notifies the donator when items are reserved-->
 <template>
   <q-page padding style="background-color: black;">
 
     <!-- <q-input rounded outlined v-model="searchText" label="Search..." /> -->
-    <div class="q-gutter-md row justify-center">
-
+    <div class="q-gutter-md row justify-center" >
       <q-btn
         class="glossy"
         color="accent"
@@ -11,7 +12,7 @@
         icon="filter_list"
         @click="clearFilters"
       />
-
+      <!-- Company filter dropdown -->
       <q-btn-dropdown
         class="glossy"
         color="accent"
@@ -27,7 +28,7 @@
           />
         </div>
       </q-btn-dropdown>
-
+      <!-- City filter dropdown -->
       <q-btn-dropdown
         class="glossy q-ml-md"
         color="accent"
@@ -43,7 +44,7 @@
           />
         </div>
       </q-btn-dropdown>
-
+      <!-- State filter dropdown -->
       <q-btn-dropdown
         class="glossy"
         color="accent"
@@ -60,7 +61,7 @@
         </div>
       </q-btn-dropdown>
 
-
+      <!-- Zip Code filter dropdown -->
       <q-btn-dropdown
         class="glossy"
         color="accent"
@@ -77,11 +78,11 @@
         </div>
       </q-btn-dropdown>
   </div>
-
+    <!-- Pantry items -->
     <div class="row q-gutter-md justify-center" style="margin-top: 5px;">
 
       <q-card class="donationCards bg-secondary text-white" v-for="(pantry_item, index) in pantryItems" :key="index" >
-
+        <!-- Pantry item details -->
         <q-card-section >
           <div class="text-h6">
             {{ pantry_item.org_displayname }}
@@ -103,7 +104,7 @@
 
           <div class="text-subtitle2 text-primary">Expires: {{ new Date(pantry_item.date_expires).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) }}</div>
         </q-card-section>
-
+        <!-- Actions for the pantry item -->
         <div class="absolute-bottom">
           <q-separator dark />
           <q-card-actions align="center" >
@@ -115,6 +116,7 @@
       </q-card>
 
     </div>
+    <!-- Contact dialog -->
     <q-dialog
       v-model="clickedCall"
     >
@@ -138,7 +140,7 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-
+     <!-- Reservation dialog -->
     <q-dialog
       v-model="clickedReserve"
     >
@@ -174,10 +176,11 @@ export default {
   name: 'pantry-find-food',
   setup() {
 
-    const pantryItem = ref(null);
-    const donationStatus = ref(0);
-    const pantryItems = ref([]);
-    const zipCodes = ref([]);
+    const pantryItem = ref(null); //used to reference the pantry item that is being reserved
+    const donationStatus = ref(0); //used to check the reservation status of the pantry item in supabase
+    const pantryItems = ref([]); //used to store the pantry items that are being displayed
+    //used to store the zip codes, states, and orginzations that are being displayed
+    const zipCodes = ref([]); 
     const zipCodes_selected = ref([]);
     const states = ref([]);
     const states_selected = ref([]);
@@ -185,14 +188,15 @@ export default {
     const cities_selected = ref([]);
     const organizations = ref([]);
     const organizations_selected = ref([]);
+    // used to store the ratings of the donators
     const ratingsMap = ref(new Map());
     const ratingsMapWatcher = ref(0);
-
+    // populating the donations from the donations database to the pantry
     const fetchDonations = async () => {
       try {
         var currentDate = new Date();
         currentDate = currentDate.toISOString().slice(0, 10);
-        console.log(currentDate);
+
 
         const { data, error } = await supabase.from('donations').select().neq('reserved', true).gt('date_expires', currentDate);
 
@@ -202,14 +206,13 @@ export default {
         }
         pantryItems.value = data;
 
-        // console.log("pantryItems: ", pantryItems.value);
-        // console.log("pantryItems (stringified): " + JSON.stringify(pantryItems.value, null, 2));
+        
       } catch (error) {
         console.error('Error fetching donations:', error);
       }
 
     };
-
+    //used to get the user status from supabase
     const getUserStatus = async () =>
     {
       try{
@@ -231,7 +234,7 @@ export default {
       }
 
     }
-
+    //used to get the ratings of the donators from supabase
     const setRatingsMap = async () => {
       // swap back to for each loop
       for (let i = 0; i < pantryItems.value.length; i++) {
@@ -264,20 +267,17 @@ export default {
         ratingsMap.value.set(pantryItems.value[i].donator_id, totalRating);
       }
 
-      //console.log(`Added to ratingsMap: Donator ID: ${currItem.donator_id}, Rating: ${totalRating}`);
-      console.log('ratingsMap:', JSON.stringify(Object.fromEntries(ratingsMap.value), null, 2));
     };
-
+    //used to get the rating of the donator
     const getRatingForDonator = (donatorId) => {
       return ratingsMap.value.get(donatorId) || 0;
     };
-
+    //used to update the rating of the donator
     const updateRating = (value, donatorId) => {
       ratingsMap.value.set(donatorId, value);
     };
-
+    //used to clear the filters
     const clearFilters = () => {
-      console.log('Clearing filters.');
       zipCodes_selected.value = [];
       states_selected.value = [];
       cities_selected.value = [];
@@ -286,8 +286,10 @@ export default {
     }
 
     onMounted(async () => {
+      //Fetch donations from supabase and user status
       await fetchDonations();
       await getUserStatus();
+      
       updateZipCodes();
       updateStates();
       updateCities();
@@ -295,39 +297,31 @@ export default {
     });
 
     const updateZipCodes = () => {
-      console.log('Updating zip codes.');
-      console.log('zipCodes: ', zipCodes.value)
 
       zipCodes.value = [];
       pantryItems.value.forEach((donation) => {
         // if zip code is not in zipCodes, add it
         if (!zipCodes.value.some(zipCode => zipCode.value === donation.pickup_zip)) {
-          console.log('Adding zip code: ', donation.pickup_zip);
           zipCodes.value.push({ label: donation.pickup_zip, value: donation.pickup_zip });
         }
       });
-      console.log('zipCodes: ', zipCodes);
     }
     // update states from donations
     const updateStates = () => {
-      console.log('pantryItems changed.');
       states.value = [];
       pantryItems.value.forEach((donation) => {
         // if state is not in states, add it
         if (!states.value.some(state => state.value === donation.pickup_state)) {
-          console.log('Adding state: ', donation.pickup_state);
           states.value.push({ label: donation.pickup_state, value: donation.pickup_state });
         }
       });
     }
     // update cities from donations
     const updateCities = () => {
-      console.log('pantryItems changed.');
       cities.value = [];
       pantryItems.value.forEach((donation) => {
         // if city is not in cities, add it
         if (!cities.value.some(city => city.value === donation.pickup_city)) {
-          console.log('Adding city: ', donation.pickup_city);
           cities.value.push({ label: donation.pickup_city, value: donation.pickup_city });
         }
       });
@@ -335,12 +329,10 @@ export default {
 
     // update organizations from donations
     const updateOrganizations = () => {
-      console.log('pantryItems changed.');
       organizations.value = [];
       pantryItems.value.forEach((donation) => {
         // if organization is not in organizations, add it
         if (!organizations.value.some(organization => organization.value === donation.org_displayname)) {
-          console.log('Adding organization: ', donation.org_displayname);
           organizations.value.push({ label: donation.org_displayname, value: donation.org_displayname });
         }
       });
@@ -349,27 +341,22 @@ export default {
     const clickedCall = ref(false);
     const clickedReserve = ref(false);
 
+    //used to reserve the donation and notify the donator
     const reserveDonation = async (pantry_item) => {
-      console.log('Reserve food button clicked.');
-      console.log(pantry_item)
       //get current user to make reservation
       const currentUserId = ref(null);
       const { data: { user } } = await supabase.auth.getUser()
       currentUserId.value = user.id;
       clickedReserve.value = true;
 
-        // update donation in db to reserved
+        // update donation status in db to reserved
         const { error } = await supabase.from('donations').update([{reserved: true, donatee_id: currentUserId.value}]).eq('id', pantry_item.id)
         if (error) {
           console.error('Error fetching donations:', error);
           return;
         }
-        else
-        {
-          console.log("Donation successfully reserved.")
-        }
-
-          // update notifications in db
+      
+          // update notifications in db for the donator
           const { error: notificationError } = await supabase
             .from('Notifications')
             .insert({
@@ -383,26 +370,21 @@ export default {
           if (notificationError) {
             console.error('Error updating Notifications:', notificationError);
             return;
-          } else {
-            console.log('Notification successfully added.');
-          }
+          } 
 
     };
 
     const contact = async (pantry_item) => {
-      console.log('Contact button clicked.');
+     
       try {
-        console.log("donatorID: " + pantry_item.donator_id)
         // get the contact info for the donator of the donation
         const {data, error } = await supabase.from('donations').select().eq('donator_id', pantry_item.donator_id)
-        console.log('data: ' + JSON.stringify(data, null, 2));
+       
         if (error) {
           console.error('Error fetching donations:', error.message);
           return;
         }
         pantryItem.value = data[0];
-        console.log("pantryItem value: " + pantryItem.value.contact_email);
-        console.log("pantryItem value: " + pantryItem.value.contact_phone);
         clickedCall.value = true;
       } catch (error) {
         console.error('Error fetching donations:', error);
@@ -411,7 +393,6 @@ export default {
 
     const searchText = ref('');
     watch(searchText, () => {
-      console.log('Search text changed.');
       // update organizations [] where name includes searchText
       pantryItems.value = pantryItems.value.filter((donation) => {
         return donation.org_displayname.includes(searchText.value);
@@ -423,9 +404,7 @@ export default {
 
     // update pantryItems from zipCodes_selected
     watch(zipCodes_selected, async () => {
-      console.log('zipCodes_selected changed.');
       if (zipCodes_selected.value.length === 0) {
-        console.log('zipCodes_selected is empty.');
         fetchDonations();
         return;
       }
@@ -433,7 +412,6 @@ export default {
       // Fetch donations again before filtering
       await fetchDonations();
       pantryItems.value = pantryItems.value.filter((donation) => {
-        console.log("zipCodes_selected.value: ", zipCodes_selected.value)
 
         // Compare donation.pickup_zip with the strings in zipCodes_selected.value
         return zipCodes_selected.value.includes(donation.pickup_zip);
@@ -442,9 +420,7 @@ export default {
 
     // update pantryItems from states_selected
     watch(states_selected, async () => {
-      console.log('states_selected changed.');
       if (states_selected.value.length === 0) {
-        console.log('states_selected is empty.');
         fetchDonations();
         return;
       }
@@ -452,7 +428,7 @@ export default {
       // Fetch donations again before filtering
       await fetchDonations();
       pantryItems.value = pantryItems.value.filter((donation) => {
-        console.log("states_selected.value: ", states_selected.value)
+
 
         // Compare donation.pickup_state with the strings in states_selected.value
         return states_selected.value.includes(donation.pickup_state);
@@ -461,9 +437,7 @@ export default {
 
     // update pantryItems from cities_selected
     watch(cities_selected, async () => {
-      console.log('cities_selected changed.');
       if (cities_selected.value.length === 0) {
-        console.log('cities_selected is empty.');
         fetchDonations();
         return;
       }
@@ -471,8 +445,6 @@ export default {
       // Fetch donations again before filtering
       await fetchDonations();
       pantryItems.value = pantryItems.value.filter((donation) => {
-        console.log("cities_selected.value: ", cities_selected.value)
-
         // Compare donation.pickup_city with the strings in cities_selected.value
         return cities_selected.value.includes(donation.pickup_city);
       });
@@ -480,9 +452,7 @@ export default {
 
     // update pantryItems from organizations_selected
     watch(organizations_selected, async () => {
-      console.log('organizations_selected changed.');
       if (organizations_selected.value.length === 0) {
-        console.log('organizations_selected is empty.');
         fetchDonations();
         return;
       }
@@ -490,13 +460,13 @@ export default {
       // Fetch donations again before filtering
       await fetchDonations();
       pantryItems.value = pantryItems.value.filter((donation) => {
-        console.log("organizations_selected.value: ", organizations_selected.value)
 
         // Compare donation.org_displayname with the strings in organizations_selected.value
         return organizations_selected.value.includes(donation.org_displayname);
       });
     });
 
+    
     watch(pantryItems, async () => {
 
       await setRatingsMap();
